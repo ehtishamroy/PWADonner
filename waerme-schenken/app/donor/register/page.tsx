@@ -1,0 +1,213 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { de } from '@/lib/i18n/de';
+import { BRAND } from '@/lib/constants';
+
+type Step = 1 | 2 | 3;
+
+function StepBar({ step }: { step: Step }) {
+    return (
+        <div className="flex gap-2 mb-10">
+            {[1, 2, 3].map((s) => (
+                <div
+                    key={s}
+                    className="h-1 flex-1 rounded-full transition-all"
+                    style={{ backgroundColor: s <= step ? BRAND.greenDark : BRAND.white }}
+                />
+            ))}
+        </div>
+    );
+}
+
+export default function DonorRegisterPage() {
+    const router  = useRouter();
+    const [step,  setStep]  = useState<Step>(1);
+    const [form,  setForm]  = useState({ firstName: '', lastName: '', email: '', newsletter: false, privacy: false });
+    const [errors,setErrors]= useState<Record<string, string>>({});
+    const [loading,setLoading]= useState(false);
+
+    function validate() {
+        const e: Record<string, string> = {};
+        if (!form.firstName.trim()) e.firstName = de.auth.errors.required;
+        if (!form.lastName.trim())  e.lastName  = de.auth.errors.required;
+        if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+            e.email = de.auth.errors.emailInvalid;
+        if (!form.privacy) e.privacy = de.auth.errors.required;
+        return e;
+    }
+
+    async function handleNext() {
+        if (step === 1) {
+            const e = validate();
+            if (Object.keys(e).length) { setErrors(e); return; }
+            setErrors({});
+            setStep(2);
+        } else if (step === 2) {
+            setLoading(true);
+            try {
+                const res = await fetch('/api/auth/send-otp', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ email: form.email, firstName: form.firstName, lastName: form.lastName, newsletter: form.newsletter, privacy: form.privacy, action: 'register' }),
+                });
+                if (!res.ok) { const d = await res.json(); setErrors({ submit: d.error || de.common.error }); return; }
+                setStep(3);
+            } finally { setLoading(false); }
+        }
+    }
+
+    async function handleVerify(code: string) {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/auth/verify-otp', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ email: form.email, code }),
+            });
+            if (!res.ok) { const d = await res.json(); setErrors({ otp: d.error || de.auth.errors.otpInvalid }); return; }
+            router.replace('/donor/dashboard');
+        } finally { setLoading(false); }
+    }
+
+    return (
+        <div className="min-h-screen pt-12 px-8 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
+            <div className="max-w-md w-full">
+                <StepBar step={step} />
+
+                {/* Step 1 — Details */}
+                {step === 1 && (
+                    <>
+                        <h1 className="mb-8" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px', letterSpacing: '0.01em' }}>
+                            {de.auth.register.heading}
+                        </h1>
+                        <div className="bg-white rounded-[32px] p-8 shadow-sm space-y-7">
+                            {[
+                                { key: 'firstName', label: de.auth.register.firstName },
+                                { key: 'lastName',  label: de.auth.register.lastName  },
+                                { key: 'email',     label: de.auth.register.email, type: 'email' },
+                            ].map(({ key, label, type = 'text' }) => (
+                                <div key={key} className="space-y-1">
+                                    <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
+                                        <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-1"
+                                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{label}</label>
+                                        <input
+                                            type={type}
+                                            value={(form as Record<string, unknown>)[key] as string}
+                                            onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                                            className="w-full font-bold bg-transparent outline-none text-[17px]"
+                                        />
+                                    </div>
+                                    {errors[key] && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors[key]}</p>}
+                                </div>
+                            ))}
+                            <div className="flex gap-3 items-start pt-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setForm(f => ({ ...f, privacy: !f.privacy }))}
+                                    className="w-6 h-6 rounded-lg border-2 border-black flex items-center justify-center shrink-0 transition-colors"
+                                    style={{ backgroundColor: form.privacy ? '#000' : 'transparent' }}
+                                >
+                                    {form.privacy && <span className="text-white text-xs">✓</span>}
+                                </button>
+                                <p className="text-[13px] leading-relaxed opacity-70">
+                                    {de.auth.register.privacy}{' '}
+                                    <Link href="/datenschutz" className="underline font-bold">{de.auth.register.privacyLink}</Link>.
+                                </p>
+                            </div>
+                            {errors.privacy && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors.privacy}</p>}
+                        </div>
+                    </>
+                )}
+
+                {/* Step 2 — Newsletter */}
+                {step === 2 && (
+                    <>
+                        <h1 className="mb-8" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
+                            {de.auth.register.stepNewsletter}
+                        </h1>
+                        <div className="bg-white rounded-[32px] p-8 shadow-sm">
+                            <div className="flex gap-3 items-start">
+                                <button
+                                    type="button"
+                                    onClick={() => setForm(f => ({ ...f, newsletter: !f.newsletter }))}
+                                    className="w-6 h-6 rounded-lg border-2 border-black flex items-center justify-center shrink-0 mt-0.5 transition-colors"
+                                    style={{ backgroundColor: form.newsletter ? '#000' : 'transparent' }}
+                                >
+                                    {form.newsletter && <span className="text-white text-xs">✓</span>}
+                                </button>
+                                <p className="text-[15px] leading-relaxed">{de.auth.register.newsletter}</p>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Step 3 — OTP */}
+                {step === 3 && (
+                    <OtpStep email={form.email} onVerify={handleVerify} error={errors.otp} />
+                )}
+
+                {errors.submit && <p className="text-center text-[13px] font-medium mt-4" style={{ color: BRAND.error }}>{errors.submit}</p>}
+
+                {step < 3 && (
+                    <div className="mt-14 flex flex-col items-center gap-4">
+                        <button
+                            onClick={handleNext}
+                            disabled={loading}
+                            className="w-full py-5 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60"
+                            style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
+                        >
+                            {loading ? de.common.loading : de.auth.register.next.toUpperCase()}
+                        </button>
+                        <p className="text-[12px] font-medium opacity-60">
+                            {de.auth.register.alreadyAccount}{' '}
+                            <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>
+                                {de.auth.register.login}
+                            </Link>
+                        </p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function OtpStep({ email, onVerify, error }: { email: string; onVerify: (code: string) => void; error?: string }) {
+    const [code, setCode] = useState('');
+
+    return (
+        <>
+            <h1 className="mb-4" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
+                {de.auth.otp.heading}
+            </h1>
+            <p className="mb-8 opacity-70 text-[15px]">{de.auth.otp.body} <strong>{email}</strong></p>
+            <div className="bg-white rounded-[32px] p-8 shadow-sm">
+                <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-3"
+                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.auth.otp.label}</label>
+                <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={code}
+                    onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+                    className="w-full font-bold bg-transparent outline-none text-[32px] tracking-[0.3em] border-b-2 pb-2"
+                    style={{ borderColor: error ? BRAND.error : '#E5E7EB', fontFamily: 'monospace' }}
+                    placeholder="000000"
+                />
+                {error && <p className="text-[12px] font-medium mt-2" style={{ color: BRAND.error }}>{error}</p>}
+            </div>
+            <div className="mt-14 flex flex-col items-center gap-4">
+                <button
+                    onClick={() => onVerify(code)}
+                    disabled={code.length !== 6}
+                    className="w-full py-5 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-40"
+                    style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
+                >
+                    {de.auth.otp.cta.toUpperCase()}
+                </button>
+            </div>
+        </>
+    );
+}

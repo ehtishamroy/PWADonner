@@ -1,0 +1,97 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model User {
+    id                String    @id @default(uuid())
+    email             String    @unique
+    role              String    @default("donor") // donor | family | admin
+    firstName         String
+    lastName          String
+    zipCode           String?
+    newsletterConsent Boolean   @default(false)
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    sessions  Session[]
+    donations Donation[]
+}
+
+model OtpCode {
+    id        String   @id @default(uuid())
+    email     String
+    code      String
+    expiresAt DateTime
+    used      Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    @@index([email])
+}
+
+model Session {
+    id        String   @id @default(uuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    token     String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+
+    @@index([token])
+}
+
+model Donation {
+    id               String    @id @default(uuid())
+    donorId          String
+    donor            User      @relation(fields: [donorId], references: [id], onDelete: Cascade)
+    toyName          String
+    category         String
+    ageRange         String
+    condition        String    // neu | wie_neu | gebraucht
+    description      String
+    status           String    @default("waiting") // waiting | approved | rejected | selected | sent
+    trackingNumber   String?
+    selectedByFamilyId String?
+    selectedAt       DateTime?
+    sentAt           DateTime?
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+
+    images DonationImage[]
+
+    @@index([donorId])
+    @@index([status])
+}
+
+model DonationImage {
+    id         String   @id @default(uuid())
+    donationId String
+    donation   Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+    imageUrl   String
+    sortOrder  Int      @default(0)
+    createdAt  DateTime @default(now())
+
+    @@index([donationId])
+}
+
+model NewsBanner {
+    id        String   @id @default(uuid())
+    title     String
+    body      String
+    isActive  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model ShopConfig {
+    id        String   @id @default(uuid())
+    openDate  DateTime?
+    closeDate DateTime?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

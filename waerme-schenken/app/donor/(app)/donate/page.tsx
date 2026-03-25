@@ -43,14 +43,24 @@ export default function DonorDonatePage() {
 
     function handleImageAdd(files: FileList | null) {
         if (!files) return;
-        const newImgs = Array.from(files).slice(0, 5 - images.length).map((file) => ({
-            file,
-            url: URL.createObjectURL(file),
-        }));
-        setImages((prev) => [...prev, ...newImgs].slice(0, 5));
+        const newImgs = Array.from(files)
+            .filter((f) => {
+                if (f.size > 5 * 1024 * 1024) {
+                    alert(`Das Bild ${f.name} ist grösser als 5MB und wird ignoriert.`);
+                    return false;
+                }
+                return true;
+            })
+            .slice(0, 3 - images.length)
+            .map((file) => ({
+                file,
+                url: URL.createObjectURL(file),
+            }));
+        setImages((prev) => [...prev, ...newImgs].slice(0, 3));
     }
 
     async function handleSubmit() {
+        if (!confirm('Möchtest du diese Spende jetzt endgültig einreichen?')) return;
         setLoading(true);
         try {
             // 1. Upload images
@@ -188,7 +198,7 @@ export default function DonorDonatePage() {
                                     </button>
                                 </div>
                             ))}
-                            {images.length < 5 && (
+                            {images.length < 3 && (
                                 <button onClick={() => fileRef.current?.click()}
                                     className="aspect-square rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors">
                                     <UploadCloud size={28} strokeWidth={1.5} color={BRAND.green} />

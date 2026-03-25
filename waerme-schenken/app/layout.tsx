@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
                 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
             </head>
-            <body className="antialiased">
+            <body className="antialiased" suppressHydrationWarning>
                 {children}
             </body>
         </html>

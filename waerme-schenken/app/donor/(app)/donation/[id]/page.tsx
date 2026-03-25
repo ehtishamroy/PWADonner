@@ -11,7 +11,7 @@ import { DonationActions } from './DonationActions';
 export default async function DonationDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const session = await getSession();
-    if (!session) redirect('/donor/login');
+    if (!session) redirect('/api/auth/clear-session');
 
     const donation = await db.donation.findUnique({
         where:   { id },

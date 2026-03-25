@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, PlusCircle, User } from 'lucide-react';
+import { Home, PlusCircle, User, LogOut } from 'lucide-react';
 import { Logo } from '@/components/brand/Logo';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
@@ -11,6 +11,7 @@ const navItems = [
     { href: '/donor/dashboard', label: de.nav.home,   icon: Home       },
     { href: '/donor/donate',    label: de.nav.donate,  icon: PlusCircle },
     { href: '/donor/profile',   label: de.nav.profile, icon: User       },
+    { href: '/donor/logout',    label: de.nav.logout,  icon: LogOut     },
 ];
 
 export function DonorSidebar() {

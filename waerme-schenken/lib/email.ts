@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
-const FROM = 'Wärme schenken <noreply@waerme-schenken.ch>';
+// Use onboarding@resend.dev until waerme-schenken.ch is verified in Resend dashboard
+const FROM = 'onboarding@resend.dev';
 
 // ── #1: Donation received (OTP + receipt) ──────────────────────────────────
 export async function sendDonationReceivedEmail(to: string, userName: string, toyName: string) {

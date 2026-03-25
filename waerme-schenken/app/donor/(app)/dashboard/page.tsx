@@ -11,7 +11,7 @@ import { Box } from 'lucide-react';
 
 export default async function DonorDashboardPage() {
     const session = await getSession();
-    if (!session) redirect('/donor/login');
+    if (!session) redirect('/api/auth/clear-session');
 
     const [user, donations, banner, stats] = await Promise.all([
         db.user.findUnique({ where: { id: session.userId } }),
@@ -24,7 +24,7 @@ export default async function DonorDashboardPage() {
         db.donation.aggregate({ _count: { id: true } }),
     ]);
 
-    if (!user) redirect('/donor/login');
+    if (!user) redirect('/api/auth/clear-session');
 
     return (
         <div className="min-h-screen pt-8 px-5 pb-28 md:pb-10 md:px-10 md:pt-10" style={{ backgroundColor: BRAND.beige }}>

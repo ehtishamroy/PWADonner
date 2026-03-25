@@ -142,6 +142,7 @@ export const de = {
         home: 'Home',
         donate: 'Neue Spende',
         profile: 'Profil',
+        logout: 'Abmelden',
     },
 
     // ── Common ──

@@ -113,7 +113,7 @@ export default function DonorDonatePage() {
                                 <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                                     className="w-full bg-transparent outline-none font-bold text-[16px] cursor-pointer">
                                     <option value="">Wählen...</option>
-                                    {TOY_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                    {TOY_CATEGORIES.map((c: string) => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             {errors.category && <p className="text-[11px] mt-1" style={{ color: BRAND.error }}>{errors.category}</p>}
@@ -124,7 +124,7 @@ export default function DonorDonatePage() {
                             <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-2"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.donate.ageRange}</label>
                             <div className="flex flex-wrap gap-2">
-                                {AGE_RANGES.map(a => (
+                                {AGE_RANGES.map((a: string) => (
                                     <button key={a} type="button"
                                         onClick={() => setForm(f => ({ ...f, ageRange: a }))}
                                         className="px-4 py-1.5 rounded-full text-[13px] font-bold border-2 transition-colors"
@@ -144,7 +144,7 @@ export default function DonorDonatePage() {
                             <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-2"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.donate.condition}</label>
                             <div className="flex gap-3">
-                                {CONDITIONS.map(c => (
+                                {CONDITIONS.map((c: string) => (
                                     <button key={c} type="button"
                                         onClick={() => setForm(f => ({ ...f, condition: c }))}
                                         className="px-4 py-2 rounded-full text-[13px] font-bold border-2 transition-colors"

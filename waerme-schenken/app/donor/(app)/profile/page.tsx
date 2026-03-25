@@ -8,13 +8,14 @@ import Link from 'next/link';
 
 export default async function DonorProfilePage() {
     const session = await getSession();
-    if (!session) redirect('/donor/login');
+    if (!session) redirect('/api/auth/clear-session');
 
     const user = await db.user.findUnique({ where: { id: session.userId } });
-    if (!user) redirect('/donor/login');
+    if (!user) redirect('/api/auth/clear-session');
 
     const accordionItems = [
         { label: de.profile.mailings, href: '/donor/profile/mailings' },
+        { label: 'Statuten',          href: '/statuten' },
         { label: de.profile.privacy,  href: '/datenschutz' },
         { label: de.profile.about,    href: '/about' },
         { label: de.profile.deleteProfile, href: '/donor/profile/delete', danger: true },

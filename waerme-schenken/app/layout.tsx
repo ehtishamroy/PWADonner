@@ -1,10 +1,23 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import fs from 'fs';
+import path from 'path';
+
+// Get cache-busting timestamp based on physical file modification time
+let iconVersion = '1';
+try {
+    const stat = fs.statSync(path.join(process.cwd(), 'public/favicon.png'));
+    iconVersion = stat.mtimeMs.toString();
+} catch (e) {}
 
 export const metadata: Metadata = {
     title:       'Wärme schenken',
     description: 'Freude weitergeben — Spielzeug spenden für Familien in Not.',
-    manifest:    '/manifest.json',
+    manifest:    '/manifest.json', // manifest cannot easily take query strings without breaking on some devices
+    icons: {
+        icon: `/favicon.png?v=${iconVersion}`,
+        apple: `/icons/apple-touch-icon.png?v=${iconVersion}`,
+    },
     appleWebApp: {
         capable:         true,
         statusBarStyle:  'default',
@@ -36,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&family=Inter:wght@400;500;700&display=swap"
                     rel="stylesheet"
                 />
-                <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+                <link rel="apple-touch-icon" href={`/icons/apple-touch-icon.png?v=${iconVersion}`} />
             </head>
             <body className="antialiased" suppressHydrationWarning>
                 {children}

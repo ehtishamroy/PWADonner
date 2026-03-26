@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { Logo } from '@/components/brand/Logo';
 import { Helicopter, Teddy } from '@/components/brand/Illustrations';
 import { de } from '@/lib/i18n/de';
@@ -9,6 +11,11 @@ import { BRAND } from '@/lib/constants';
 
 export default function WelcomePage() {
     const router = useRouter();
+    const [timestamp, setTimestamp] = useState<number | null>(null);
+
+    useEffect(() => {
+        setTimestamp(Date.now());
+    }, []);
 
     function goToDonor() {
         router.push('/donor/intro');
@@ -98,13 +105,16 @@ export default function WelcomePage() {
                 <div className="relative w-full aspect-[4/5] rounded-3xl overflow-visible order-2">
                     {/* Photo / placeholder */}
                     <div
-                        className="w-full h-full rounded-3xl overflow-hidden shadow-lg flex items-center justify-center"
-                        style={{ backgroundColor: BRAND.greenBright + '66' }}
+                        className="w-full h-full rounded-3xl overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100"
                     >
-                        {/* ── Replace this block with a real <Image> when you have the photo ──
-                            <Image src="/images/split-photo.jpg" alt="Kind mit Spielzeug" fill className="object-cover" priority />
-                        */}
-                        <Logo size={160} animated={false} />
+                        <Image 
+                            src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`} 
+                            alt="Kind mit Spielzeug" 
+                            fill 
+                            className="object-cover" 
+                            priority 
+                            unoptimized 
+                        />
                     </div>
 
                     {/* Floating Helicopter — top left */}

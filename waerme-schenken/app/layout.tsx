@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import fs from 'fs';
 import path from 'path';
+import { ServiceWorkerRegistration } from '@/components/ui/ServiceWorkerRegistration';
+import { PWAInstallBanner } from '@/components/ui/PWAInstallBanner';
+import { Suspense } from 'react';
 
 // Get cache-busting timestamp based on physical file modification time
 let iconVersion = '1';
@@ -52,6 +55,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <link rel="apple-touch-icon" href={`/icons/apple-touch-icon.png?v=${iconVersion}`} />
             </head>
             <body className="antialiased" suppressHydrationWarning>
+                <ServiceWorkerRegistration />
+                <Suspense fallback={null}>
+                    <PWAInstallBanner />
+                </Suspense>
                 {children}
             </body>
         </html>

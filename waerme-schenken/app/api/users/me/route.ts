@@ -35,3 +35,25 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 }
+
+export async function DELETE() {
+    const session = await getSession();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    try {
+        // Delete in order: images → donations → sessions → user
+        const donations = await db.donation.findMany({
+            where:  { donorId: session.userId },
+            select: { id: true },
+        });
+        for (const d of donations) {
+            await db.donationImage.deleteMany({ where: { donationId: d.id } });
+        }
+        await db.donation.deleteMany({ where: { donorId: session.userId } });
+        await db.session.deleteMany({ where: { userId: session.userId } });
+        await db.user.delete({ where: { id: session.userId } });
+        return NextResponse.json({ success: true });
+    } catch {
+        return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    }
+}

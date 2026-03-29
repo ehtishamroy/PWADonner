@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { ConditionBadge } from '@/components/ui/StatusBadge';
-import { BRAND } from '@/lib/constants';
+import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import { DonationActions } from './DonationActions';
@@ -104,24 +104,17 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
                         {donation.toyName}
                     </h1>
                     <p className="text-[13px] font-medium mt-1 leading-tight opacity-80">
-                        {de.donationDetail.address.replace('Adresse', '')}{donation.ageRange} Jahre · {donation.category} · {donation.condition}
+                        {donation.ageRange} · {donation.category} · {CONDITION_LABELS[donation.condition] || donation.condition}
                     </p>
                     <p className="mt-4 text-[14px] leading-relaxed opacity-90">{donation.description}</p>
                 </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions — includes delete button */}
             <DonationActions
                 donationId={donation.id}
                 status={donation.status}
             />
-
-            {/* Delete link */}
-            <p className="text-center text-[12px] mt-4 opacity-60">
-                <span className="underline font-bold cursor-pointer" style={{ color: BRAND.green }}>
-                    {de.donationDetail.delete}
-                </span>
-            </p>
 
         </div>
     );

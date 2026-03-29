@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-import { sendDonationApprovedEmail } from '@/lib/email';
+import { sendDonationApprovedEmail, sendDonationRejectedEmail } from '@/lib/email';
 
 export async function PATCH(
     request: Request,
@@ -28,7 +28,7 @@ export async function PATCH(
             include: { donor: true },
         });
 
-        // Send email only if it's a first-time approval
+        // Send approval email
         if (status === 'approved' && donation.donor.email) {
             try {
                 await sendDonationApprovedEmail(
@@ -38,6 +38,19 @@ export async function PATCH(
                 );
             } catch (emailError) {
                 console.error('Failed to send approval email:', emailError);
+            }
+        }
+
+        // Send rejection email
+        if (status === 'rejected' && donation.donor.email) {
+            try {
+                await sendDonationRejectedEmail(
+                    donation.donor.email,
+                    donation.donor.firstName,
+                    donation.toyName
+                );
+            } catch (emailError) {
+                console.error('Failed to send rejection email:', emailError);
             }
         }
 

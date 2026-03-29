@@ -8,6 +8,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BRAND, STATUS_COLORS } from '@/lib/constants';
 import { Box } from 'lucide-react';
+import { SuccessToast } from '@/components/ui/SuccessToast';
+import { Suspense } from 'react';
 
 export default async function DonorDashboardPage() {
     const session = await getSession();
@@ -28,6 +30,9 @@ export default async function DonorDashboardPage() {
 
     return (
         <div className="min-h-screen pt-8 px-5 pb-28 md:pb-10 md:px-10 md:pt-10" style={{ backgroundColor: BRAND.beige }}>
+            <Suspense fallback={null}>
+                <SuccessToast message="Danke! Deine Spende wurde eingereicht." />
+            </Suspense>
             <div className="max-w-4xl mx-auto">
 
             {/* NEWS */}
@@ -89,7 +94,7 @@ export default async function DonorDashboardPage() {
                                                 {d.toyName}
                                             </h3>
                                             <p className="text-[12px] opacity-85">
-                                                {d.ageRange} Jahre · {d.category}
+                                                {d.ageRange} · {d.category}
                                             </p>
                                         </div>
                                         <StatusBadge status={d.status} className="self-start mt-1" />

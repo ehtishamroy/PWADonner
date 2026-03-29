@@ -101,7 +101,7 @@ export const de = {
         description: 'Beschreibung',
         descriptionPlaceholder: 'Erzähl etwas über das Spielzeug...',
         uploadImages: 'Fotos hochladen',
-        uploadHint: 'PNG, JPG bis 10 MB (max. 5 Fotos)',
+        uploadHint: 'PNG, JPG bis 3 MB (max. 3 Fotos)',
         reviewTitle: 'Überprüfe deine Angaben',
         submit: 'Spende einreichen',
         submitting: 'Wird eingereicht...',

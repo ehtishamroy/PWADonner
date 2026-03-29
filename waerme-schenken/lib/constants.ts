@@ -12,40 +12,41 @@ export const BRAND = {
     error:       '#DE0000',
 } as const;
 
-// ── Toy categories ──
+// ── Toy categories (per client spec) ──
 export const TOY_CATEGORIES = [
-    'Bücher',
-    'Holzspielzeug',
+    'Buch',
+    'Duplo',
     'Lego',
-    'Plüschtiere',
-    'Fahrzeuge',
-    'Gesellschaftsspiele',
-    'Puzzles',
-    'Outdoor',
-    'Sonstiges',
+    'Playmobil',
+    'Hörspiel',
+    'Musik',
+    'Plüschtier',
+    'Puppen & Zubehör',
 ] as const;
 
-// ── Age ranges ──
+// ── Age ranges (per client spec) ──
 export const AGE_RANGES = [
-    '0-1',
-    '1-3',
-    '3-6',
-    '6-9',
-    '9-12',
-    '12+',
+    '0-1 (Baby)',
+    '1-2 Jahre',
+    '3-4 Jahre',
+    '5-6 Jahre',
+    '7-8 Jahre',
+    '8+ Jahre',
 ] as const;
 
-// ── Condition options ──
-export const CONDITIONS = ['neu', 'wie_neu', 'gebraucht'] as const;
+// ── Condition options (per client spec) ──
+export const CONDITIONS = ['neu_originalverpackt', 'wie_neu', 'leichte_gebrauchsspuren', 'starke_gebrauchsspuren'] as const;
 export const CONDITION_LABELS: Record<string, string> = {
-    neu:        'Neu',
-    wie_neu:    'Wie neu',
-    gebraucht:  'Gebraucht',
+    neu_originalverpackt:     'Neu, originalverpackt',
+    wie_neu:                  'Wie neu',
+    leichte_gebrauchsspuren:  'Leichte Gebrauchsspuren',
+    starke_gebrauchsspuren:   'Starke Gebrauchsspuren',
 };
 export const CONDITION_COLORS: Record<string, string> = {
-    neu:       BRAND.greenBright,
-    wie_neu:   BRAND.lila,
-    gebraucht: BRAND.mustard,
+    neu_originalverpackt:     BRAND.greenBright,
+    wie_neu:                  BRAND.lila,
+    leichte_gebrauchsspuren:  BRAND.mustard,
+    starke_gebrauchsspuren:   BRAND.redBright,
 };
 
 // ── Donation status ──

@@ -6,7 +6,7 @@ import { OTP_RATE_LIMIT } from '@/lib/constants';
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, action, firstName, lastName, newsletter, privacy } = await req.json();
+        const { email, action, firstName, lastName, newsletter, privacy, emailShare, zipCode } = await req.json();
 
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             return NextResponse.json({ error: 'Ungültige E-Mail-Adresse.' }, { status: 400 });
@@ -30,15 +30,19 @@ export async function POST(req: NextRequest) {
                 where: { email },
                 create: {
                     email,
-                    firstName:         firstName || '',
-                    lastName:          lastName  || '',
-                    role:              'donor',
-                    newsletterConsent: !!newsletter,
+                    firstName:          firstName || '',
+                    lastName:           lastName  || '',
+                    role:               'donor',
+                    newsletterConsent:  !!newsletter,
+                    emailShareConsent:  !!emailShare,
+                    zipCode:            zipCode || null,
                 },
                 update: {
-                    firstName:         firstName || undefined,
-                    lastName:          lastName  || undefined,
-                    newsletterConsent: newsletter != null ? !!newsletter : undefined,
+                    firstName:          firstName  || undefined,
+                    lastName:           lastName   || undefined,
+                    newsletterConsent:  newsletter != null ? !!newsletter : undefined,
+                    emailShareConsent:  emailShare != null ? !!emailShare : undefined,
+                    zipCode:            zipCode    || undefined,
                 },
             });
         } else {

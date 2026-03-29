@@ -23,11 +23,19 @@ function StepBar({ step }: { step: Step }) {
 }
 
 export default function DonorRegisterPage() {
-    const router  = useRouter();
-    const [step,  setStep]  = useState<Step>(1);
-    const [form,  setForm]  = useState({ firstName: '', lastName: '', email: '', newsletter: false, privacy: false });
-    const [errors,setErrors]= useState<Record<string, string>>({});
-    const [loading,setLoading]= useState(false);
+    const router    = useRouter();
+    const [step, setStep]     = useState<Step>(1);
+    const [form, setForm]     = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        zipCode: '',
+        newsletter: false,
+        emailShare: false,
+        privacy: false,
+    });
+    const [errors, setErrors]   = useState<Record<string, string>>({});
+    const [loading, setLoading] = useState(false);
 
     function validate() {
         const e: Record<string, string> = {};
@@ -51,7 +59,16 @@ export default function DonorRegisterPage() {
                 const res = await fetch('/api/auth/send-otp', {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ email: form.email, firstName: form.firstName, lastName: form.lastName, newsletter: form.newsletter, privacy: form.privacy, action: 'register' }),
+                    body:    JSON.stringify({
+                        email: form.email,
+                        firstName: form.firstName,
+                        lastName: form.lastName,
+                        zipCode: form.zipCode,
+                        newsletter: form.newsletter,
+                        emailShare: form.emailShare,
+                        privacy: form.privacy,
+                        action: 'register',
+                    }),
                 });
                 if (!res.ok) { const d = await res.json(); setErrors({ submit: d.error || de.common.error }); return; }
                 setStep(3);
@@ -72,12 +89,28 @@ export default function DonorRegisterPage() {
         } finally { setLoading(false); }
     }
 
+    function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: () => void; children: React.ReactNode }) {
+        return (
+            <div className="flex gap-3 items-start">
+                <button
+                    type="button"
+                    onClick={onChange}
+                    className="w-6 h-6 rounded-lg border-2 border-black flex items-center justify-center shrink-0 mt-0.5 transition-colors"
+                    style={{ backgroundColor: checked ? '#000' : 'transparent' }}
+                >
+                    {checked && <span className="text-white text-xs">✓</span>}
+                </button>
+                <p className="text-[13px] leading-relaxed opacity-70">{children}</p>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen pt-12 px-8 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-md w-full">
                 <StepBar step={step} />
 
-                {/* Step 1 — Details */}
+                {/* Step 1 — Personal details */}
                 {step === 1 && (
                     <>
                         <h1 className="mb-8" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px', letterSpacing: '0.01em' }}>
@@ -85,60 +118,51 @@ export default function DonorRegisterPage() {
                         </h1>
                         <div className="bg-white rounded-[32px] p-8 shadow-sm space-y-7">
                             {[
-                                { key: 'firstName', label: de.auth.register.firstName },
-                                { key: 'lastName',  label: de.auth.register.lastName  },
-                                { key: 'email',     label: de.auth.register.email, type: 'email' },
-                            ].map(({ key, label, type = 'text' }) => (
+                                { key: 'firstName', label: de.auth.register.firstName, placeholder: 'Dein Vorname' },
+                                { key: 'lastName',  label: de.auth.register.lastName,  placeholder: 'Dein Nachname' },
+                                { key: 'email',     label: de.auth.register.email,     placeholder: 'beispiel@mail.com' },
+                                { key: 'zipCode',   label: 'PLZ (optional)',            placeholder: 'z.B. 8000' },
+                            ].map(({ key, label, placeholder }) => (
                                 <div key={key} className="space-y-1">
                                     <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
                                         <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-1"
                                             style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{label}</label>
                                         <input
-                                            type={type}
+                                            type={key === 'email' ? 'email' : 'text'}
                                             value={(form as Record<string, unknown>)[key] as string}
+                                            placeholder={placeholder}
                                             onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                            className="w-full font-bold bg-transparent outline-none text-[17px]"
+                                            className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30 placeholder:font-normal"
                                         />
                                     </div>
                                     {errors[key] && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors[key]}</p>}
                                 </div>
                             ))}
-                            <div className="flex gap-3 items-start pt-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setForm(f => ({ ...f, privacy: !f.privacy }))}
-                                    className="w-6 h-6 rounded-lg border-2 border-black flex items-center justify-center shrink-0 transition-colors"
-                                    style={{ backgroundColor: form.privacy ? '#000' : 'transparent' }}
-                                >
-                                    {form.privacy && <span className="text-white text-xs">✓</span>}
-                                </button>
-                                <p className="text-[13px] leading-relaxed opacity-70">
-                                    {de.auth.register.privacy}{' '}
-                                    <Link href="/datenschutz" className="underline font-bold">{de.auth.register.privacyLink}</Link>.
-                                </p>
-                            </div>
+
+                            {/* Privacy checkbox */}
+                            <Checkbox checked={form.privacy} onChange={() => setForm(f => ({ ...f, privacy: !f.privacy }))}>
+                                {de.auth.register.privacy}{' '}
+                                <Link href="/datenschutz" className="underline font-bold">{de.auth.register.privacyLink}</Link>.
+                            </Checkbox>
                             {errors.privacy && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors.privacy}</p>}
                         </div>
                     </>
                 )}
 
-                {/* Step 2 — Newsletter */}
+                {/* Step 2 — Consents */}
                 {step === 2 && (
                     <>
                         <h1 className="mb-8" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
                             {de.auth.register.stepNewsletter}
                         </h1>
-                        <div className="bg-white rounded-[32px] p-8 shadow-sm">
-                            <div className="flex gap-3 items-start">
-                                <button
-                                    type="button"
-                                    onClick={() => setForm(f => ({ ...f, newsletter: !f.newsletter }))}
-                                    className="w-6 h-6 rounded-lg border-2 border-black flex items-center justify-center shrink-0 mt-0.5 transition-colors"
-                                    style={{ backgroundColor: form.newsletter ? '#000' : 'transparent' }}
-                                >
-                                    {form.newsletter && <span className="text-white text-xs">✓</span>}
-                                </button>
-                                <p className="text-[15px] leading-relaxed">{de.auth.register.newsletter}</p>
+                        <div className="bg-white rounded-[32px] p-8 shadow-sm space-y-6">
+                            <Checkbox checked={form.newsletter} onChange={() => setForm(f => ({ ...f, newsletter: !f.newsletter }))}>
+                                {de.auth.register.newsletter}
+                            </Checkbox>
+                            <div className="border-t border-gray-100 pt-6">
+                                <Checkbox checked={form.emailShare} onChange={() => setForm(f => ({ ...f, emailShare: !f.emailShare }))}>
+                                    Ich erlaube Wärme Schenken, meine E-Mail-Adresse mit Familien zu teilen, damit sie mir eine Dankes-Nachricht schicken können.
+                                </Checkbox>
                             </div>
                         </div>
                     </>

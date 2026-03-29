@@ -52,6 +52,8 @@ export default function DonorDonatePage() {
 
     function handleImageAdd(files: FileList | null) {
         if (!files) return;
+        // Reset file input so same files can be re-selected / picker opens fresh
+        if (fileRef.current) fileRef.current.value = '';
         const oversized: string[] = [];
         const valid = Array.from(files).filter((f) => {
             if (f.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -212,35 +214,36 @@ export default function DonorDonatePage() {
                             Max. {MAX_IMAGES} Fotos · max. {MAX_SIZE_MB} MB pro Foto · mind. 1 Foto erforderlich
                         </p>
 
-                        {/* Upload grid — center aligned */}
+                        {/* Upload grid */}
                         <div className="w-full flex flex-col items-center gap-3">
-                            <div className="grid grid-cols-3 gap-3 w-full">
-                                {images.map((img, i) => (
-                                    <div key={i} className="relative aspect-square rounded-[16px] overflow-hidden">
-                                        <Image src={img.url} alt="" fill className="object-cover" />
-                                        <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))}
-                                            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white">
-                                            <X size={12} />
-                                        </button>
-                                    </div>
-                                ))}
-                                {images.length < MAX_IMAGES && (
-                                    <button onClick={() => fileRef.current?.click()}
-                                        className="aspect-square rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors">
-                                        <UploadCloud size={28} strokeWidth={1.5} color={BRAND.green} />
-                                        <span className="text-[10px] opacity-50 text-center px-1">Foto hinzufügen</span>
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Large upload area when empty */}
-                            {images.length === 0 && (
+                            {images.length === 0 ? (
+                                // Empty state — large upload zone only
                                 <button onClick={() => fileRef.current?.click()}
-                                    className="w-full mt-2 py-10 rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 bg-gray-50 hover:bg-gray-100 transition-colors">
+                                    className="w-full py-10 rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 bg-gray-50 hover:bg-gray-100 transition-colors">
                                     <UploadCloud size={36} strokeWidth={1.5} color={BRAND.green} />
                                     <span className="text-[13px] opacity-60 font-medium">Fotos hochladen</span>
                                     <span className="text-[11px] opacity-40">PNG, JPG bis {MAX_SIZE_MB} MB (max. {MAX_IMAGES} Fotos)</span>
                                 </button>
+                            ) : (
+                                // Has images — grid with previews + add-more slot
+                                <div className="grid grid-cols-3 gap-3 w-full">
+                                    {images.map((img, i) => (
+                                        <div key={i} className="relative aspect-square rounded-[16px] overflow-hidden">
+                                            <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                            <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))}
+                                                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white">
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {images.length < MAX_IMAGES && (
+                                        <button onClick={() => fileRef.current?.click()}
+                                            className="aspect-square rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors">
+                                            <UploadCloud size={28} strokeWidth={1.5} color={BRAND.green} />
+                                            <span className="text-[10px] opacity-50 text-center px-1">Hinzufügen</span>
+                                        </button>
+                                    )}
+                                </div>
                             )}
                         </div>
 

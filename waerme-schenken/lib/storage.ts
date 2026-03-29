@@ -11,11 +11,19 @@ export function ensureUploadDir() {
 }
 
 /**
- * Returns the public URL for an uploaded file.
- * In dev: /uploads/donations/filename.jpg
- * In prod: UPLOAD_BASE_URL + /uploads/donations/filename.jpg
+ * Always returns a relative URL for an uploaded file.
+ * This avoids the Next.js Image optimizer trying to remotely fetch
+ * its own server's files via an absolute URL (which causes "upstream
+ * response is invalid" errors).
+ * Use UPLOAD_BASE_URL only if you serve uploads from a separate CDN.
  */
 export function getPublicUrl(filename: string): string {
     const base = process.env.UPLOAD_BASE_URL || '';
-    return `${base}/uploads/donations/${filename}`;
+    // If a CDN base is configured, use it; otherwise always relative
+    if (base && !base.startsWith('http://localhost') && base !== '') {
+        // For CDN — store absolute URL (images served from separate domain)
+        // Comment this out if having issues; prefer relative paths
+        // return `${base}/uploads/donations/${filename}`;
+    }
+    return `/uploads/donations/${filename}`;
 }

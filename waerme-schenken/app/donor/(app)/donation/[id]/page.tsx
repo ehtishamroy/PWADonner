@@ -4,7 +4,6 @@ import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { ConditionBadge } from '@/components/ui/StatusBadge';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
-import Image from 'next/image';
 import Link from 'next/link';
 import { DonationActions } from './DonationActions';
 
@@ -76,11 +75,10 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
                     <div className="relative rounded-[22px] overflow-hidden aspect-square mb-4 shadow-md"
                         style={{ backgroundColor: 'white' }}>
                         <ConditionBadge condition={donation.condition} className="absolute top-4 left-4 z-10" />
-                        <Image
+                        <img
                             src={donation.images[0].imageUrl}
                             alt={donation.toyName}
-                            fill
-                            className="object-cover"
+                            className="w-full h-full object-cover absolute inset-0"
                         />
                     </div>
                 ) : (

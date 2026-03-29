@@ -26,9 +26,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
         }
 
-        // Validate size (10 MB)
-        if (file.size > 10 * 1024 * 1024) {
-            return NextResponse.json({ error: 'Datei zu groß (max. 10 MB).' }, { status: 400 });
+        // Validate size (3 MB max)
+        if (file.size > 3 * 1024 * 1024) {
+            return NextResponse.json({ error: 'Datei zu groß (max. 3 MB).' }, { status: 400 });
         }
 
         const ext      = fileType.split('/')[1].replace('jpeg', 'jpg');

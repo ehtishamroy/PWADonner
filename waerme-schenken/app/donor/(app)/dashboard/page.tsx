@@ -5,7 +5,6 @@ import { de } from '@/lib/i18n/de';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { ZebraCat, Gift, Duck } from '@/components/brand/Illustrations';
 import Link from 'next/link';
-import Image from 'next/image';
 import { BRAND, STATUS_COLORS } from '@/lib/constants';
 import { Box } from 'lucide-react';
 import { SuccessToast } from '@/components/ui/SuccessToast';
@@ -79,10 +78,10 @@ export default async function DonorDashboardPage() {
                             <Link key={d.id} href={`/donor/donation/${d.id}`}>
                                 <div className="rounded-[24px] p-4 pr-5 flex gap-4 min-h-[130px] relative hover:scale-[1.01] transition-transform"
                                     style={{ backgroundColor: bg }}>
-                                    {/* Thumbnail */}
+                                    {/* Thumbnail — use plain img to avoid Next.js optimizer issues with local uploads */}
                                     <div className="w-[100px] h-[100px] bg-white rounded-[18px] overflow-hidden shrink-0">
                                         {imgUrl
-                                            ? <Image src={imgUrl} alt={d.toyName} width={100} height={100} className="w-full h-full object-cover" />
+                                            ? <img src={imgUrl} alt={d.toyName} className="w-full h-full object-cover" />
                                             : <div className="w-full h-full bg-gray-100" />
                                         }
                                     </div>

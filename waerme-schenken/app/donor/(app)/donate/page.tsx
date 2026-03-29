@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { de } from '@/lib/i18n/de';
 import { BRAND, TOY_CATEGORIES, AGE_RANGES, CONDITIONS, CONDITION_LABELS } from '@/lib/constants';
 import { UploadCloud, X } from 'lucide-react';
-import Image from 'next/image';
 
 type Step = 1 | 2 | 3;
 
@@ -52,8 +51,7 @@ export default function DonorDonatePage() {
 
     function handleImageAdd(files: FileList | null) {
         if (!files) return;
-        // Reset file input so same files can be re-selected / picker opens fresh
-        if (fileRef.current) fileRef.current.value = '';
+
         const oversized: string[] = [];
         const valid = Array.from(files).filter((f) => {
             if (f.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -70,16 +68,21 @@ export default function DonorDonatePage() {
         const remaining = MAX_IMAGES - images.length;
         if (remaining <= 0) {
             setErrors(prev => ({ ...prev, images: `Maximal ${MAX_IMAGES} Fotos erlaubt.` }));
+            // Reset input so picker can be reopened
+            if (fileRef.current) fileRef.current.value = '';
             return;
         }
 
-        const toAdd = valid.slice(0, remaining).map((file) => ({ file, url: URL.createObjectURL(file) }));
+        const toAdd = valid.slice(0, remaining).map((f) => ({ file: f, url: URL.createObjectURL(f) }));
         if (valid.length > remaining) {
             setErrors(prev => ({ ...prev, images: `Maximal ${MAX_IMAGES} Fotos erlaubt. Nur ${remaining} wurden hinzugefügt.` }));
         } else {
             setErrors(prev => { const next = { ...prev }; delete next.images; return next; });
         }
         setImages((prev) => [...prev, ...toAdd].slice(0, MAX_IMAGES));
+
+        // Reset AFTER processing so the picker can be reopened fresh next time
+        if (fileRef.current) fileRef.current.value = '';
     }
 
     async function handleSubmit() {
@@ -129,7 +132,7 @@ export default function DonorDonatePage() {
                 </h1>
                 <StepBar step={step} />
 
-                {/* Step 1 — Details */}
+                {/* ── Step 1 — Details ── */}
                 {step === 1 && (
                     <div className="bg-white rounded-[28px] p-7 shadow-sm space-y-6">
                         {field('toyName', de.donate.toyName, 'z.B. LEGO Technic Set')}
@@ -204,7 +207,7 @@ export default function DonorDonatePage() {
                     </div>
                 )}
 
-                {/* Step 2 — Images */}
+                {/* ── Step 2 — Images ── */}
                 {step === 2 && (
                     <div className="bg-white rounded-[28px] p-7 shadow-sm flex flex-col items-center">
                         <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '20px' }} className="mb-2 self-start">
@@ -214,10 +217,9 @@ export default function DonorDonatePage() {
                             Max. {MAX_IMAGES} Fotos · max. {MAX_SIZE_MB} MB pro Foto · mind. 1 Foto erforderlich
                         </p>
 
-                        {/* Upload grid */}
-                        <div className="w-full flex flex-col items-center gap-3">
+                        <div className="w-full">
                             {images.length === 0 ? (
-                                // Empty state — large upload zone only
+                                /* Empty state — large zone only */
                                 <button onClick={() => fileRef.current?.click()}
                                     className="w-full py-10 rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 bg-gray-50 hover:bg-gray-100 transition-colors">
                                     <UploadCloud size={36} strokeWidth={1.5} color={BRAND.green} />
@@ -225,7 +227,7 @@ export default function DonorDonatePage() {
                                     <span className="text-[11px] opacity-40">PNG, JPG bis {MAX_SIZE_MB} MB (max. {MAX_IMAGES} Fotos)</span>
                                 </button>
                             ) : (
-                                // Has images — grid with previews + add-more slot
+                                /* Has images — 3-col grid */
                                 <div className="grid grid-cols-3 gap-3 w-full">
                                     {images.map((img, i) => (
                                         <div key={i} className="relative aspect-square rounded-[16px] overflow-hidden">
@@ -239,8 +241,8 @@ export default function DonorDonatePage() {
                                     {images.length < MAX_IMAGES && (
                                         <button onClick={() => fileRef.current?.click()}
                                             className="aspect-square rounded-[16px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors">
-                                            <UploadCloud size={28} strokeWidth={1.5} color={BRAND.green} />
-                                            <span className="text-[10px] opacity-50 text-center px-1">Hinzufügen</span>
+                                            <UploadCloud size={24} strokeWidth={1.5} color={BRAND.green} />
+                                            <span className="text-[10px] opacity-50 text-center">Hinzufügen</span>
                                         </button>
                                     )}
                                 </div>
@@ -256,7 +258,7 @@ export default function DonorDonatePage() {
                     </div>
                 )}
 
-                {/* Step 3 — Review */}
+                {/* ── Step 3 — Review ── */}
                 {step === 3 && (
                     <div className="bg-white rounded-[28px] p-7 shadow-sm space-y-4">
                         <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '20px' }}>
@@ -279,7 +281,7 @@ export default function DonorDonatePage() {
                             <div className="flex gap-2 mt-2 flex-wrap">
                                 {images.map((img, i) => (
                                     <div key={i} className="w-16 h-16 rounded-xl overflow-hidden">
-                                        <Image src={img.url} alt="" width={64} height={64} className="object-cover w-full h-full" />
+                                        <img src={img.url} alt="" className="w-full h-full object-cover" />
                                     </div>
                                 ))}
                             </div>

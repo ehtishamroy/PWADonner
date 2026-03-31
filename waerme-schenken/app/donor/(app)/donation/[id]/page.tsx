@@ -6,6 +6,7 @@ import { ConditionBadge } from '@/components/ui/StatusBadge';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import Link from 'next/link';
 import { DonationActions } from './DonationActions';
+import { ImageCarousel } from './ImageCarousel';
 
 export default async function DonationDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -30,7 +31,8 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     }
 
     return (
-        <div className="min-h-screen pb-24" style={{ backgroundColor: BRAND.beige }}>
+        <div className="min-h-screen pb-24 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
+            <div className="max-w-xl w-full">
             {/* Header */}
             <div className="pt-10 px-5 flex items-center gap-3 mb-6">
                 <Link href="/donor/dashboard"
@@ -72,27 +74,14 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
             >
                 {/* Image carousel */}
                 {donation.images.length > 0 ? (
-                    <div className="relative rounded-[22px] overflow-hidden aspect-square mb-4 shadow-md"
+                    <div className="relative rounded-[22px] overflow-hidden aspect-square max-h-[500px] mx-auto mb-4 shadow-md"
                         style={{ backgroundColor: 'white' }}>
-                        <ConditionBadge condition={donation.condition} className="absolute top-4 left-4 z-10" />
-                        <img
-                            src={donation.images[0].imageUrl}
-                            alt={donation.toyName}
-                            className="w-full h-full object-cover absolute inset-0"
-                        />
+                        <ConditionBadge condition={donation.condition} className="absolute top-4 left-4 z-30" />
+                        <ImageCarousel images={donation.images} altBase={donation.toyName} />
                     </div>
                 ) : (
                     <div className="rounded-[22px] aspect-square bg-gray-100 mb-4 flex items-center justify-center">
                         <span className="opacity-30 text-sm">Kein Foto</span>
-                    </div>
-                )}
-
-                {/* Dots */}
-                {donation.images.length > 1 && (
-                    <div className="flex justify-center gap-2 mb-4">
-                        {donation.images.map((_: unknown, i: number) => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-brand-greenDark' : 'bg-white/60'}`} />
-                        ))}
                     </div>
                 )}
 
@@ -114,6 +103,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
                 status={donation.status}
             />
 
+            </div>
         </div>
     );
 }

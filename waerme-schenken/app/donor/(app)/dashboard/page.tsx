@@ -70,29 +70,29 @@ export default async function DonorDashboardPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="space-y-4 mb-10">
+                <div className="space-y-5 mb-10">
                     {donations.map((d: (typeof donations)[number]) => {
                         const bg      = STATUS_COLORS[d.status] || '#D1D5DB';
                         const imgUrl  = d.images[0]?.imageUrl;
                         return (
-                            <Link key={d.id} href={`/donor/donation/${d.id}`}>
-                                <div className="rounded-[24px] p-4 pr-5 flex gap-4 min-h-[130px] relative hover:scale-[1.01] transition-transform"
+                            <Link key={d.id} href={`/donor/donation/${d.id}`} className="block">
+                                <div className="rounded-[24px] p-5 flex gap-5 min-h-[150px] relative hover:scale-[1.01] transition-transform shadow-sm"
                                     style={{ backgroundColor: bg }}>
-                                    {/* Thumbnail — use plain img to avoid Next.js optimizer issues with local uploads */}
-                                    <div className="w-[100px] h-[100px] bg-white rounded-[18px] overflow-hidden shrink-0">
+                                    {/* Thumbnail — framed design with inner shadow */}
+                                    <div className="w-[110px] h-[110px] bg-white rounded-[18px] p-1.5 shrink-0 overflow-hidden shadow-inner">
                                         {imgUrl
-                                            ? <img src={imgUrl} alt={d.toyName} className="w-full h-full object-cover" />
-                                            : <div className="w-full h-full bg-gray-100" />
+                                            ? <img src={imgUrl} alt={d.toyName} className="w-full h-full object-cover rounded-[14px]" />
+                                            : <div className="w-full h-full bg-gray-100 rounded-[14px]" />
                                         }
                                     </div>
                                     {/* Info */}
                                     <div className="flex flex-col justify-between py-1 flex-grow">
                                         <div>
-                                            <h3 className="font-bold text-[16px] leading-tight mb-1 line-clamp-2"
+                                            <h3 className="font-bold text-[17px] leading-[1.2] mb-1 line-clamp-2 text-[#000000]"
                                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                                 {d.toyName}
                                             </h3>
-                                            <p className="text-[12px] opacity-85">
+                                            <p className="text-[13px] leading-[1.4] opacity-90 text-[#000000]">
                                                 {d.ageRange} · {d.category}
                                             </p>
                                         </div>

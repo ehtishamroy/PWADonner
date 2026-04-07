@@ -37,7 +37,7 @@ export default function DonorIntroPage() {
                 {/* Steps — 1 column mobile, 3 columns desktop */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center mb-12">
                     {steps.map((s, i) => (
-                        <div key={i} className="bg-white/50 md:bg-transparent p-6 md:p-0 rounded-3xl">
+                        <div key={i} className="">
                             <h2
                                 className="font-bold mb-2"
                                 style={{
@@ -48,8 +48,8 @@ export default function DonorIntroPage() {
                                 {s.title}
                             </h2>
                             <p
-                                className="opacity-70"
-                                style={{ fontFamily: "'Inter', sans-serif", fontSize: '15px', lineHeight: '20px' }}
+                                className=""
+                                style={{ fontFamily: "'Inter', sans-serif", fontSize: '15px', lineHeight: '20px', color: '#000000' }}
                             >
                                 {s.body}
                             </p>
@@ -75,7 +75,7 @@ export default function DonorIntroPage() {
                     <div className="flex flex-col items-center gap-3 relative z-20 pt-16">
                         <button
                             onClick={() => router.push('/donor/register')}
-                            className="w-full max-w-[220px] py-4 rounded-full text-white shadow-lg active:scale-95 transition-transform"
+                            className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center"
                             style={{
                                 backgroundColor: BRAND.green,
                                 fontFamily: "'Bricolage Grotesque', sans-serif",

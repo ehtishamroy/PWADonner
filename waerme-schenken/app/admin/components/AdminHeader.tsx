@@ -29,6 +29,7 @@ export function AdminHeader() {
                 </Link>
                 <div className="hidden md:flex items-center gap-4 ml-8 text-sm font-medium opacity-60">
                     <Link href="/admin/dashboard" className="hover:opacity-100 transition-opacity">Spenden prüfen</Link>
+                    <Link href="/admin/users" className="hover:opacity-100 transition-opacity">Nutzer</Link>
                     <Link href="/admin/settings/images" className="hover:opacity-100 transition-opacity">Einstellungen</Link>
                 </div>
             </div>

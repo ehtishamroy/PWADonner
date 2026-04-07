@@ -49,16 +49,16 @@ export default function ReviewActions({ params, currentStatus }: { params: Promi
                 <button
                     onClick={() => handleAction('waiting')}
                     disabled={loading}
-                    className="w-full py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 border-2"
+                    className="mx-auto h-10 min-w-[200px] px-6 rounded-full font-bold uppercase tracking-widest text-[11px] transition-transform active:scale-95 disabled:opacity-50 border-2 flex items-center justify-center"
                     style={{ borderColor: BRAND.mustard, color: BRAND.mustard, fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                     {loading ? 'Warten...' : 'Freigabe zurückziehen'}
                 </button>
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center">
                     <button
                         onClick={() => handleAction('rejected')}
                         disabled={loading}
-                        className="flex-1 py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 border-2"
+                        className="h-10 min-w-[110px] px-4 rounded-full font-bold uppercase tracking-widest text-[11px] transition-transform active:scale-95 disabled:opacity-50 border-2 flex items-center justify-center"
                         style={{ borderColor: BRAND.error, color: BRAND.error, fontFamily: "'Bricolage Grotesque', sans-serif" }}
                     >
                         Ablehnen
@@ -66,7 +66,7 @@ export default function ReviewActions({ params, currentStatus }: { params: Promi
                     <button
                         onClick={() => handleAction('deleted')}
                         disabled={loading}
-                        className="flex-1 py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 text-white"
+                        className="h-10 min-w-[110px] px-4 rounded-full font-bold uppercase tracking-widest text-[11px] transition-transform active:scale-95 disabled:opacity-50 text-white flex items-center justify-center"
                         style={{ backgroundColor: BRAND.error, fontFamily: "'Bricolage Grotesque', sans-serif" }}
                     >
                         Löschen
@@ -77,11 +77,11 @@ export default function ReviewActions({ params, currentStatus }: { params: Promi
     }
 
     return (
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
                 onClick={() => handleAction('approved')}
                 disabled={loading}
-                className="flex-[2] py-4 rounded-full text-white font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50"
+                className="h-10 min-w-[143px] px-6 rounded-[8px] text-white font-bold uppercase tracking-widest text-[12px] transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center"
                 style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque', sans-serif" }}
             >
                 {loading ? 'Warten...' : 'Freischalten'}
@@ -89,7 +89,7 @@ export default function ReviewActions({ params, currentStatus }: { params: Promi
             <button
                 onClick={() => handleAction('rejected')}
                 disabled={loading}
-                className="flex-1 py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 border-2"
+                className="h-10 min-w-[110px] px-4 rounded-full font-bold uppercase tracking-widest text-[12px] transition-transform active:scale-95 disabled:opacity-50 border-2 flex items-center justify-center"
                 style={{ 
                     backgroundColor: 'transparent',
                     color: BRAND.error,
@@ -102,7 +102,7 @@ export default function ReviewActions({ params, currentStatus }: { params: Promi
             <button
                 onClick={() => handleAction('deleted')}
                 disabled={loading}
-                className="flex-1 py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 text-white"
+                className="h-10 min-w-[110px] px-4 rounded-full font-bold uppercase tracking-widest text-[12px] transition-transform active:scale-95 disabled:opacity-50 text-white flex items-center justify-center"
                 style={{ backgroundColor: BRAND.error, fontFamily: "'Bricolage Grotesque', sans-serif" }}
             >
                 Löschen

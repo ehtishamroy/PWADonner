@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
-const FROM = 'hallo@waerme-schenken.ch';
+const FROM = 'Wärme Schenken <hallo@waerme-schenken.ch>';
 const SIGNATURE = '<p>Liebe Grüsse<br/>Catharina, Gaby &amp; Vanessa</p>';
 
 // ── #1: Donation received ──────────────────────────────────────────────────

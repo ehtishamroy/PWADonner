@@ -36,16 +36,16 @@ export default async function DonorDashboardPage() {
 
             {/* NEWS */}
             <div className="flex justify-between items-center mb-4 px-1">
-                <h2 className="text-[13px] font-bold tracking-[0.15em] opacity-70"
-                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                    {de.dashboard.news.toUpperCase()}
+                <h2 className="font-bold text-[#000000]"
+                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
+                    {de.dashboard.news}
                 </h2>
                 <div className="-mt-2">
                     <ZebraCat width={60} height={60} />
                 </div>
             </div>
 
-            <div className="bg-white rounded-[28px] p-7 shadow-sm mb-10">
+            <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
                 <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
                     {banner?.title || 'Wärme schenken'}
                 </h1>
@@ -55,16 +55,16 @@ export default async function DonorDashboardPage() {
             </div>
 
             {/* DONATION OVERVIEW */}
-            <h2 className="text-[13px] font-bold tracking-[0.15em] opacity-70 mb-5 px-1"
-                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                {de.dashboard.donationOverview.toUpperCase()}
+            <h2 className="font-medium text-[#000000] mb-5 px-1"
+                style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
+                {de.dashboard.donationOverview}
             </h2>
 
             {donations.length === 0 ? (
                 <div className="text-center py-12 opacity-60">
                     <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px' }}>{de.dashboard.empty}</p>
                     <Link href="/donor/donate"
-                        className="inline-block mt-4 px-8 py-3 rounded-full text-white text-sm font-bold"
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white text-[13px] font-bold flex items-center justify-center mx-auto mt-4 transition-transform active:scale-95 shadow-sm"
                         style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                         {de.dashboard.addFirst}
                     </Link>
@@ -76,7 +76,7 @@ export default async function DonorDashboardPage() {
                         const imgUrl  = d.images[0]?.imageUrl;
                         return (
                             <Link key={d.id} href={`/donor/donation/${d.id}`} className="block">
-                                <div className="rounded-[24px] p-5 flex gap-5 min-h-[150px] relative hover:scale-[1.01] transition-transform shadow-sm"
+                                <div className="rounded-[8px] p-5 flex gap-5 min-h-[150px] relative hover:scale-[1.01] transition-transform shadow-sm"
                                     style={{ backgroundColor: bg }}>
                                     {/* Thumbnail — framed design with inner shadow */}
                                     <div className="w-[110px] h-[110px] bg-white rounded-[18px] p-1.5 shrink-0 overflow-hidden shadow-inner">
@@ -114,9 +114,9 @@ export default async function DonorDashboardPage() {
             )}
 
             {/* FACTS */}
-            <h2 className="text-[13px] font-bold tracking-[0.15em] opacity-70 mb-5 px-1"
-                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                {de.dashboard.facts.toUpperCase()}
+            <h2 className="font-medium text-[#000000] mb-5 px-1"
+                style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
+                {de.dashboard.facts}
             </h2>
             <div className="rounded-[32px] p-9 pt-12 relative overflow-visible mb-4"
                 style={{ backgroundColor: BRAND.greenDark }}>

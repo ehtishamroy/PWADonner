@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { ConditionBadge } from '@/components/ui/StatusBadge';
-import { BRAND, CONDITION_LABELS } from '@/lib/constants';
+import { BRAND, CONDITION_LABELS, STATUS_COLORS } from '@/lib/constants';
 import Link from 'next/link';
 import { DonationActions } from './DonationActions';
 import { ImageCarousel } from './ImageCarousel';
@@ -69,12 +69,12 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
 
             {/* Content block — lila bg when selected */}
             <div
-                className="mx-5 rounded-[28px] p-4 pt-14 relative"
-                style={{ backgroundColor: donation.status === 'selected' ? BRAND.lila : 'transparent', padding: donation.status === 'selected' ? undefined : '0' }}
+                className="mx-5 rounded-[8px] p-4 pt-14 relative"
+                style={{ backgroundColor: STATUS_COLORS[donation.status] || 'transparent' }}
             >
                 {/* Image carousel */}
                 {donation.images.length > 0 ? (
-                    <div className="relative rounded-[22px] overflow-hidden aspect-square max-h-[500px] mx-auto mb-4 shadow-md"
+                    <div className="relative rounded-[8px] overflow-hidden aspect-square max-h-[500px] mx-auto mb-4 shadow-md"
                         style={{ backgroundColor: 'white' }}>
                         <ConditionBadge condition={donation.condition} className="absolute top-4 left-4 z-30" />
                         <ImageCarousel images={donation.images} altBase={donation.toyName} />

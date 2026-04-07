@@ -62,13 +62,14 @@ export default function DonorDonatePage() {
         });
 
         if (oversized.length > 0) {
-            setErrors(prev => ({ ...prev, images: `Folgende Bilder sind grösser als ${MAX_SIZE_MB}MB: ${oversized.join(', ')}` }));
+            setErrors(prev => ({ ...prev, images: `Bild zu gross. Bitte verkleinere es oder wähle ein anderes (max. ${MAX_SIZE_MB} MB).` }));
+            if (fileRef.current) fileRef.current.value = '';
+            return;
         }
 
         const remaining = MAX_IMAGES - images.length;
         if (remaining <= 0) {
             setErrors(prev => ({ ...prev, images: `Maximal ${MAX_IMAGES} Fotos erlaubt.` }));
-            // Reset input so picker can be reopened
             if (fileRef.current) fileRef.current.value = '';
             return;
         }
@@ -81,12 +82,10 @@ export default function DonorDonatePage() {
         }
         setImages((prev) => [...prev, ...toAdd].slice(0, MAX_IMAGES));
 
-        // Reset AFTER processing so the picker can be reopened fresh next time
         if (fileRef.current) fileRef.current.value = '';
     }
 
     async function handleSubmit() {
-        if (!confirm('Möchtest du diese Spende jetzt endgültig einreichen?')) return;
         setLoading(true);
         try {
             const imageUrls: string[] = [];
@@ -101,7 +100,30 @@ export default function DonorDonatePage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...form, imageUrls }),
             });
-            if (!res.ok) throw new Error('Server error');
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                const msg = data?.error || de.common.error;
+                // Surface field-level errors if the API tells us which field failed
+                if (msg.toLowerCase().includes('name') || msg.toLowerCase().includes('spielzeug')) {
+                    setErrors({ toyName: msg, submit: msg });
+                } else if (msg.toLowerCase().includes('kategorie') || msg.toLowerCase().includes('category')) {
+                    setErrors({ category: msg, submit: msg });
+                } else if (msg.toLowerCase().includes('felder')) {
+                    // Generic "all fields required" — go back to step 1 and show errors
+                    setErrors({
+                        toyName: !form.toyName ? de.auth.errors.required : '',
+                        category: !form.category ? de.auth.errors.required : '',
+                        ageRange: !form.ageRange ? 'Bitte wähle eine Altersgruppe.' : '',
+                        condition: !form.condition ? 'Bitte wähle einen Zustand.' : '',
+                        description: !form.description ? de.auth.errors.required : '',
+                        submit: 'Bitte überprüfe deine Angaben.',
+                    });
+                    setStep(1);
+                } else {
+                    setErrors({ submit: msg });
+                }
+                return;
+            }
             router.replace('/donor/dashboard?success=1');
         } catch {
             setErrors({ submit: de.common.error });
@@ -176,11 +198,11 @@ export default function DonorDonatePage() {
                         <div>
                             <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-2"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.donate.condition}</label>
-                            <div className="flex flex-col gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                                 {CONDITIONS.map((c: string) => (
                                     <button key={c} type="button"
                                         onClick={() => setForm(f => ({ ...f, condition: c }))}
-                                        className="px-4 py-2.5 rounded-full text-[13px] font-bold border-2 transition-colors text-left"
+                                        className="px-3 py-1.5 rounded-full text-[12px] font-bold border-2 transition-colors text-center"
                                         style={{
                                             borderColor:     form.condition === c ? BRAND.green : '#E5E7EB',
                                             backgroundColor: form.condition === c ? BRAND.green : 'transparent',
@@ -307,13 +329,13 @@ export default function DonorDonatePage() {
                             }
                             setStep((s) => (s + 1) as Step);
                         }}
-                            className="w-full py-5 rounded-full text-white shadow-xl transition-transform active:scale-95"
+                            className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 flex items-center justify-center"
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                             {de.common.next.toUpperCase()}
                         </button>
                     ) : (
                         <button onClick={handleSubmit} disabled={loading}
-                            className="w-full py-5 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60"
+                            className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                             {loading ? de.donate.submitting.toUpperCase() : de.donate.submit.toUpperCase()}
                         </button>

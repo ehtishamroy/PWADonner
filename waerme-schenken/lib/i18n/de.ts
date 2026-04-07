@@ -37,7 +37,7 @@ export const de = {
             firstName: 'Vorname',
             lastName: 'Nachname',
             email: 'E-Mail',
-            privacy: 'Ich akzeptiere die',
+            privacy: 'Akzeptiere unseren Datenschutz. Mit der Registrierung akzeptierst du unsere',
             privacyLink: 'Datenschutzerklärung',
             newsletter: 'Ja, ich möchte den Newsletter erhalten.',
             next: 'Weiter',

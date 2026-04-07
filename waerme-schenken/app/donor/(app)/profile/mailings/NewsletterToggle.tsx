@@ -47,7 +47,7 @@ export default function NewsletterToggle({ initialConsent }: { initialConsent: b
                 <button 
                     onClick={toggleConsent}
                     disabled={loading}
-                    className="px-6 py-3 rounded-full font-bold uppercase tracking-widest text-[11px] transition-transform active:scale-95 disabled:opacity-50"
+                    className="h-10 min-w-[110px] px-4 rounded-full font-bold uppercase tracking-widest text-[11px] transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center"
                     style={{ 
                         fontFamily: "'Bricolage Grotesque', sans-serif",
                         backgroundColor: consent ? 'transparent' : BRAND.green,

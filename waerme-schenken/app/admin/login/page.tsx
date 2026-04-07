@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: BRAND.beige }}>
-            <div className="bg-white rounded-[32px] shadow-xl p-8 w-full max-w-sm">
+            <div className="bg-white rounded-[8px] shadow-xl p-8 w-full max-w-sm">
                 <div className="flex justify-center mb-6">
                     <Logo size={60} animated={false} />
                 </div>
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-4 rounded-full text-white font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50 mt-4"
+                        className="mx-auto h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 disabled:opacity-50 mt-4 flex items-center justify-center"
                         style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque', sans-serif" }}
                     >
                         {loading ? 'Laden...' : 'Anmelden'}

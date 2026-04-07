@@ -40,14 +40,14 @@ export function DonationActions({ donationId, status }: Props) {
                 {confirm ? (
                     <div className="bg-white rounded-[20px] p-6 shadow-sm text-center">
                         <p className="text-[15px] mb-5 opacity-80">{de.donationDetail.deleteConfirm}</p>
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 justify-center">
                             <button onClick={() => setConfirm(false)}
-                                className="flex-1 py-3 rounded-full border-2 font-bold text-sm"
+                                className="h-10 min-w-[120px] px-4 rounded-full border-2 font-bold text-[13px] flex items-center justify-center"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                 {de.donationDetail.cancel}
                             </button>
                             <button onClick={deleteDonation} disabled={deleting}
-                                className="flex-1 py-3 rounded-full text-white font-bold text-sm"
+                                className="h-10 min-w-[120px] px-4 rounded-full text-white font-bold text-[13px] flex items-center justify-center"
                                 style={{ backgroundColor: BRAND.error, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                 {deleting ? de.common.loading : de.donationDetail.deleteConfirmBtn}
                             </button>
@@ -84,8 +84,8 @@ export function DonationActions({ donationId, status }: Props) {
             <button
                 onClick={markSent}
                 disabled={sending}
-                className="w-full py-4 rounded-full text-white font-bold uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50"
-                style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '14px', letterSpacing: '0.1em' }}
+                className="mx-auto h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center"
+                style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '13px', letterSpacing: '0.1em' }}
             >
                 {sending ? de.common.loading : de.donationDetail.markSent.toUpperCase()}
             </button>

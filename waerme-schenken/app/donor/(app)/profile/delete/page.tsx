@@ -97,11 +97,11 @@ export default function DeleteProfilePage() {
                     <button
                         onClick={handleDelete}
                         disabled={!confirmed || loading}
-                        className={`w-full py-4 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-all
+                        className={`mx-auto h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[12px] transition-all flex items-center justify-center
                                   ${(!confirmed || loading) ? 'opacity-40 cursor-not-allowed' : 'hover:opacity-90 active:scale-95'}`}
                         style={{ backgroundColor: BRAND.error, fontFamily: "'Bricolage Grotesque',sans-serif" }}
                     >
-                        {loading ? 'Wird gelöscht...' : 'Profil endgültig löschen'}
+                        {loading ? 'Löschen...' : 'Profil löschen'}
                     </button>
                 </div>
 

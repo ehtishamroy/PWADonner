@@ -42,10 +42,10 @@ export default function WelcomePage() {
                     <h1
                         className="mb-4"
                         style={{
-                            fontFamily:    "'Bricolage Grotesque', sans-serif",
-                            fontWeight:    700,
-                            fontSize:      '27px',
-                            lineHeight:    '30px',
+                            fontFamily: "'Bricolage Grotesque', sans-serif",
+                            fontWeight: 700,
+                            fontSize: '27px',
+                            lineHeight: '30px',
                             letterSpacing: '0.01em',
                         }}
                     >
@@ -57,7 +57,7 @@ export default function WelcomePage() {
                         className="opacity-80 mb-8 max-w-md mx-auto md:mx-0"
                         style={{
                             fontFamily: "'Inter', sans-serif",
-                            fontSize:   '15px',
+                            fontSize: '15px',
                             lineHeight: '20px',
                         }}
                     >
@@ -68,7 +68,7 @@ export default function WelcomePage() {
                     <div className="hidden md:flex gap-4">
                         <button
                             onClick={goToDonor}
-                            className="px-12 py-4 rounded-full text-white font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 hover:opacity-90"
+                            className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
                             style={{
                                 backgroundColor: BRAND.green,
                                 fontFamily:       "'Bricolage Grotesque', sans-serif",
@@ -79,11 +79,10 @@ export default function WelcomePage() {
                         </button>
                         <button
                             onClick={goToDonor}
-                            className="px-12 py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 hover:opacity-90 border-2"
+                            className="h-10 min-w-[143px] px-6 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
                             style={{
                                 backgroundColor: BRAND.white,
                                 color:            BRAND.green,
-                                borderColor:      BRAND.green,
                                 fontFamily:       "'Bricolage Grotesque', sans-serif",
                                 letterSpacing:    '0.1em',
                             }}
@@ -102,18 +101,18 @@ export default function WelcomePage() {
                 </div>
 
                 {/* ── RIGHT COLUMN — Photo with floating SVGs ── */}
-                <div className="relative w-full aspect-[4/5] rounded-3xl overflow-visible order-2">
+                <div className="relative w-full aspect-[4/5] overflow-visible order-2">
                     {/* Photo / placeholder */}
                     <div
-                        className="w-full h-full rounded-3xl overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100"
+                        className="w-full h-full overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100"
                     >
-                        <Image 
-                            src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`} 
-                            alt="Kind mit Spielzeug" 
-                            fill 
-                            className="object-cover" 
-                            priority 
-                            unoptimized 
+                        <Image
+                            src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
+                            alt="Kind mit Spielzeug"
+                            fill
+                            className="object-cover"
+                            priority
+                            unoptimized
                         />
                     </div>
 
@@ -132,7 +131,7 @@ export default function WelcomePage() {
                 <div className="w-full grid grid-cols-2 gap-4 md:hidden order-3">
                     <button
                         onClick={goToDonor}
-                        className="py-4 rounded-full text-white font-bold uppercase tracking-widest text-sm transition-transform active:scale-95"
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.green,
                             fontFamily:       "'Bricolage Grotesque', sans-serif",
@@ -143,11 +142,10 @@ export default function WelcomePage() {
                     </button>
                     <button
                         onClick={goToDonor}
-                        className="py-4 rounded-full font-bold uppercase tracking-widest text-sm transition-transform active:scale-95 border-2"
+                        className="h-10 min-w-[143px] px-6 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.white,
                             color:            BRAND.green,
-                            borderColor:      BRAND.green,
                             fontFamily:       "'Bricolage Grotesque', sans-serif",
                             letterSpacing:    '0.1em',
                         }}

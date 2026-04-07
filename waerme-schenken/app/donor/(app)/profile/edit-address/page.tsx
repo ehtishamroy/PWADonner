@@ -107,7 +107,7 @@ export default function EditAddressPage() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className={`w-full py-4 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-all
+                            className={`mx-auto h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-all flex items-center justify-center
                                       ${saving ? 'opacity-70' : 'hover:opacity-90 active:scale-95'}`}
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif" }}
                         >

@@ -31,13 +31,13 @@ export function BottomNav() {
                                 <Icon
                                     size={24}
                                     strokeWidth={active ? 2.5 : 1.5}
-                                    color={active ? BRAND.green : '#777'}
+                                    color={active ? '#000000' : '#777'}
                                 />
                             </div>
                             <span
                                 className="text-[11px] font-medium transition-colors"
                                 style={{
-                                    color:       active ? BRAND.green : '#777',
+                                    color:       active ? '#000000' : '#777',
                                     fontFamily: "'Inter', sans-serif",
                                 }}
                             >

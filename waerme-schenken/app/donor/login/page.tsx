@@ -58,7 +58,7 @@ export default function DonorLoginPage() {
                     {step === 1 ? de.auth.login.heading : de.auth.otp.heading}
                 </h1>
 
-                <div className="bg-white rounded-[32px] p-8 shadow-sm">
+                <div className="bg-white rounded-[8px] p-8 shadow-sm">
                     {step === 1 ? (
                         <div>
                             <label className="text-xs font-bold uppercase tracking-widest opacity-40 block mb-2"
@@ -103,7 +103,7 @@ export default function DonorLoginPage() {
                     <button
                         onClick={step === 1 ? sendOtp : verifyOtp}
                         disabled={loading || (step === 2 && code.length !== 6)}
-                        className="w-full py-5 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-50"
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center"
                         style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                     >
                         {loading ? de.common.loading : (step === 1 ? de.auth.login.cta : de.auth.otp.cta).toUpperCase()}

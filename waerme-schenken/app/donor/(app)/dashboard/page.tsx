@@ -14,7 +14,7 @@ export default async function DonorDashboardPage() {
     const session = await getSession();
     if (!session) redirect('/api/auth/clear-session');
 
-    const [user, donations, banner, stats] = await Promise.all([
+    const [user, donations, banner, approvedCount, selectedCount] = await Promise.all([
         db.user.findUnique({ where: { id: session.userId } }),
         db.donation.findMany({
             where:   { donorId: session.userId },
@@ -22,7 +22,8 @@ export default async function DonorDashboardPage() {
             orderBy: { createdAt: 'desc' },
         }),
         db.newsBanner.findFirst({ where: { isActive: true } }),
-        db.donation.aggregate({ _count: { id: true } }),
+        db.donation.count({ where: { status: 'approved' } }),
+        db.donation.count({ where: { status: 'selected' } }),
     ]);
 
     if (!user) redirect('/api/auth/clear-session');
@@ -129,15 +130,15 @@ export default async function DonorDashboardPage() {
                 <div className="grid grid-cols-2 gap-6 text-white relative">
                     <div className="text-center">
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            {stats._count.id.toLocaleString('de-CH')}
+                            {approvedCount.toLocaleString('de-CH')}
                         </p>
                         <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsCount}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            5{`'`}020
+                            {selectedCount.toLocaleString('de-CH')}
                         </p>
-                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsMoney}</p>
+                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsSelected}</p>
                     </div>
                 </div>
             </div>

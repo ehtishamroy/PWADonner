@@ -6,7 +6,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { ZebraCat, Gift, Duck } from '@/components/brand/Illustrations';
 import Link from 'next/link';
 import { BRAND, STATUS_COLORS } from '@/lib/constants';
-import { Box } from 'lucide-react';
+import { Box, Plus } from 'lucide-react';
 import { SuccessToast } from '@/components/ui/SuccessToast';
 import { Suspense } from 'react';
 
@@ -14,7 +14,7 @@ export default async function DonorDashboardPage() {
     const session = await getSession();
     if (!session) redirect('/api/auth/clear-session');
 
-    const [user, donations, banner, approvedCount, selectedCount] = await Promise.all([
+    const [user, donations, banner, myStatusCounts, globalApprovedCount, globalSelectedCount] = await Promise.all([
         db.user.findUnique({ where: { id: session.userId } }),
         db.donation.findMany({
             where:   { donorId: session.userId },
@@ -22,9 +22,20 @@ export default async function DonorDashboardPage() {
             orderBy: { createdAt: 'desc' },
         }),
         db.newsBanner.findFirst({ where: { isActive: true } }),
+        db.donation.groupBy({
+            by: ['status'],
+            where: { donorId: session.userId },
+            _count: true,
+        }),
         db.donation.count({ where: { status: 'approved' } }),
         db.donation.count({ where: { status: 'selected' } }),
     ]);
+
+    const myCounts = Object.fromEntries(myStatusCounts.map(s => [s.status, s._count])) as Record<string, number>;
+    const waitingCount  = myCounts.waiting  || 0;
+    const approvedCount = myCounts.approved || 0;
+    const selectedCount = myCounts.selected || 0;
+    const sentCount     = myCounts.sent     || 0;
 
     if (!user) redirect('/api/auth/clear-session');
 
@@ -54,6 +65,26 @@ export default async function DonorDashboardPage() {
                     {banner?.body || 'Herzlich willkommen!'}
                 </p>
             </div>
+
+            {/* PERSONAL STATUS SUMMARY */}
+            {donations.length > 0 && (
+                <div className="grid grid-cols-4 gap-2 mb-6">
+                    {[
+                        { label: 'Wartend',        count: waitingCount,  color: STATUS_COLORS.waiting  },
+                        { label: 'Freigegeben',    count: approvedCount, color: STATUS_COLORS.approved },
+                        { label: 'Ausgewählt',     count: selectedCount, color: STATUS_COLORS.selected },
+                        { label: 'Verschickt',     count: sentCount,     color: STATUS_COLORS.sent     },
+                    ].map(s => (
+                        <div key={s.label} className="rounded-[8px] p-3 text-center shadow-sm"
+                            style={{ backgroundColor: s.color }}>
+                            <p className="text-[24px] font-bold leading-none"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{s.count}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider opacity-70 mt-1"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{s.label}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* DONATION OVERVIEW */}
             <h2 className="font-medium text-[#000000] mb-5 px-1"
@@ -130,13 +161,13 @@ export default async function DonorDashboardPage() {
                 <div className="grid grid-cols-2 gap-6 text-white relative">
                     <div className="text-center">
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            {approvedCount.toLocaleString('de-CH')}
+                            {globalApprovedCount.toLocaleString('de-CH')}
                         </p>
                         <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsCount}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            {selectedCount.toLocaleString('de-CH')}
+                            {globalSelectedCount.toLocaleString('de-CH')}
                         </p>
                         <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsSelected}</p>
                     </div>
@@ -144,6 +175,16 @@ export default async function DonorDashboardPage() {
             </div>
 
             </div> {/* max-w container */}
+
+            {/* Floating + button */}
+            {donations.length > 0 && (
+                <Link href="/donor/donate"
+                    aria-label="Neue Spende hinzufügen"
+                    className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
+                    style={{ backgroundColor: BRAND.green }}>
+                    <Plus size={28} strokeWidth={2.5} />
+                </Link>
+            )}
         </div>
     );
 }

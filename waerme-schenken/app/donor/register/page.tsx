@@ -226,7 +226,7 @@ export default function DonorRegisterPage() {
                                 {loading ? de.common.loading : de.auth.register.next.toUpperCase()}
                             </button>
                             <p className="text-[12px] font-medium opacity-60">
-                                {de.auth.register.alreadyAccount}{' '}
+                                {de.auth.register.alreadyAccount}<br />
                                 <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>
                                     {de.auth.register.login}
                                 </Link>

@@ -110,6 +110,107 @@ export async function sendDonationReminderEmail(
     });
 }
 
+// ── #5: Family Registration Received ──────────────────────────────────────
+export async function sendFamilyRegistrationReceivedEmail(
+    to: string,
+    userName: string,
+) {
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: `Vielen Dank für deine Registrierung, ${userName}`,
+        html: `
+          <p>Liebe*r ${userName}</p>
+          <p>Wir haben deine Registrierung erhalten. Wir prüfen deine Angaben in den nächsten 48 Stunden und melden uns bei dir, sobald dein Zugang zur Spielzeugbörse aktiv ist.</p>
+          <p>Bis dahin kannst du dich noch nicht einloggen.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
+// ── #6: Family Registration Approved ──────────────────────────────────────
+export async function sendFamilyRegistrationApprovedEmail(
+    to: string,
+    userName: string,
+    loginUrl = 'https://app.waerme-schenken.ch/family/login',
+) {
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: `Deine Registrierung war erfolgreich, ${userName}`,
+        html: `
+          <p>Liebe*r ${userName}</p>
+          <p>Deine Registrierung wurde erfolgreich freigeschaltet. Du hast nun Zugang zu unserer Spielzeugbörse und kannst bis zu 5 Spielzeuge für deine Familie auswählen.</p>
+          <p><a href="${loginUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zur Spielzeugbörse</a></p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
+// ── #7: Family Order Received ─────────────────────────────────────────────
+export async function sendFamilyOrderReceivedEmail(
+    to: string,
+    userName: string,
+    toys: { toyName: string }[],
+) {
+    const list = toys.map(t => `<li>${t.toyName}</li>`).join('');
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: 'Schön, bist du in unserer Börse fündig geworden.',
+        html: `
+          <p>Liebe*r ${userName}</p>
+          <p>Du hast folgende Spielzeuge ausgewählt:</p>
+          <ul>${list}</ul>
+          <p>Die Spender*innen wurden informiert und senden dir die Pakete in den nächsten Tagen direkt nach Hause. Du bekommst eine E-Mail, sobald ein Paket unterwegs ist.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
+// ── #8: Toy Deleted (donor removed a selected toy) ────────────────────────
+export async function sendToyDeletedEmail(
+    to: string,
+    userName: string,
+    toyName: string,
+) {
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: 'Spielzeug leider nicht mehr verfügbar',
+        html: `
+          <p>Liebe*r ${userName}</p>
+          <p>Leider ist dein ausgewähltes Spielzeug <strong>${toyName}</strong> nicht mehr verfügbar. Der/die Spender*in musste es aus der Börse entfernen.</p>
+          <p>Du kannst in der Spielzeugbörse gerne ein anderes Spielzeug auswählen.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
+// ── #9: Donation Sent (family notified, with optional tracking) ───────────
+export async function sendDonationSentEmail(
+    to: string,
+    userName: string,
+    toyName: string,
+    trackingNumber?: string | null,
+) {
+    const trackingBlock = trackingNumber
+        ? `<p><strong>Sendungsverfolgungsnummer:</strong> ${trackingNumber}</p>`
+        : '';
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: 'Dein Geschenk ist auf dem Weg zu dir!',
+        html: `
+          <p>Liebe*r ${userName}</p>
+          <p>Gute Nachrichten! Dein ausgewähltes Spielzeug <strong>${toyName}</strong> ist unterwegs zu dir.</p>
+          ${trackingBlock}
+          <p>Wir wünschen dir und deiner Familie viel Freude damit.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
 // ── OTP email ──────────────────────────────────────────────────────────────
 export async function sendOtpEmail(to: string, code: string) {
     return resend.emails.send({

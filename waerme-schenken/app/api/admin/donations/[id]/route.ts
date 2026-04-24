@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-import { sendDonationApprovedEmail, sendDonationRejectedEmail } from '@/lib/email';
+import { sendDonationApprovedEmail } from '@/lib/email';
 
 export async function PATCH(
     request: Request,
@@ -41,18 +41,7 @@ export async function PATCH(
             }
         }
 
-        // Send rejection email
-        if (status === 'rejected' && donation.donor.email) {
-            try {
-                await sendDonationRejectedEmail(
-                    donation.donor.email,
-                    donation.donor.firstName,
-                    donation.toyName
-                );
-            } catch (emailError) {
-                console.error('Failed to send rejection email:', emailError);
-            }
-        }
+        // Per spec 7.1: rejection sends no email
 
         return NextResponse.json({ success: true, status: donation.status });
     } catch (error) {

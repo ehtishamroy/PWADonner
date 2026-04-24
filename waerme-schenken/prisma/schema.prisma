@@ -15,6 +15,12 @@ model User {
     firstName         String
     lastName          String
     zipCode           String?
+    street            String?
+    city              String?
+    socialCardUrl     String?
+    socialCardOrg     String?
+    familyApproved    Boolean   @default(false)
+    familySpecial     Boolean   @default(false)
     newsletterConsent Boolean   @default(false)
     emailShareConsent Boolean   @default(false)
     createdAt         DateTime  @default(now())
@@ -25,14 +31,22 @@ model User {
 }
 
 model OtpCode {
-    id        String   @id @default(uuid())
-    email     String
-    code      String
-    expiresAt DateTime
-    used      Boolean  @default(false)
-    createdAt DateTime @default(now())
+    id          String   @id @default(uuid())
+    email       String
+    code        String
+    expiresAt   DateTime
+    used        Boolean  @default(false)
+    attempts    Int      @default(0)
+    lockedUntil DateTime?
+    createdAt   DateTime @default(now())
 
     @@index([email])
+}
+
+model AppSettings {
+    id                      String    @id @default("singleton")
+    familyApprovalRequired  Boolean   @default(true)
+    updatedAt               DateTime  @updatedAt
 }
 
 model Session {
@@ -94,5 +108,12 @@ model ShopConfig {
     openDate  DateTime?
     closeDate DateTime?
     createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CategoryImage {
+    id        String   @id @default(uuid())
+    category  String   @unique
+    imageUrl  String
     updatedAt DateTime @updatedAt
 }

@@ -6,19 +6,30 @@ import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
 
+const VALID_TABS = ['waiting', 'approved', 'rejected'] as const;
+type Tab = typeof VALID_TABS[number];
+
 export default async function AdminDashboardPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
     const params = await searchParams;
-    const tab = params.tab || 'waiting'; // 'waiting' or 'approved'
+    const tab: Tab = (VALID_TABS as readonly string[]).includes(params.tab ?? '')
+        ? (params.tab as Tab)
+        : 'waiting';
 
-    // Fetch donations based on tab
+    // Oldest first for all tabs per spec 7.1
     const donations = await db.donation.findMany({
         where: { status: tab },
-        orderBy: { createdAt: tab === 'waiting' ? 'asc' : 'desc' }, // oldest first for waiting, newest first for approved
-        include: { 
+        orderBy: { createdAt: 'asc' },
+        include: {
             images: { orderBy: { sortOrder: 'asc' }, take: 1 },
             donor: { select: { firstName: true, lastName: true, email: true } }
         },
     });
+
+    const tabLabels: Record<Tab, string> = {
+        waiting:  'Ausstehend',
+        approved: 'Freigeschaltet',
+        rejected: 'Abgelehnt',
+    };
 
     return (
         <>
@@ -31,31 +42,33 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
                     
                     {/* Tabs */}
                     <div className="flex gap-4 border-b border-gray-200 pb-px">
-                        <Link 
-                            href="/admin/dashboard?tab=waiting" 
-                            className={`pb-3 font-bold uppercase tracking-widest text-sm transition-colors border-b-2 ${tab === 'waiting' ? 'border-brand-green text-brand-green' : 'border-transparent opacity-40 hover:opacity-100'}`}
-                            style={{ fontFamily: "'Bricolage Grotesque', sans-serif", borderColor: tab === 'waiting' ? BRAND.green : undefined, color: tab === 'waiting' ? BRAND.green : undefined }}
-                        >
-                            Ausstehend
-                        </Link>
-                        <Link 
-                            href="/admin/dashboard?tab=approved" 
-                            className={`pb-3 font-bold uppercase tracking-widest text-sm transition-colors border-b-2 ${tab === 'approved' ? 'border-brand-green text-brand-green' : 'border-transparent opacity-40 hover:opacity-100'}`}
-                            style={{ fontFamily: "'Bricolage Grotesque', sans-serif", borderColor: tab === 'approved' ? BRAND.green : undefined, color: tab === 'approved' ? BRAND.green : undefined }}
-                        >
-                            Freigeschaltet
-                        </Link>
+                        {VALID_TABS.map(t => (
+                            <Link key={t}
+                                href={`/admin/dashboard?tab=${t}`}
+                                className={`pb-3 font-bold uppercase tracking-widest text-sm transition-colors border-b-2 ${tab === t ? '' : 'border-transparent opacity-40 hover:opacity-100'}`}
+                                style={{
+                                    fontFamily: "'Bricolage Grotesque', sans-serif",
+                                    borderColor: tab === t ? BRAND.green : undefined,
+                                    color:       tab === t ? BRAND.green : undefined,
+                                }}>
+                                {tabLabels[t]}
+                            </Link>
+                        ))}
                     </div>
                 </div>
 
                 {donations.length === 0 ? (
                     <div className="bg-white rounded-[24px] p-12 text-center shadow-sm border border-gray-100 mt-8">
-                        <div className="text-4xl mb-4 opacity-50">{tab === 'waiting' ? '🎉' : '📦'}</div>
+                        <div className="text-4xl mb-4 opacity-50">{tab === 'waiting' ? '🎉' : tab === 'approved' ? '📦' : '🗑️'}</div>
                         <h3 className="text-xl font-bold mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                            {tab === 'waiting' ? 'Alles erledigt!' : 'Keine freigeschalteten Spenden'}
+                            {tab === 'waiting' ? 'Alles erledigt!' : tab === 'approved' ? 'Keine freigeschalteten Spenden' : 'Keine abgelehnten Spenden'}
                         </h3>
                         <p className="opacity-60">
-                            {tab === 'waiting' ? 'Keine neuen Spenden müssen überprüft werden.' : 'Sobald du Spenden freischaltest, erscheinen sie hier.'}
+                            {tab === 'waiting'
+                                ? 'Keine neuen Spenden müssen überprüft werden.'
+                                : tab === 'approved'
+                                ? 'Sobald du Spenden freischaltest, erscheinen sie hier.'
+                                : 'Abgelehnte Spenden erscheinen hier.'}
                         </p>
                     </div>
                 ) : (
@@ -80,8 +93,9 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
                                             Kein Bild
                                         </div>
                                     )}
-                                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm" style={{ color: tab === 'waiting' ? undefined : BRAND.green }}>
-                                        {tab === 'waiting' ? 'Warten' : 'Freigeschaltet'}
+                                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                                        style={{ color: tab === 'approved' ? BRAND.green : tab === 'rejected' ? BRAND.error : undefined }}>
+                                        {tabLabels[tab]}
                                     </div>
                                 </div>
 

@@ -17,6 +17,10 @@ export default function WelcomePage() {
         setTimestamp(Date.now());
     }, []);
 
+    function goToFamily() {
+        router.push('/family/intro');
+    }
+
     function goToDonor() {
         router.push('/donor/intro');
     }
@@ -67,7 +71,7 @@ export default function WelcomePage() {
                     {/* Desktop role buttons — side by side */}
                     <div className="hidden md:flex gap-4">
                         <button
-                            onClick={goToDonor}
+                            onClick={goToFamily}
                             className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
                             style={{
                                 backgroundColor: BRAND.green,
@@ -130,7 +134,7 @@ export default function WelcomePage() {
                 {/* ── MOBILE-ONLY role buttons — full width below photo ── */}
                 <div className="w-full grid grid-cols-2 gap-4 md:hidden order-3">
                     <button
-                        onClick={goToDonor}
+                        onClick={goToFamily}
                         className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.green,

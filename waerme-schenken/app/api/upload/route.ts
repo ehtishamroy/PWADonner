@@ -26,12 +26,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
         }
 
-        // Validate size (3 MB max)
-        if (file.size > 3 * 1024 * 1024) {
-            return NextResponse.json({ error: 'Datei zu groß (max. 3 MB).' }, { status: 400 });
+        // Validate size (5 MB max to accommodate mobile photos)
+        if (file.size > 5 * 1024 * 1024) {
+            return NextResponse.json({ error: 'Datei zu gross (max. 5 MB).' }, { status: 400 });
         }
 
-        const ext      = fileType.split('/')[1].replace('jpeg', 'jpg');
+        // Sanitize extension: only allow jpg/png/webp/gif/heic
+        const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
+        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic']);
+        const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
         const filename = `${session.userId}-${Date.now()}.${ext}`;
         const filepath = path.join(UPLOAD_DIR, filename);
 

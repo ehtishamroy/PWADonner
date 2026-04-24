@@ -6,7 +6,15 @@ import { OTP_RATE_LIMIT } from '@/lib/constants';
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, action, firstName, lastName, newsletter, privacy, emailShare, zipCode } = await req.json();
+        const body = await req.json();
+        const {
+            email, action,
+            firstName, lastName,
+            newsletter, privacy, emailShare,
+            zipCode,
+            // family-only:
+            street, city, socialCardUrl, socialCardOrg,
+        } = body;
 
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             return NextResponse.json({ error: 'Ungültige E-Mail-Adresse.' }, { status: 400 });
@@ -21,7 +29,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Zu viele Versuche. Bitte warte kurz.' }, { status: 429 });
         }
 
-        // If register action, create or update user record
+        // Donor registration
         if (action === 'register') {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
@@ -43,6 +51,43 @@ export async function POST(req: NextRequest) {
                     newsletterConsent:  newsletter != null ? !!newsletter : undefined,
                     emailShareConsent:  emailShare != null ? !!emailShare : undefined,
                     zipCode:            zipCode    || undefined,
+                },
+            });
+        } else if (action === 'register-family') {
+            if (!privacy) {
+                return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
+            }
+            if (!street || !city || !zipCode) {
+                return NextResponse.json({ error: 'Vollständige Adresse erforderlich.' }, { status: 400 });
+            }
+            if (!socialCardUrl || !socialCardOrg) {
+                return NextResponse.json({ error: 'Sozialausweis und Organisation erforderlich.' }, { status: 400 });
+            }
+            await db.user.upsert({
+                where: { email },
+                create: {
+                    email,
+                    firstName:          firstName || '',
+                    lastName:           lastName  || '',
+                    role:               'family',
+                    familyApproved:     false,
+                    newsletterConsent:  !!newsletter,
+                    zipCode,
+                    street,
+                    city,
+                    socialCardUrl,
+                    socialCardOrg,
+                },
+                update: {
+                    firstName,
+                    lastName,
+                    role:               'family',
+                    zipCode,
+                    street,
+                    city,
+                    socialCardUrl,
+                    socialCardOrg,
+                    newsletterConsent:  newsletter != null ? !!newsletter : undefined,
                 },
             });
         } else {

@@ -6,16 +6,24 @@ export function middleware(request: NextRequest) {
     const hasAdminToken = request.cookies.has('ws_admin_session');
     const path = request.nextUrl.pathname;
 
-    // ── Donor Auth Protection ──
+    // ── Shared Auth Paths (donor OR family will be redirected from here) ──
+    const isSharedAuthPath = ['/welcome', '/'].includes(path);
+
     const isDonorAuthPath = [
         '/donor/login',
         '/donor/register',
-        '/welcome',
         '/donor/intro',
-        '/'
     ].includes(path);
 
-    if (hasToken && isDonorAuthPath) {
+    const isFamilyAuthPath = [
+        '/family/login',
+        '/family/register',
+        '/family/intro',
+    ].includes(path);
+
+    // Logged-in users hitting auth pages → redirect (role determined client-side, default to donor)
+    if (hasToken && (isSharedAuthPath || isDonorAuthPath || isFamilyAuthPath)) {
+        // Can't tell role from cookie alone; donor dashboard does its own role check
         return NextResponse.redirect(new URL('/donor/dashboard', request.url));
     }
 
@@ -26,7 +34,6 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // If an admin is logged in and visits /admin/login, send them to dashboard
     if (path === '/admin/login' && hasAdminToken) {
         return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
@@ -41,6 +48,9 @@ export const config = {
         '/donor/intro',
         '/donor/login',
         '/donor/register',
-        '/admin/:path*'
+        '/family/intro',
+        '/family/login',
+        '/family/register',
+        '/admin/:path*',
     ],
 };

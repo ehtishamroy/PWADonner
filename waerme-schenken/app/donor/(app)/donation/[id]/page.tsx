@@ -20,14 +20,13 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
 
     if (!donation || donation.donorId !== session.userId) notFound();
 
-    // If selected, load family address
-    let familyAddress: string | null = null;
+    // If selected, load family recipient details (full address)
+    let family: { firstName: string; lastName: string; street: string | null; zipCode: string | null; city: string | null } | null = null;
     if (donation.status === 'selected' && donation.selectedByFamilyId) {
-        const family = await db.user.findUnique({
+        family = await db.user.findUnique({
             where: { id: donation.selectedByFamilyId },
+            select: { firstName: true, lastName: true, street: true, zipCode: true, city: true },
         });
-        // Family address is in families table — for now show what we have
-        familyAddress = family ? `${family.firstName} ${family.lastName}` : null;
     }
 
     return (
@@ -47,7 +46,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
                 </span>
             </div>
 
-            {/* If selected — show "Who selected yours?" */}
+            {/* If selected — show "Who selected yours?" with full shipping address */}
             {donation.status === 'selected' && (
                 <div className="px-5 mb-4">
                     <h2 className="font-bold tracking-widest uppercase text-sm mb-4"
@@ -59,9 +58,17 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
                             style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                             {de.donationDetail.address}
                         </p>
-                        <p className="font-bold text-[16px] leading-snug mb-2">
-                            {familyAddress || 'Familie wartet auf Bestätigung'}
-                        </p>
+                        {family ? (
+                            <p className="font-bold text-[16px] leading-relaxed mb-3">
+                                {family.firstName} {family.lastName}<br />
+                                {family.street}<br />
+                                {family.zipCode} {family.city}
+                            </p>
+                        ) : (
+                            <p className="font-bold text-[16px] leading-snug mb-2 opacity-60">
+                                Familie wartet auf Bestätigung
+                            </p>
+                        )}
                         <p className="text-[14px] opacity-70">{de.donationDetail.sendTo}</p>
                     </div>
                 </div>

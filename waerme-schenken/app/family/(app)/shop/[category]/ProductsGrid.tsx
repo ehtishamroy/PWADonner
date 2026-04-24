@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-    ChevronLeft, Search, ChevronDown, Package,
-    ShoppingCart, Plus, ArrowUp,
+    ChevronLeft, Search, ChevronDown, Package, ArrowUp,
 } from 'lucide-react';
 import Image from 'next/image';
 import { BRAND, CONDITION_COLORS, AGE_RANGES } from '@/lib/constants';
@@ -194,12 +193,7 @@ export function ProductsGrid({ category }: { category: string }) {
                                     aria-label={added ? 'Entfernen' : 'Hinzufügen'}>
                                     {added
                                         ? <Image src="/images/cart.png" alt="" width={18} height={18} style={{ filter: 'brightness(0) saturate(100%) invert(40%) sepia(50%) saturate(400%) hue-rotate(100deg)' }} />
-                                        : (
-                                            <div className="relative">
-                                                <ShoppingCart size={18} color={BRAND.green} />
-                                                <Plus size={9} color={BRAND.green} strokeWidth={3} className="absolute -top-1 -right-1 bg-white rounded-full" />
-                                            </div>
-                                        )}
+                                        : <Image src="/images/shopcart.png" alt="" width={20} height={20} />}
                                 </button>
                             </div>
                         );

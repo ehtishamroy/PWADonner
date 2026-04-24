@@ -240,14 +240,11 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
         const ctrl = new AbortController();
         const t = setTimeout(async () => {
             try {
-                const url = `https://swisspost.opendatasoft.com/api/records/1.0/search/?dataset=plz_verzeichnis_v2&q=${encodeURIComponent(q)}&rows=8&facet=postleitzahl&facet=ortbez27`;
+                const url = `/api/swiss-post?q=${encodeURIComponent(q)}`;
                 const res = await fetch(url, { signal: ctrl.signal });
                 if (!res.ok) return;
                 const data = await res.json();
-                const items = (data.records || []).map((r: { fields: { postleitzahl: number; ortbez27: string } }) => ({
-                    zip: String(r.fields.postleitzahl),
-                    city: r.fields.ortbez27,
-                }));
+                const items = (data.suggestions || []) as Array<{ zip: string; city: string }>;
                 // Dedupe by zip+city
                 const seen = new Set<string>();
                 const unique = items.filter((i: { zip: string; city: string }) => {

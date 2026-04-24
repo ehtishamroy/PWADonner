@@ -37,14 +37,11 @@ export default function FamilyEditAddressPage() {
         const ctrl = new AbortController();
         const t = setTimeout(async () => {
             try {
-                const url = `https://swisspost.opendatasoft.com/api/records/1.0/search/?dataset=plz_verzeichnis_v2&q=${encodeURIComponent(q)}&rows=8`;
+                const url = `/api/swiss-post?q=${encodeURIComponent(q)}`;
                 const res = await fetch(url, { signal: ctrl.signal });
                 if (!res.ok) return;
                 const data = await res.json();
-                const items = (data.records || []).map((r: { fields: { postleitzahl: number; ortbez27: string } }) => ({
-                    zip: String(r.fields.postleitzahl),
-                    city: r.fields.ortbez27,
-                }));
+                const items = (data.suggestions || []) as Array<{ zip: string; city: string }>;
                 const seen = new Set<string>();
                 setSuggestions(items.filter((i: { zip: string; city: string }) => {
                     const k = `${i.zip}-${i.city}`;

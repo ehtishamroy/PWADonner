@@ -1,19 +1,14 @@
-// Minimal service worker for PWA installability
-// Enables Chrome's "Add to Home Screen" prompt
+// Service worker for PWA installability
+// Only caches immutable static assets — HTML always comes from the network
 
-const CACHE_NAME = 'waerme-schenken-v1';
+const CACHE_NAME = 'waerme-schenken-v2';
 
-// Cache only core assets on install
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) =>
-            cache.addAll(['/', '/manifest.json'])
-        )
-    );
+// Nothing to pre-cache — static assets are cached on first fetch
+self.addEventListener('install', () => {
     self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: purge ALL old caches (including v1)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) =>
@@ -25,24 +20,39 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Network-first strategy: always try network, fall back to cache
+// Network-first for static assets only; everything else goes straight to network
 self.addEventListener('fetch', (event) => {
-    // Only handle GET requests
-    if (event.request.method !== 'GET') return;
+    const { request } = event;
 
-    // Skip non-http(s) requests
-    if (!event.request.url.startsWith('http')) return;
+    // Only handle GET
+    if (request.method !== 'GET') return;
+
+    // Skip cross-origin requests (fonts, analytics, external APIs)
+    if (!request.url.startsWith(self.location.origin)) return;
+
+    // Skip navigation requests (HTML pages) — let the browser fetch them natively
+    if (request.mode === 'navigate') return;
+
+    // Skip API routes — always fresh
+    if (request.url.includes('/api/')) return;
+
+    // Only intercept immutable Next.js static assets
+    if (!request.url.includes('/_next/static/')) return;
 
     event.respondWith(
-        fetch(event.request)
+        fetch(request)
             .then((response) => {
-                // Cache successful responses for static assets
-                if (response.ok && event.request.url.includes('/_next/static/')) {
+                if (response.ok) {
                     const clone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                    caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
                 }
                 return response;
             })
-            .catch(() => caches.match(event.request))
+            .catch(() =>
+                caches.match(request).then((cached) => {
+                    // Guard: never return undefined to respondWith
+                    return cached || new Response('', { status: 503, statusText: 'Offline' });
+                })
+            )
     );
 });

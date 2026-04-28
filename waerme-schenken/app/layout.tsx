@@ -44,7 +44,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="de" suppressHydrationWarning>
+        <html lang="de" suppressHydrationWarning style={{ backgroundColor: '#F5F0EA' }}>
             <head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
                 <link rel="apple-touch-icon" href={`/icons/apple-touch-icon.png?v=${iconVersion}`} />
             </head>
-            <body className="antialiased" suppressHydrationWarning>
+            <body className="antialiased" suppressHydrationWarning style={{ backgroundColor: '#F5F0EA' }}>
                 <ServiceWorkerRegistration />
                 <Suspense fallback={null}>
                     <PWAInstallBanner />

@@ -47,6 +47,37 @@ export default function FamilyRegisterPage() {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // Load persisted state
+    useEffect(() => {
+        const saved = localStorage.getItem('ws_family_register_form');
+        if (saved) {
+            try {
+                const { form: savedForm, step: savedStep } = JSON.parse(saved);
+                if (savedForm) setForm(savedForm);
+                if (savedStep) setStep(savedStep);
+            } catch (e) {
+                console.error('Failed to parse saved form', e);
+            }
+        }
+        setIsLoaded(true);
+    }, []);
+
+    // Persist state on change
+    useEffect(() => {
+        if (isLoaded && step < 4) {
+            localStorage.setItem('ws_family_register_form', JSON.stringify({ form, step }));
+        }
+    }, [form, step, isLoaded]);
+
+    const isStepComplete = step === 1
+        ? (form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.privacy)
+        : step === 2
+        ? (form.street.trim() && form.zipCode.trim() && form.city.trim())
+        : step === 3
+        ? (form.socialCardOrg && form.socialCardUrl)
+        : true;
 
     function validate1() {
         const e: Record<string, string> = {};
@@ -125,6 +156,7 @@ export default function FamilyRegisterPage() {
                 return;
             }
             // After successful OTP, family is registered. Show pending page.
+            localStorage.removeItem('ws_family_register_form');
             // NOTE: do NOT setLoading(false) here — router.replace begins
             // unmounting this component; setting state afterwards triggers
             // React "removeChild" crashes in dev.
@@ -148,8 +180,8 @@ export default function FamilyRegisterPage() {
                 </h1>
             </div>
 
-            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
-                <div className="w-full mx-auto px-8 py-10 flex flex-col flex-grow">
+            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
+                <div className="w-full mx-auto px-8 py-8 flex flex-col flex-grow">
                     <div className="flex-grow">
                         {step === 1 && (
                             <div className="space-y-7">
@@ -194,10 +226,10 @@ export default function FamilyRegisterPage() {
                     </div>
 
                     {step < 4 && (
-                        <div className="mt-10 flex flex-col items-center gap-4">
+                        <div className="mt-auto pt-6 flex flex-col items-center gap-4">
                             <button onClick={handleNext} disabled={loading}
                                 className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
-                                style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
+                                style={{ backgroundColor: isStepComplete ? BRAND.green : 'rgba(155,155,155,0.25)', fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                                 {loading ? de.common.loading : 'WEITER'}
                             </button>
                             {step > 1 && (
@@ -207,8 +239,8 @@ export default function FamilyRegisterPage() {
                                     {de.common.back}
                                 </button>
                             )}
-                            <p className="text-[12px] font-medium opacity-60">
-                                {de.family.register.alreadyAccount}{' '}
+                            <p className="text-[12px] font-medium opacity-100 text-center">
+                                {de.family.register.alreadyAccount}<br />
                                 <Link href="/family/login" className="underline font-bold" style={{ color: BRAND.green }}>
                                     {de.family.register.login}
                                 </Link>

@@ -159,8 +159,8 @@ export default function DonorRegisterPage() {
             </div>
 
             {/* Bottom Section — White, extends to bottom with margins */}
-            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
-                <div className="w-full mx-auto px-8 py-10 flex flex-col flex-grow">
+            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
+                <div className="w-full mx-auto px-8 py-8 flex flex-col flex-grow">
                     
                     <div className="flex-grow">
                         {/* Step 1 — Personal details */}
@@ -219,9 +219,9 @@ export default function DonorRegisterPage() {
                         {errors.submit && <p className="text-center text-[13px] font-medium mt-4" style={{ color: BRAND.error }}>{errors.submit}</p>}
                     </div>
 
-                    {/* Navigation Buttons — always at bottom of white area */}
+                    {/* Navigation Buttons — sticky at bottom */}
                     {step < 3 && (
-                        <div className="mt-10 flex flex-col items-center gap-4">
+                        <div className="mt-auto pt-6 flex flex-col items-center gap-4">
                             <button
                                 onClick={handleNext}
                                 disabled={loading}

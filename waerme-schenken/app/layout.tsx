@@ -46,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="de" suppressHydrationWarning style={{ backgroundColor: '#F5F0EA' }}>
             <head>
+                <style dangerouslySetInnerHTML={{ __html: 'html,body{background-color:#F5F0EA!important}' }} />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link

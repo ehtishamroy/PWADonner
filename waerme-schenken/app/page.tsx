@@ -14,7 +14,7 @@ export default function SplashPage() {
     }, [router]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <div className="flex flex-col items-center justify-center min-h-screen" style={{ backgroundColor: '#F5F0EA' }}>
             <Logo size={180} animated />
             <h1
                 className="mt-8 text-center"

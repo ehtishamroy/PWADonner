@@ -111,7 +111,7 @@ export default function DonorLoginPage() {
                     >
                         {loading ? de.common.loading : (step === 1 ? de.auth.login.cta : de.auth.otp.cta).toUpperCase()}
                     </button>
-                    <p className="text-[12px] font-medium opacity-60">
+                    <p className="text-[12px] font-medium opacity-100">
                         {de.auth.login.noAccount}<br />
                         <Link href="/donor/register" className="underline font-bold" style={{ color: BRAND.green }}>
                             {de.auth.login.register}

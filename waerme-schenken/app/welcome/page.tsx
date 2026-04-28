@@ -26,90 +26,48 @@ export default function WelcomePage() {
     }
 
     return (
-        <div
-            className="flex flex-col items-center min-h-screen pt-12 px-8 pb-8 md:justify-center"
-            style={{ backgroundColor: BRAND.beige }}
-        >
-            <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-
-                {/* ── LEFT COLUMN ── */}
-                <div className="text-center md:text-left order-1">
-                    {/* Logo — left-aligned on desktop, centered on mobile */}
-                    <div className="mb-6 hidden md:block">
-                        <Logo size={90} animated={false} />
-                    </div>
-                    <div className="mb-6 md:hidden flex justify-center">
-                        <Logo size={72} animated={false} />
-                    </div>
-
-                    {/* Heading */}
-                    <h1
-                        className="mb-4"
-                        style={{
-                            fontFamily: "'Bricolage Grotesque', sans-serif",
-                            fontWeight: 700,
-                            fontSize: '27px',
-                            lineHeight: '30px',
-                            letterSpacing: '0.01em',
-                        }}
-                    >
-                        {de.split.heading}
-                    </h1>
-
-                    {/* Body */}
-                    <p
-                        className="opacity-80 mb-8 max-w-md mx-auto md:mx-0"
-                        style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: '15px',
-                            lineHeight: '20px',
-                        }}
-                    >
-                        {de.split.body}
-                    </p>
-
-                    {/* Desktop role buttons — side by side */}
-                    <div className="hidden md:flex gap-4">
-                        <button
-                            onClick={goToFamily}
-                            className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
-                            style={{
-                                backgroundColor: BRAND.green,
-                                fontFamily:       "'Bricolage Grotesque', sans-serif",
-                                letterSpacing:    '0.1em',
-                            }}
-                        >
-                            {de.split.family.toUpperCase()}
-                        </button>
-                        <button
-                            onClick={goToDonor}
-                            className="h-10 min-w-[143px] px-6 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
-                            style={{
-                                backgroundColor: BRAND.white,
-                                color:            BRAND.green,
-                                fontFamily:       "'Bricolage Grotesque', sans-serif",
-                                letterSpacing:    '0.1em',
-                            }}
-                        >
-                            {de.split.donor.toUpperCase()}
-                        </button>
-                    </div>
-
-                    {/* Desktop login link */}
-                    <p className="hidden md:block mt-6 text-sm opacity-50">
-                        Bereits Konto?{' '}
-                        <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>
-                            Jetzt einloggen
-                        </Link>
-                    </p>
+        <>
+            {/* ── MOBILE LAYOUT ── fits within one viewport height ── */}
+            <div
+                className="md:hidden flex flex-col h-[100dvh] px-6 pt-6 pb-6"
+                style={{ backgroundColor: BRAND.beige }}
+            >
+                {/* Logo */}
+                <div className="flex justify-center mb-3">
+                    <Logo size={60} animated={false} />
                 </div>
 
-                {/* ── RIGHT COLUMN — Photo with floating SVGs ── */}
-                <div className="relative w-full aspect-[4/5] overflow-visible order-2">
-                    {/* Photo / placeholder */}
-                    <div
-                        className="w-full h-full overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100"
-                    >
+                {/* Heading */}
+                <h1
+                    className="text-center mb-2"
+                    style={{
+                        fontFamily: "'Bricolage Grotesque', sans-serif",
+                        fontWeight: 700,
+                        fontSize: '27px',
+                        lineHeight: '30px',
+                        letterSpacing: '0.01em',
+                    }}
+                >
+                    {de.split.heading}
+                </h1>
+
+                {/* Body */}
+                <p
+                    className="text-center opacity-80 mb-4 max-w-xs mx-auto"
+                    style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: '15px',
+                        lineHeight: '20px',
+                        paddingTop: '2px',
+                        paddingBottom: '41px',
+                    }}
+                >
+                    {de.split.body}
+                </p>
+
+                {/* Photo — fills remaining space */}
+                <div className="relative flex-1 min-h-0 w-full overflow-visible mb-5">
+                    <div className="w-full h-full overflow-hidden shadow-lg relative bg-gray-100">
                         <Image
                             src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
                             alt="Kind mit Spielzeug"
@@ -121,21 +79,21 @@ export default function WelcomePage() {
                     </div>
 
                     {/* Floating Helicopter — top left */}
-                    <div className="absolute top-[-28px] left-[-30px] drop-shadow-lg z-10">
-                        <Helicopter width={105} height={84} />
+                    <div className="absolute drop-shadow-lg z-10" style={{ top: -42, left: 14, transform: 'rotate(0deg)' }}>
+                        <Helicopter width={119} height={90} />
                     </div>
 
                     {/* Floating Teddy — bottom right */}
-                    <div className="absolute bottom-[-18px] right-[-18px] drop-shadow-lg z-10">
-                        <Teddy width={95} height={95} />
+                    <div className="absolute drop-shadow-lg z-10" style={{ bottom: -20, right: 10, transform: 'rotate(17.96deg)' }}>
+                        <Teddy width={106} height={134} />
                     </div>
                 </div>
 
-                {/* ── MOBILE-ONLY role buttons — full width below photo ── */}
-                <div className="w-full grid grid-cols-2 gap-4 md:hidden order-3">
+                {/* Role buttons — always visible */}
+                <div className="grid grid-cols-2 gap-3 shrink-0">
                     <button
                         onClick={goToFamily}
-                        className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
+                        className="h-10 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.green,
                             fontFamily:       "'Bricolage Grotesque', sans-serif",
@@ -146,7 +104,7 @@ export default function WelcomePage() {
                     </button>
                     <button
                         onClick={goToDonor}
-                        className="h-10 min-w-[143px] px-6 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
+                        className="h-10 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.white,
                             color:            BRAND.green,
@@ -158,6 +116,98 @@ export default function WelcomePage() {
                     </button>
                 </div>
             </div>
-        </div>
+
+            {/* ── DESKTOP LAYOUT ── unchanged two-column ── */}
+            <div
+                className="hidden md:flex flex-col items-center min-h-screen px-8 pb-8 justify-center"
+                style={{ backgroundColor: BRAND.beige }}
+            >
+                <div className="max-w-4xl w-full grid grid-cols-2 gap-12 items-center">
+                    {/* Left column */}
+                    <div className="text-left">
+                        <div className="mb-6">
+                            <Logo size={90} animated={false} />
+                        </div>
+
+                        <h1
+                            className="mb-4"
+                            style={{
+                                fontFamily: "'Bricolage Grotesque', sans-serif",
+                                fontWeight: 700,
+                                fontSize: '27px',
+                                lineHeight: '30px',
+                                letterSpacing: '0.01em',
+                            }}
+                        >
+                            {de.split.heading}
+                        </h1>
+
+                        <p
+                            className="opacity-80 mb-8 max-w-md"
+                            style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: '15px',
+                                lineHeight: '20px',
+                            }}
+                        >
+                            {de.split.body}
+                        </p>
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={goToFamily}
+                                className="h-10 min-w-[143px] px-6 rounded-full text-white font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
+                                style={{
+                                    backgroundColor: BRAND.green,
+                                    fontFamily:       "'Bricolage Grotesque', sans-serif",
+                                    letterSpacing:    '0.1em',
+                                }}
+                            >
+                                {de.split.family.toUpperCase()}
+                            </button>
+                            <button
+                                onClick={goToDonor}
+                                className="h-10 min-w-[143px] px-6 rounded-full font-bold uppercase tracking-widest text-[13px] transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center"
+                                style={{
+                                    backgroundColor: BRAND.white,
+                                    color:            BRAND.green,
+                                    fontFamily:       "'Bricolage Grotesque', sans-serif",
+                                    letterSpacing:    '0.1em',
+                                }}
+                            >
+                                {de.split.donor.toUpperCase()}
+                            </button>
+                        </div>
+
+                        <p className="mt-6 text-sm opacity-50">
+                            Bereits Konto?{' '}
+                            <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>
+                                Jetzt einloggen
+                            </Link>
+                        </p>
+                    </div>
+
+                    {/* Right column — Photo */}
+                    <div className="relative w-full aspect-[4/5] overflow-visible">
+                        <div className="w-full h-full overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100">
+                            <Image
+                                src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
+                                alt="Kind mit Spielzeug"
+                                fill
+                                className="object-cover"
+                                priority
+                                unoptimized
+                            />
+                        </div>
+                        <div className="absolute top-[-28px] left-[-30px] drop-shadow-lg z-10">
+                            <Helicopter width={105} height={84} />
+                        </div>
+                        <div className="absolute bottom-[-18px] right-[-18px] drop-shadow-lg z-10">
+                            <Teddy width={95} height={95} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

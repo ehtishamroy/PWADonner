@@ -1,30 +1,29 @@
 import { STATUS_COLORS, STATUS_LABELS, CONDITION_COLORS, CONDITION_LABELS } from '@/lib/constants';
-import { ThumbsUp, CheckCircle, Clock, Package2, X } from 'lucide-react';
 
 interface StatusBadgeProps {
     status: string;
     className?: string;
 }
 
-const STATUS_ICONS: Record<string, React.ReactNode> = {
-    waiting:  <Clock      size={14} />,
-    approved: <ThumbsUp   size={14} fill="white" />,
-    selected: <CheckCircle size={14} fill="white" />,
-    sent:     <Package2   size={14} />,
-    rejected: <X          size={14} />,
+const STATUS_ICON_PATHS: Record<string, string> = {
+    waiting:  '/images/icon-status-waiting.png',
+    approved: '/images/icon-status-approved.png',
+    selected: '/images/icon-status-selected.png',
+    sent:     '/images/icon-status-sent.png',
+    rejected: '/images/icon-status-rejected.png',
 };
 
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
     const bg    = STATUS_COLORS[status]  || '#D1D5DB';
     const label = STATUS_LABELS[status]  || status;
-    const icon  = STATUS_ICONS[status];
+    const iconPath = STATUS_ICON_PATHS[status];
 
     return (
         <span
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-bold text-white ${className}`}
             style={{ backgroundColor: bg }}
         >
-            {icon}
+            {iconPath && <img src={iconPath} alt="" width={14} height={14} className="object-contain" />}
             {label}
         </span>
     );

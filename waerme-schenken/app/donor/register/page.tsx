@@ -36,6 +36,11 @@ export default function DonorRegisterPage() {
     });
     const [errors, setErrors]   = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+
+    // Check if required fields are filled for the current step
+    const isStepComplete = step === 1
+        ? (form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.privacy)
+        : true;
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Load persisted state
@@ -125,7 +130,7 @@ export default function DonorRegisterPage() {
                 >
                     {checked && <span className="text-white text-xs">✓</span>}
                 </button>
-                <p className="text-[13px] leading-relaxed opacity-70">{children}</p>
+                <p className="text-[12px] leading-relaxed opacity-100">{children}</p>
             </div>
         );
     }
@@ -221,11 +226,11 @@ export default function DonorRegisterPage() {
                                 onClick={handleNext}
                                 disabled={loading}
                                 className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
-                                style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
+                                style={{ backgroundColor: isStepComplete ? BRAND.green : 'rgba(155,155,155,0.25)', fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                             >
                                 {loading ? de.common.loading : de.auth.register.next.toUpperCase()}
                             </button>
-                            <p className="text-[12px] font-medium opacity-60">
+                            <p className="text-[13px] font-medium opacity-100">
                                 {de.auth.register.alreadyAccount}<br />
                                 <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>
                                     {de.auth.register.login}

@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
-import { Edit2, User, ChevronRight } from 'lucide-react';
+import { User, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function DonorProfilePage() {
@@ -31,18 +31,18 @@ export default async function DonorProfilePage() {
                 </h1>
 
                 {/* Details card */}
-                <div className="bg-white rounded-[28px] p-7 shadow-sm mb-4 relative overflow-hidden">
-                    <h3 className="text-[11px] font-bold uppercase tracking-widest opacity-30 mb-4"
-                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.profile.details}</h3>
+                <div className="bg-white rounded-[7px] p-7 shadow-sm mb-4 relative overflow-hidden">
+                    <h3 className="mb-4"
+                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.details}</h3>
                     <p className="font-bold text-[18px] mb-1">{user.firstName} {user.lastName}</p>
                     <p className="opacity-60 text-[15px]">{user.email}</p>
                     <User className="absolute -bottom-5 -right-5 w-28 h-28 opacity-[0.03]" />
                 </div>
 
                 {/* Address card */}
-                <div className="bg-white rounded-[28px] p-7 shadow-sm mb-6 relative">
-                    <h3 className="text-[11px] font-bold uppercase tracking-widest opacity-30 mb-4"
-                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{de.profile.address}</h3>
+                <div className="bg-white rounded-[7px] p-7 shadow-sm mb-6 relative">
+                    <h3 className="mb-4"
+                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.address}</h3>
                     {user.zipCode ? (
                         <p className="font-bold text-[18px]">{user.zipCode}</p>
                     ) : (
@@ -51,26 +51,27 @@ export default async function DonorProfilePage() {
                     <p className="text-[13px] opacity-50 mt-3 max-w-[180px] leading-relaxed">{de.profile.addressHint}</p>
                     <Link
                         href="/donor/profile/edit-address"
-                        className="absolute top-7 right-7 w-12 h-12 rounded-full flex items-center justify-center text-white"
-                        style={{ backgroundColor: BRAND.green }}>
-                        <Edit2 size={18} />
+                        className="absolute top-7 right-7 flex items-center justify-center">
+                        <img src="/images/icon-profile-edit.png" alt="" width={35} height={35} className="object-contain" />
                     </Link>
                 </div>
 
                 {/* Accordion */}
-                <div className="bg-white rounded-[28px] shadow-sm overflow-hidden divide-y divide-gray-50">
+                <div className="bg-white rounded-[7px] shadow-sm overflow-hidden divide-y divide-gray-200">
                     {accordionItems.map(({ label, href, danger }) => (
                         <Link key={label} href={href}
                             className="flex justify-between items-center px-7 py-5 hover:bg-gray-50 transition-colors group">
-                            <span className="font-bold text-[15px] uppercase tracking-widest"
+                            <span
                                 style={{
                                     fontFamily: "'Bricolage Grotesque',sans-serif",
+                                    fontWeight: 700,
+                                    fontSize: '16px',
                                     color: danger ? BRAND.error : '#000',
-                                    opacity: 0.75,
+                                    opacity: 1,
                                 }}>
                                 {label}
                             </span>
-                            <ChevronRight size={20} className="opacity-25 group-hover:opacity-60 transition-opacity" />
+                            <ChevronRight size={20} className="opacity-40 group-hover:opacity-60 transition-opacity" />
                         </Link>
                     ))}
                 </div>

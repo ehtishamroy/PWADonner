@@ -3,10 +3,11 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ZebraCat, Gift, Duck } from '@/components/brand/Illustrations';
+import { ZebraCat, Duck } from '@/components/brand/Illustrations';
+import Image from 'next/image';
 import Link from 'next/link';
 import { BRAND, STATUS_COLORS } from '@/lib/constants';
-import { Box, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { SuccessToast } from '@/components/ui/SuccessToast';
 import { Suspense } from 'react';
 
@@ -52,7 +53,7 @@ export default async function DonorDashboardPage() {
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                     {de.dashboard.news}
                 </h2>
-                <div className="-mt-2">
+                <div style={{ position: 'relative', top: 54, left: -2 }}>
                     <ZebraCat width={60} height={60} />
                 </div>
             </div>
@@ -108,13 +109,13 @@ export default async function DonorDashboardPage() {
                         const imgUrl  = d.images[0]?.imageUrl;
                         return (
                             <Link key={d.id} href={`/donor/donation/${d.id}`} className="block">
-                                <div className="rounded-[8px] p-5 flex gap-5 min-h-[150px] relative hover:scale-[1.01] transition-transform shadow-sm"
+                                <div className="rounded-[8px] p-3 flex gap-3 min-h-[130px] relative hover:scale-[1.01] transition-transform shadow-sm"
                                     style={{ backgroundColor: bg }}>
                                     {/* Thumbnail — framed design with inner shadow */}
-                                    <div className="w-[110px] h-[110px] bg-white rounded-[18px] p-1.5 shrink-0 overflow-hidden shadow-inner">
+                                    <div className="w-[110px] h-[110px] shrink-0 overflow-hidden">
                                         {imgUrl
-                                            ? <img src={imgUrl} alt={d.toyName} className="w-full h-full object-cover rounded-[14px]" />
-                                            : <div className="w-full h-full bg-gray-100 rounded-[14px]" />
+                                            ? <img src={imgUrl} alt={d.toyName} className="w-full h-full object-cover" />
+                                            : <div className="w-full h-full bg-gray-100" />
                                         }
                                     </div>
                                     {/* Info */}
@@ -124,8 +125,9 @@ export default async function DonorDashboardPage() {
                                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                                 {d.toyName}
                                             </h3>
-                                            <p className="text-[13px] leading-[1.4] opacity-90 text-[#000000]">
-                                                {d.ageRange} · {d.category}
+                                            <p className="text-[13px] leading-[1.6] opacity-100 text-[#000000]" style={{ fontWeight: 400 }}>
+                                                Alter: {d.ageRange}<br />
+                                                Kategorie: {d.category}
                                             </p>
                                         </div>
                                         <StatusBadge status={d.status} className="self-start mt-1" />
@@ -133,9 +135,7 @@ export default async function DonorDashboardPage() {
                                     {/* Ship button for selected */}
                                     {d.status === 'selected' && (
                                         <div className="absolute bottom-4 right-4">
-                                            <div className="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center text-white">
-                                                <Box size={20} />
-                                            </div>
+                                            <img src="/images/icon-selected-action.png" alt="" width={35} height={35} className="object-contain" />
                                         </div>
                                     )}
                                 </div>
@@ -150,12 +150,14 @@ export default async function DonorDashboardPage() {
                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                 {de.dashboard.facts}
             </h2>
-            <div className="rounded-[32px] p-9 pt-12 relative overflow-visible mb-4"
-                style={{ backgroundColor: BRAND.greenDark }}>
+            <div className="rounded-[7px] p-9 pt-12 relative overflow-visible mb-4"
+                style={{ backgroundColor: '#335E52' }}>
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
-                    <Gift width={90} height={80} />
+                    <div style={{ width: 90, height: 80, position: 'relative' }}>
+                        <Image src="/images/gift-dashboard.png" alt="Gift" fill className="object-contain" unoptimized />
+                    </div>
                 </div>
-                <div className="absolute -bottom-6 -left-2 z-10">
+                <div className="absolute -bottom-6 -left-2 z-10" style={{ transform: 'scaleX(-1)' }}>
                     <Duck width={66} height={58} />
                 </div>
                 <div className="grid grid-cols-2 gap-6 text-white relative">

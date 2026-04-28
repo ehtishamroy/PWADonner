@@ -61,14 +61,14 @@ export default function DonorIntroPage() {
                 <div className="w-full max-w-sm mx-auto relative mt-2 md:max-w-none">
                     {/* Floating icons */}
                     <div className="absolute top-0 left-[-30px] md:left-20 drop-shadow-md rotate-[-5deg] z-0">
-                        <Car width={115} height={76} />
+                        <Car width={137} height={90} />
                     </div>
                     <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[12deg] z-0">
-                        <Gift width={90} height={80} />
+                        <Gift width={115} height={82} />
                     </div>
                     {/* Duck only visible on mobile */}
                     <div className="absolute bottom-[-10px] right-[-30px] drop-shadow-md md:hidden z-0">
-                        <Duck width={72} height={63} />
+                        <Duck width={100} height={71} />
                     </div>
 
                     {/* CTA buttons — centered */}

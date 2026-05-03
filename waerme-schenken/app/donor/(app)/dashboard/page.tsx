@@ -48,12 +48,12 @@ export default async function DonorDashboardPage() {
             <div className="max-w-4xl mx-auto">
 
             {/* NEWS */}
-            <div className="flex justify-between items-center mb-4 px-1">
-                <h2 className="font-bold text-[#000000]"
+            <div className="flex justify-between items-center mb-0 px-1">
+                <h3 className="font-medium text-[#000000] uppercase"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                     {de.dashboard.news}
-                </h2>
-                <div style={{ position: 'relative', top: 54, left: -2 }}>
+                </h3>
+                <div style={{ position: 'relative', top: 43, left: -2 }}>
                     <ZebraCat width={60} height={60} />
                 </div>
             </div>
@@ -71,7 +71,7 @@ export default async function DonorDashboardPage() {
             {donations.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mb-6">
                     {[
-                        { label: 'Wartend',        count: waitingCount,  color: STATUS_COLORS.waiting  },
+                        { label: 'Auf Freigabe warten', count: waitingCount,  color: STATUS_COLORS.waiting  },
                         { label: 'Freigegeben',    count: approvedCount, color: STATUS_COLORS.approved },
                         { label: 'Ausgewählt',     count: selectedCount, color: STATUS_COLORS.selected },
                         { label: 'Verschickt',     count: sentCount,     color: STATUS_COLORS.sent     },
@@ -88,10 +88,10 @@ export default async function DonorDashboardPage() {
             )}
 
             {/* DONATION OVERVIEW */}
-            <h2 className="font-medium text-[#000000] mb-5 px-1"
+            <h3 className="font-medium text-[#000000] mb-5 px-1 uppercase"
                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                 {de.dashboard.donationOverview}
-            </h2>
+            </h3>
 
             {donations.length === 0 ? (
                 <div className="text-center py-12 opacity-60">
@@ -146,10 +146,10 @@ export default async function DonorDashboardPage() {
             )}
 
             {/* FACTS */}
-            <h2 className="font-medium text-[#000000] mb-5 px-1"
+            <h3 className="font-medium text-[#000000] mb-5 px-1 uppercase"
                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                 {de.dashboard.facts}
-            </h2>
+            </h3>
             <div className="rounded-[7px] p-9 pt-12 relative overflow-visible mb-4"
                 style={{ backgroundColor: '#335E52' }}>
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
@@ -183,7 +183,7 @@ export default async function DonorDashboardPage() {
                 <Link href="/donor/donate"
                     aria-label="Neue Spende hinzufügen"
                     className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
-                    style={{ backgroundColor: BRAND.green }}>
+                    style={{ backgroundColor: BRAND.lila }}>
                     <Plus size={28} strokeWidth={2.5} />
                 </Link>
             )}

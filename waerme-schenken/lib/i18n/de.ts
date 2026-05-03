@@ -72,6 +72,7 @@ export const de = {
             otpInvalid: 'Der Code ist ungültig oder abgelaufen.',
             otpRateLimit: 'Zu viele Versuche. Bitte warte kurz.',
             required: 'Dieses Feld ist erforderlich.',
+            duplicateAccount: 'Du hast bereits ein Konto.',
         },
     },
 
@@ -88,7 +89,7 @@ export const de = {
 
     // ── Donation Status ──
     status: {
-        waiting:  'Warten',
+        waiting:  'Auf Freigabe warten',
         approved: 'Freigegeben',
         selected: 'Ausgewählt',
         sent:     'Gesendet',
@@ -170,7 +171,9 @@ export const de = {
             stepDetails:    'Deine Daten',
             stepAddress:    'Deine Adresse',
             stepSocialCard: 'Sozialausweis',
+            stepNewsletter: 'Newsletter',
             stepOtp:        'Bestätigung',
+            newsletter:     'Ja, ich möchte den Newsletter erhalten.',
             firstName: 'Vorname',
             lastName:  'Nachname',
             email:     'E-Mail',
@@ -229,6 +232,8 @@ export const de = {
             yourPresents:     'Deine Spielzeuge',
             presentsOnWay:    'Deine Geschenke sind unterwegs zu dir.',
             shopMore:         'Weiter stöbern',
+            statsSelected:    'Ausgewählt',
+            statsOnWay:       'Unterwegs',
             pendingApproval:  'Warten auf Freigabe',
             pendingBody:      'Wir prüfen deine Registrierung. Du erhältst eine E-Mail, sobald dein Zugang aktiv ist.',
         },

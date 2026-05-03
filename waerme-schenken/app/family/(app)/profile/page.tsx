@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
 import { Edit2, User, ChevronRight } from 'lucide-react';
+import { LogoutRow } from './LogoutRow';
 
 export default async function FamilyProfilePage() {
     const session = await getSession();
@@ -24,7 +25,7 @@ export default async function FamilyProfilePage() {
     return (
         <div className="min-h-screen pt-12 px-5 pb-24" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-md mx-auto">
-                <h1 className="mb-8"
+                <h1 className="mb-4"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
                     {de.profile.greeting} {user.firstName}
                 </h1>
@@ -73,6 +74,7 @@ export default async function FamilyProfilePage() {
                             <ChevronRight size={20} className="opacity-25 group-hover:opacity-60 transition-opacity" />
                         </Link>
                     ))}
+                    <LogoutRow />
                 </div>
             </div>
         </div>

@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { BRAND, STATUS_COLORS, STATUS_LABELS } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { Package } from 'lucide-react';
+import { OrderedBanner } from './OrderedBanner';
 
 const MAX_TOYS = 5;
 
@@ -30,10 +32,16 @@ export default async function FamilyDashboardPage() {
         ? now >= shop.openDate && now <= shop.closeDate
         : true;
     const atLimit = selections.length >= MAX_TOYS;
+    const sentCount = selections.filter(s => s.status === 'sent').length;
 
     return (
         <div className="min-h-screen pt-8 px-5 pb-28 md:pb-10 md:px-10 md:pt-10" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-4xl mx-auto">
+
+                {/* Post-checkout success banner */}
+                <Suspense fallback={null}>
+                    <OrderedBanner />
+                </Suspense>
 
                 {/* Greeting */}
                 <h1 className="mb-6"
@@ -79,6 +87,34 @@ export default async function FamilyDashboardPage() {
                     </div>
                 )}
 
+                {/* Stats */}
+                {selections.length > 0 && (
+                    <div className="flex gap-3 mb-6">
+                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center shadow-sm"
+                            style={{ backgroundColor: BRAND.lila }}>
+                            <span className="text-[32px] font-bold leading-none mb-1"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                                {selections.length}
+                            </span>
+                            <span className="text-[11px] font-bold uppercase tracking-widest opacity-80"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                                {de.family.dashboard.statsSelected}
+                            </span>
+                        </div>
+                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center shadow-sm"
+                            style={{ backgroundColor: BRAND.greenBright }}>
+                            <span className="text-[32px] font-bold leading-none mb-1"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                                {sentCount}&nbsp;<span className="text-[18px] opacity-60">/ {selections.length}</span>
+                            </span>
+                            <span className="text-[11px] font-bold uppercase tracking-widest opacity-80"
+                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                                {de.family.dashboard.statsOnWay}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Selected toys */}
                 <h2 className="mb-4 font-medium"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
@@ -95,7 +131,8 @@ export default async function FamilyDashboardPage() {
                             const bg = STATUS_COLORS[d.status] || '#D1D5DB';
                             const thumb = d.images[0]?.imageUrl;
                             return (
-                                <div key={d.id} className="rounded-[8px] p-4 flex gap-4 shadow-sm"
+                                <Link key={d.id} href={`/family/selections/${d.id}`}
+                                    className="rounded-[8px] p-4 flex gap-4 shadow-sm active:scale-[0.98] transition-transform block"
                                     style={{ backgroundColor: bg }}>
                                     <div className="w-20 h-20 bg-white rounded-[8px] overflow-hidden shrink-0">
                                         {thumb
@@ -108,15 +145,15 @@ export default async function FamilyDashboardPage() {
                                             {d.toyName}
                                         </h3>
                                         <p className="text-[12px] mb-2 opacity-80">{d.ageRange} · {d.category}</p>
-                                        <span className="text-[11px] font-bold uppercase tracking-widest"
+                                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-widest bg-white/40"
                                             style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                             {STATUS_LABELS[d.status] || d.status}
                                         </span>
                                         {d.trackingNumber && (
-                                            <p className="text-[11px] opacity-70 mt-1 font-mono">#{d.trackingNumber}</p>
+                                            <p className="text-[11px] opacity-70 mt-1.5 font-mono">#{d.trackingNumber}</p>
                                         )}
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })}
                     </div>

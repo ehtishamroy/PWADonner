@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useRef } from 'react';
-import { ChevronLeft, ShoppingCart, Package } from 'lucide-react';
+import { ShoppingCart, Package } from 'lucide-react';
 import Image from 'next/image';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
@@ -58,15 +58,17 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
     return (
         <div className="max-w-2xl mx-auto">
             {/* Top bar */}
-            <div className="pt-8 px-5 flex items-center gap-3 mb-6">
+            <div className="pt-10 px-5 flex items-center gap-3 mb-6">
                 <Link href={`/family/shop/${encodeURIComponent(category)}`}
-                    className="flex items-center gap-3">
-                    <ChevronLeft size={22} color={BRAND.green} />
-                    <span className="font-bold uppercase tracking-widest text-sm"
-                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                        {de.common.back.toUpperCase()}
-                    </span>
+                    className="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 5L7 10L12 15" stroke="#537D61" strokeWidth="2.5" strokeLinecap="round"/>
+                    </svg>
                 </Link>
+                <span className="font-bold uppercase tracking-widest text-sm"
+                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                    {de.common.back.toUpperCase()}
+                </span>
             </div>
 
             {/* Image + dots */}

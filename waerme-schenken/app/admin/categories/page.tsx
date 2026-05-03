@@ -1,17 +1,21 @@
 import { db } from '@/lib/db';
 import { AdminHeader } from '../components/AdminHeader';
-import { TOY_CATEGORIES } from '@/lib/constants';
 import { CategoryImageManager } from './CategoryImageManager';
+import { CategoryManager } from './CategoryManager';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCategoriesPage() {
-    const rows = await db.categoryImage.findMany();
-    const map = Object.fromEntries(rows.map(r => [r.category, r.imageUrl]));
+    const [toyCategories, catImages] = await Promise.all([
+        db.toyCategory.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),
+        db.categoryImage.findMany(),
+    ]);
 
-    const items = TOY_CATEGORIES.map(name => ({
-        category: name,
-        imageUrl: map[name] || null,
+    const imageMap = Object.fromEntries(catImages.map(r => [r.category, r.imageUrl]));
+
+    const items = toyCategories.map(tc => ({
+        category: tc.name,
+        imageUrl: imageMap[tc.name] || null,
     }));
 
     return (
@@ -20,12 +24,13 @@ export default async function AdminCategoriesPage() {
             <main className="max-w-4xl mx-auto p-6 md:p-10 space-y-8">
                 <div>
                     <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                        Kategoriebilder
+                        Kategorien
                     </h2>
                     <p className="text-sm opacity-60 leading-relaxed max-w-xl">
-                        Lade für jede Kategorie ein Bild hoch. Es erscheint in der Kategorieliste der Familien-Spielzeugbörse.
+                        Verwalte die Kategorien und lade für jede ein Bild hoch. Es erscheint in der Kategorieliste der Familien-Spielzeugbörse.
                     </p>
                 </div>
+                <CategoryManager categories={toyCategories.map(tc => ({ name: tc.name }))} />
                 <CategoryImageManager items={items} />
             </main>
         </>

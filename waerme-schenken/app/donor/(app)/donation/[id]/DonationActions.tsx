@@ -8,9 +8,10 @@ import { BRAND } from '@/lib/constants';
 interface Props {
     donationId: string;
     status: string;
+    trackingNumber?: string | null;
 }
 
-export function DonationActions({ donationId, status }: Props) {
+export function DonationActions({ donationId, status, trackingNumber: initialTracking }: Props) {
     const router = useRouter();
     const [tracking, setTracking] = useState('');
     const [sending,  setSending]  = useState(false);
@@ -32,6 +33,24 @@ export function DonationActions({ donationId, status }: Props) {
         setDeleting(true);
         await fetch(`/api/donations/${donationId}`, { method: 'DELETE' });
         router.replace('/donor/dashboard');
+    }
+
+    if (status === 'sent') {
+        return (
+            <div className="px-5 mt-6">
+                <div className="bg-white rounded-[20px] p-5 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-40 mb-2"
+                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                        {de.donationDetail.trackingNumber}
+                    </p>
+                    {initialTracking ? (
+                        <p className="font-mono text-[15px] font-bold">{initialTracking}</p>
+                    ) : (
+                        <p className="text-[14px] opacity-40">Keine Tracking-Nummer</p>
+                    )}
+                </div>
+            </div>
+        );
     }
 
     if (status !== 'selected') {
@@ -77,7 +96,7 @@ export function DonationActions({ donationId, status }: Props) {
                     value={tracking}
                     onChange={e => setTracking(e.target.value)}
                     className="w-full bg-transparent border-b-2 border-gray-200 pb-2 outline-none font-medium text-[15px]"
-                    placeholder="z.B. 990000000000000000"
+                    placeholder="z.B. 99.12.123456.12345678"
                 />
             </div>
             {/* Send button */}

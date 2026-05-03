@@ -22,7 +22,7 @@ export default function FamilyDeleteProfilePage() {
             if (!res.ok) throw new Error('Löschen fehlgeschlagen');
             setSuccess(true);
             setTimeout(() => {
-                fetch('/api/auth/logout', { method: 'POST' }).then(() => router.replace('/family/login'));
+                fetch('/api/auth/logout', { method: 'POST' }).then(() => router.replace('/welcome'));
             }, 1800);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Fehler');

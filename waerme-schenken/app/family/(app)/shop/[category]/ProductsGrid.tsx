@@ -26,7 +26,7 @@ const CONDITION_SHORT: Record<string, string> = {
     starke_gebrauchsspuren:   'gebraucht',
 };
 
-export function ProductsGrid({ category }: { category: string }) {
+export function ProductsGrid({ category, isSpecial = false }: { category: string; isSpecial?: boolean }) {
     const [items, setItems]       = useState<Product[]>([]);
     const [total, setTotal]       = useState(0);
     const [loading, setLoading]   = useState(true);
@@ -36,7 +36,7 @@ export function ProductsGrid({ category }: { category: string }) {
     const initialAge = searchParams?.get('age') ?? '';
     const [ageOpen, setAgeOpen]   = useState(false);
     const [ageFilter, setAgeFilter] = useState<string>(initialAge);
-    const [limitToast, setLimitToast] = useState(false);
+    const [limitModal, setLimitModal] = useState(false);
     const [showTop, setShowTop] = useState(false);
     const cart = useFamilyCart();
 
@@ -78,12 +78,9 @@ export function ProductsGrid({ category }: { category: string }) {
     );
 
     function handleAdd(id: string) {
+        if (!isSpecial && cart.count >= CART_MAX) { setLimitModal(true); return; }
         const r = cart.add(id);
-        if (!r.ok && r.reason === 'limit') {
-            setLimitToast(true);
-            setTimeout(() => setLimitToast(false), 3000);
-            return;
-        }
+        if (!r.ok && r.reason === 'limit') { setLimitModal(true); return; }
         if (r.ok) {
             window.dispatchEvent(new CustomEvent('cart:added'));
         }
@@ -181,14 +178,15 @@ export function ProductsGrid({ category }: { category: string }) {
                                         </div>
                                     )}
                                 </Link>
-                                <div className="px-1 flex-grow">
+                                <Link href={`/family/shop/${encodeURIComponent(category)}/${p.id}`}
+                                    className="px-1 flex-grow block">
                                     <h3 className="font-bold text-[13px] leading-[1.2] mb-0.5 line-clamp-2"
                                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", minHeight: '32px' }}>
                                         {p.toyName}
                                     </h3>
                                     <p className="text-[11px] opacity-60">{p.ageRange}</p>
-                                </div>
-                                <button onClick={() => added ? cart.remove(p.id) : handleAdd(p.id)}
+                                </Link>
+                                <button onClick={e => { e.stopPropagation(); added ? cart.remove(p.id) : handleAdd(p.id); }}
                                     className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/70"
                                     aria-label={added ? 'Entfernen' : 'Hinzufügen'}>
                                     {added
@@ -212,10 +210,26 @@ export function ProductsGrid({ category }: { category: string }) {
                 </div>
             )}
 
-            {/* Limit toast */}
-            {limitToast && (
-                <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 bg-black/90 text-white px-5 py-3 rounded-full text-sm z-50 shadow-lg">
-                    {de.family.shop.limitReached} ({CART_MAX}/{CART_MAX})
+            {/* Cart limit modal */}
+            {limitModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-6"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+                    onClick={() => setLimitModal(false)}>
+                    <div className="bg-white rounded-[16px] p-8 max-w-sm w-full shadow-2xl text-center"
+                        onClick={e => e.stopPropagation()}>
+                        <p className="text-[20px] font-bold mb-3"
+                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                            Warenkorb voll
+                        </p>
+                        <p className="text-[14px] opacity-70 mb-6 leading-relaxed">
+                            Du hast bereits {CART_MAX} Spielzeuge ausgewählt.
+                        </p>
+                        <button onClick={() => setLimitModal(false)}
+                            className="w-full h-11 rounded-full text-white font-bold text-[14px]"
+                            style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                            OK
+                        </button>
+                    </div>
                 </div>
             )}
 

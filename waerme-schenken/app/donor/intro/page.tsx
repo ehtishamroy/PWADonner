@@ -14,10 +14,10 @@ export default function DonorIntroPage() {
 
     return (
         <div
-            className="flex flex-col items-center min-h-screen pt-12 px-8 pb-8 relative md:justify-center overflow-x-hidden"
+            className="flex flex-col items-center min-h-screen pt-12 px-8 pb-8 relative overflow-x-hidden"
             style={{ backgroundColor: BRAND.beige }}
         >
-            <div className="max-w-4xl w-full">
+            <div className="max-w-4xl w-full flex-1">
 
                 {/* Logo + Heading */}
                 <div className="text-center mb-10 md:mb-14">
@@ -57,43 +57,43 @@ export default function DonorIntroPage() {
                     ))}
                 </div>
 
-                {/* Floating illustrations + CTA */}
-                <div className="w-full max-w-sm mx-auto relative mt-2 md:max-w-none">
-                    {/* Floating icons */}
-                    <div className="absolute top-0 left-[-30px] md:left-20 drop-shadow-md rotate-[-5deg] z-0">
-                        <Car width={137} height={90} />
-                    </div>
-                    <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[12deg] z-0">
-                        <Gift width={115} height={82} />
-                    </div>
-                    {/* Duck only visible on mobile */}
-                    <div className="absolute bottom-[-10px] right-[-30px] drop-shadow-md md:hidden z-0">
-                        <Duck width={100} height={71} />
-                    </div>
+            </div>
 
-                    {/* CTA buttons — centered */}
-                    <div className="flex flex-col items-center gap-3 relative z-20 pt-16">
-                        <button
-                            onClick={() => router.push('/donor/register')}
-                            className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center"
-                            style={{
-                                backgroundColor: BRAND.green,
-                                fontFamily: "'Bricolage Grotesque', sans-serif",
-                                fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em',
-                            }}
-                        >
-                            {de.intro.cta.toUpperCase()}
-                        </button>
-                        <Link
-                            href="/welcome"
-                            className="font-bold underline text-sm"
-                            style={{ color: BRAND.green, fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                        >
-                            {de.intro.back}
-                        </Link>
-                    </div>
+            {/* Floating illustrations + CTA — always pinned to bottom */}
+            <div className="w-full max-w-sm mx-auto relative mt-auto pt-2 md:max-w-none">
+                {/* Floating icons */}
+                <div className="absolute top-0 left-[-30px] md:left-20 drop-shadow-md rotate-[-5deg] z-0">
+                    <Car width={137} height={90} />
+                </div>
+                <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[12deg] z-0">
+                    <Gift width={115} height={82} />
+                </div>
+                {/* Duck only visible on mobile */}
+                <div className="absolute bottom-[-10px] right-[-30px] drop-shadow-md md:hidden z-0">
+                    <Duck width={100} height={71} />
                 </div>
 
+                {/* CTA buttons — centered */}
+                <div className="flex flex-col items-center gap-3 relative z-20 pt-16 pb-2">
+                    <button
+                        onClick={() => router.push('/donor/register')}
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center"
+                        style={{
+                            backgroundColor: BRAND.green,
+                            fontFamily: "'Bricolage Grotesque', sans-serif",
+                            fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em',
+                        }}
+                    >
+                        {de.intro.cta.toUpperCase()}
+                    </button>
+                    <Link
+                        href="/welcome"
+                        className="font-bold underline text-sm"
+                        style={{ color: BRAND.green, fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                    >
+                        {de.intro.back}
+                    </Link>
+                </div>
             </div>
         </div>
     );

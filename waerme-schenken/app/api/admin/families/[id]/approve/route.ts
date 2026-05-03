@@ -42,7 +42,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const nowApproved = data.familyApproved ?? user.familyApproved;
     const becomesSpecial = data.familySpecial === true && !user.familySpecial;
     if ((nowApproved && !wasApproved) || becomesSpecial) {
-        sendFamilyRegistrationApprovedEmail(user.email, user.firstName).catch(console.error);
+        const shopConfig = await db.shopConfig.findFirst();
+        const openingDate = shopConfig?.openDate
+            ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })
+            : 'demnächst';
+        sendFamilyRegistrationApprovedEmail(
+            user.email,
+            user.firstName,
+            undefined,
+            openingDate,
+        ).catch(console.error);
     }
 
     return NextResponse.json({ ok: true });

@@ -7,14 +7,12 @@ import { UploadCloud, ChevronDown, Check } from 'lucide-react';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
 
-type Step = 1 | 2 | 3 | 4;
-
-const ORGS = ['Caritas', 'Rotes Kreuz', 'Heilsarmee', 'Diakonie', 'Andere'];
+type Step = 1 | 2 | 3 | 4 | 5;
 
 function StepBar({ step }: { step: Step }) {
     return (
         <div className="flex gap-2 mb-10">
-            {[1, 2, 3, 4].map((s) => (
+            {[1, 2, 3, 4, 5].map((s) => (
                 <div key={s} className="h-1 flex-1 rounded-full transition-all"
                     style={{ backgroundColor: s <= step ? BRAND.greenDark : BRAND.white }} />
             ))}
@@ -48,6 +46,9 @@ export default function FamilyRegisterPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [orgs, setOrgs] = useState<string[]>([]);
+    const mounted = useRef(true);
+    useEffect(() => () => { mounted.current = false; }, []);
 
     // Load persisted state
     useEffect(() => {
@@ -64,9 +65,18 @@ export default function FamilyRegisterPage() {
         setIsLoaded(true);
     }, []);
 
+    useEffect(() => {
+        const ctrl = new AbortController();
+        fetch('/api/orgs', { signal: ctrl.signal })
+            .then(r => r.json())
+            .then(d => { if (mounted.current) setOrgs(d.orgs || []); })
+            .catch(() => {});
+        return () => ctrl.abort();
+    }, []);
+
     // Persist state on change
     useEffect(() => {
-        if (isLoaded && step < 4) {
+        if (isLoaded && step < 5) {
             localStorage.setItem('ws_family_register_form', JSON.stringify({ form, step }));
         }
     }, [form, step, isLoaded]);
@@ -77,7 +87,7 @@ export default function FamilyRegisterPage() {
         ? (form.street.trim() && form.zipCode.trim() && form.city.trim())
         : step === 3
         ? (form.socialCardOrg && form.socialCardUrl)
-        : true;
+        : true; // step 4 (newsletter) is always complete (optional)
 
     function validate1() {
         const e: Record<string, string> = {};
@@ -115,6 +125,9 @@ export default function FamilyRegisterPage() {
         }
         if (step === 3) {
             const e = validate3(); if (Object.keys(e).length) { setErrors(e); return; }
+            setErrors({}); setStep(4); return;
+        }
+        if (step === 4) {
             setErrors({});
             setLoading(true);
             try {
@@ -135,9 +148,16 @@ export default function FamilyRegisterPage() {
                         privacy: form.privacy,
                     }),
                 });
-                if (!res.ok) { const d = await res.json(); setErrors({ submit: d.error || de.common.error }); return; }
-                setStep(4);
-            } finally { setLoading(false); }
+                if (!mounted.current) return;
+                if (!res.ok) {
+                    const d = await res.json();
+                    if (res.status === 409 && d.loginUrl) {
+                        setErrors({ duplicate: d.loginUrl }); return;
+                    }
+                    setErrors({ submit: d.error || de.common.error }); return;
+                }
+                setStep(5);
+            } finally { if (mounted.current) setLoading(false); }
         }
     }
 
@@ -149,6 +169,7 @@ export default function FamilyRegisterPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({ email: form.email, code }),
             });
+            if (!mounted.current) return;
             if (!res.ok) {
                 const d = await res.json();
                 setErrors({ otp: d.error || de.auth.errors.otpInvalid });
@@ -163,8 +184,10 @@ export default function FamilyRegisterPage() {
             router.replace('/family/pending');
         } catch (err) {
             console.error('[family register] verify exception:', err);
-            setErrors({ otp: de.auth.errors.otpInvalid });
-            setLoading(false);
+            if (mounted.current) {
+                setErrors({ otp: de.auth.errors.otpInvalid });
+                setLoading(false);
+            }
         }
     }
 
@@ -176,7 +199,8 @@ export default function FamilyRegisterPage() {
                     {step === 1 && de.family.register.stepDetails}
                     {step === 2 && de.family.register.stepAddress}
                     {step === 3 && de.family.register.stepSocialCard}
-                    {step === 4 && de.auth.otp.heading}
+                    {step === 4 && de.family.register.stepNewsletter}
+                    {step === 5 && de.auth.otp.heading}
                 </h1>
             </div>
 
@@ -215,17 +239,33 @@ export default function FamilyRegisterPage() {
                         )}
 
                         {step === 3 && (
-                            <SocialCardStep form={form} setForm={setForm} errors={errors} />
+                            <SocialCardStep form={form} setForm={setForm} errors={errors} orgs={orgs} />
                         )}
 
                         {step === 4 && (
+                            <div className="space-y-6">
+                                <Checkbox checked={form.newsletter} onChange={() => setForm(f => ({ ...f, newsletter: !f.newsletter }))}>
+                                    {de.family.register.newsletter}
+                                </Checkbox>
+                            </div>
+                        )}
+
+                        {step === 5 && (
                             <OtpStep email={form.email} onVerify={handleVerify} error={errors.otp} loading={loading} />
                         )}
 
+                        {errors.duplicate && (
+                            <div className="text-center mt-4 p-4 rounded-xl bg-red-50">
+                                <p className="text-[14px] font-bold" style={{ color: BRAND.error }}>{de.auth.errors.duplicateAccount}</p>
+                                <Link href={errors.duplicate} className="text-[13px] underline font-bold mt-1 inline-block" style={{ color: BRAND.green }}>
+                                    {de.family.register.login}
+                                </Link>
+                            </div>
+                        )}
                         {errors.submit && <p className="text-center text-[13px] font-medium mt-4" style={{ color: BRAND.error }}>{errors.submit}</p>}
                     </div>
 
-                    {step < 4 && (
+                    {step < 5 && (
                         <div className="mt-auto pt-6 flex flex-col items-center gap-4">
                             <button onClick={handleNext} disabled={loading}
                                 className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
@@ -347,7 +387,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
 }
 
 // ── Social card upload step ──
-function SocialCardStep({ form, setForm, errors }: { form: FormShape; setForm: React.Dispatch<React.SetStateAction<FormShape>>; errors: Record<string, string> }) {
+function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setForm: React.Dispatch<React.SetStateAction<FormShape>>; errors: Record<string, string>; orgs: string[] }) {
     const [orgOpen, setOrgOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
@@ -396,10 +436,10 @@ function SocialCardStep({ form, setForm, errors }: { form: FormShape; setForm: R
                 </button>
                 {orgOpen && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[12px] shadow-xl overflow-hidden z-50">
-                        {ORGS.map((o, i) => (
+                        {orgs.map((o, i) => (
                             <button key={o} type="button"
                                 onClick={() => { setForm(f => ({ ...f, socialCardOrg: o })); setOrgOpen(false); }}
-                                className={`w-full text-left px-6 py-3.5 text-sm font-bold transition-colors hover:bg-gray-50 ${i < ORGS.length - 1 ? 'border-b border-gray-50' : ''}`}
+                                className={`w-full text-left px-6 py-3.5 text-sm font-bold transition-colors hover:bg-gray-50 ${i < orgs.length - 1 ? 'border-b border-gray-50' : ''}`}
                                 style={{
                                     color: o === form.socialCardOrg ? BRAND.green : '#000',
                                     fontFamily: "'Bricolage Grotesque',sans-serif",

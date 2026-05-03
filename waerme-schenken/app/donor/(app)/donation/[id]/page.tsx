@@ -108,6 +108,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
             <DonationActions
                 donationId={donation.id}
                 status={donation.status}
+                trackingNumber={donation.trackingNumber}
             />
 
             </div>

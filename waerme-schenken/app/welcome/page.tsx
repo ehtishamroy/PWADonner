@@ -53,20 +53,19 @@ export default function WelcomePage() {
 
                 {/* Body */}
                 <p
-                    className="text-center opacity-80 mb-4 max-w-xs mx-auto"
+                    className="text-center opacity-80 mb-0 max-w-xs mx-auto"
                     style={{
                         fontFamily: "'Inter', sans-serif",
                         fontSize: '15px',
                         lineHeight: '20px',
-                        paddingTop: '2px',
-                        paddingBottom: '41px',
                     }}
                 >
                     {de.split.body}
                 </p>
 
-                {/* Photo — fills remaining space */}
-                <div className="relative flex-1 min-h-0 w-full overflow-visible mb-5">
+                {/* Photo + Buttons — pinned to bottom as a group */}
+                <div className="mt-auto pt-4">
+                <div className="relative w-full overflow-visible mb-8" style={{ height: '50vh' }}>
                     <div className="w-full h-full overflow-hidden shadow-lg relative bg-gray-100">
                         <Image
                             src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
@@ -89,7 +88,7 @@ export default function WelcomePage() {
                     </div>
                 </div>
 
-                {/* Role buttons — always visible */}
+                {/* Role buttons */}
                 <div className="grid grid-cols-2 gap-3 shrink-0">
                     <button
                         onClick={goToFamily}
@@ -115,6 +114,7 @@ export default function WelcomePage() {
                         {de.split.donor.toUpperCase()}
                     </button>
                 </div>
+                </div>{/* end bottom group */}
             </div>
 
             {/* ── DESKTOP LAYOUT ── unchanged two-column ── */}

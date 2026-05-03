@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { de } from '@/lib/i18n/de';
-import { BRAND, TOY_CATEGORIES, AGE_RANGES, CONDITIONS, CONDITION_LABELS } from '@/lib/constants';
+import { BRAND, AGE_RANGES, CONDITIONS, CONDITION_LABELS } from '@/lib/constants';
 import { UploadCloud, X } from 'lucide-react';
 
 type Step = 1 | 2 | 3;
@@ -32,6 +32,11 @@ export default function DonorDonatePage() {
     const [errors, setErrors]   = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const fileRef               = useRef<HTMLInputElement>(null);
+    const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || [])).catch(() => {});
+    }, []);
 
     function validateStep1() {
         const e: Record<string, string> = {};
@@ -167,7 +172,7 @@ export default function DonorDonatePage() {
                                 <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                                     className="w-full bg-transparent outline-none font-bold text-[16px] cursor-pointer">
                                     <option value="">Wählen...</option>
-                                    {TOY_CATEGORIES.map((c: string) => <option key={c} value={c}>{c}</option>)}
+                                    {categories.map((c: string) => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             {errors.category && <p className="text-[11px] mt-1" style={{ color: BRAND.error }}>{errors.category}</p>}

@@ -77,7 +77,11 @@ export async function POST(req: NextRequest) {
             const sessionCount = await db.session.count({ where: { userId: user.id } });
             // sessionCount === 1 means this is the session we just created → first login
             if (sessionCount === 1) {
-                sendFamilyRegistrationReceivedEmail(user.email, user.firstName).catch(console.error);
+                const shopConfig = await db.shopConfig.findFirst();
+                const openingDate = shopConfig?.openDate
+                    ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                    : 'demnächst';
+                sendFamilyRegistrationReceivedEmail(user.email, user.firstName, openingDate).catch(console.error);
             }
         }
 

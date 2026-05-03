@@ -33,6 +33,7 @@ export function AdminHeader() {
                     <Link href="/admin/banner" className="hover:opacity-100 transition-opacity">Banner</Link>
                     <Link href="/admin/shop-schedule" className="hover:opacity-100 transition-opacity">Börse</Link>
                     <Link href="/admin/users" className="hover:opacity-100 transition-opacity">Nutzer</Link>
+                    <Link href="/admin/orgs" className="hover:opacity-100 transition-opacity">Organisationen</Link>
                     <Link href="/admin/settings" className="hover:opacity-100 transition-opacity">Einstellungen</Link>
                 </div>
             </div>

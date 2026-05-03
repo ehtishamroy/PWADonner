@@ -98,8 +98,8 @@ export default function FamilyLoginPage() {
                         style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                         {loading ? de.common.loading : (step === 1 ? de.auth.login.cta : de.auth.otp.cta).toUpperCase()}
                     </button>
-                    <p className="text-[12px] font-medium opacity-60">
-                        {de.auth.login.noAccount}{' '}
+                    <p className="text-[12px] font-medium text-center">
+                        {de.auth.login.noAccount}<br />
                         <Link href="/family/register" className="underline font-bold" style={{ color: BRAND.green }}>
                             {de.auth.login.register}
                         </Link>

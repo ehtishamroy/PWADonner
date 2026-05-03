@@ -117,3 +117,17 @@ model CategoryImage {
     imageUrl  String
     updatedAt DateTime @updatedAt
 }
+
+model ToyCategory {
+    id        String   @id @default(uuid())
+    name      String   @unique
+    sortOrder Int      @default(0)
+    createdAt DateTime @default(now())
+}
+
+model SocialCardOrg {
+    id        String   @id @default(uuid())
+    name      String   @unique
+    sortOrder Int      @default(0)
+    createdAt DateTime @default(now())
+}

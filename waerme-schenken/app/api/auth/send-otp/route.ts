@@ -34,9 +34,15 @@ export async function POST(req: NextRequest) {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
             }
-            await db.user.upsert({
-                where: { email },
-                create: {
+            const existing = await db.user.findUnique({ where: { email } });
+            if (existing) {
+                return NextResponse.json(
+                    { error: 'Du hast bereits ein Konto. Bitte logge dich ein.', loginUrl: '/donor/login' },
+                    { status: 409 },
+                );
+            }
+            await db.user.create({
+                data: {
                     email,
                     firstName:          firstName || '',
                     lastName:           lastName  || '',
@@ -44,13 +50,6 @@ export async function POST(req: NextRequest) {
                     newsletterConsent:  !!newsletter,
                     emailShareConsent:  !!emailShare,
                     zipCode:            zipCode || null,
-                },
-                update: {
-                    firstName:          firstName  || undefined,
-                    lastName:           lastName   || undefined,
-                    newsletterConsent:  newsletter != null ? !!newsletter : undefined,
-                    emailShareConsent:  emailShare != null ? !!emailShare : undefined,
-                    zipCode:            zipCode    || undefined,
                 },
             });
         } else if (action === 'register-family') {
@@ -63,9 +62,15 @@ export async function POST(req: NextRequest) {
             if (!socialCardUrl || !socialCardOrg) {
                 return NextResponse.json({ error: 'Sozialausweis und Organisation erforderlich.' }, { status: 400 });
             }
-            await db.user.upsert({
-                where: { email },
-                create: {
+            const existing = await db.user.findUnique({ where: { email } });
+            if (existing) {
+                return NextResponse.json(
+                    { error: 'Du hast bereits ein Konto. Bitte logge dich ein.', loginUrl: '/family/login' },
+                    { status: 409 },
+                );
+            }
+            await db.user.create({
+                data: {
                     email,
                     firstName:          firstName || '',
                     lastName:           lastName  || '',
@@ -77,17 +82,6 @@ export async function POST(req: NextRequest) {
                     city,
                     socialCardUrl,
                     socialCardOrg,
-                },
-                update: {
-                    firstName,
-                    lastName,
-                    role:               'family',
-                    zipCode,
-                    street,
-                    city,
-                    socialCardUrl,
-                    socialCardOrg,
-                    newsletterConsent:  newsletter != null ? !!newsletter : undefined,
                 },
             });
         } else {

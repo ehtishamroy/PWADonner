@@ -59,7 +59,7 @@ export const STATUS_COLORS: Record<string, string> = {
 };
 
 export const STATUS_LABELS: Record<string, string> = {
-    waiting:  'Warten',
+    waiting:  'Auf Freigabe warten',
     approved: 'Freigegeben',
     selected: 'Ausgewählt',
     sent:     'Gesendet',

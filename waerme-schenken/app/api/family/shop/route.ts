@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category') || undefined;
     const ageRange = searchParams.get('ageRange') || undefined;
+    const query    = searchParams.get('query')    || undefined;
     const limit    = Math.min(parseInt(searchParams.get('limit') || '24', 10), 48);
     const skip     = parseInt(searchParams.get('skip')  || '0',  10);
 
@@ -23,9 +24,11 @@ export async function GET(req: NextRequest) {
         status: 'approved';
         category?: string;
         ageRange?: string;
+        toyName?: { contains: string; mode: 'insensitive' };
     } = { status: 'approved' };
     if (category) where.category = category;
     if (ageRange) where.ageRange = ageRange;
+    if (query)    where.toyName  = { contains: query, mode: 'insensitive' };
 
     const [items, total] = await Promise.all([
         db.donation.findMany({

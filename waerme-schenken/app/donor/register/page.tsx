@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { de } from '@/lib/i18n/de';
@@ -36,6 +36,8 @@ export default function DonorRegisterPage() {
     });
     const [errors, setErrors]   = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const mounted = useRef(true);
+    useEffect(() => () => { mounted.current = false; }, []);
 
     // Check if required fields are filled for the current step
     const isStepComplete = step === 1
@@ -99,9 +101,16 @@ export default function DonorRegisterPage() {
                         action: 'register',
                     }),
                 });
-                if (!res.ok) { const d = await res.json(); setErrors({ submit: d.error || de.common.error }); return; }
+                if (!mounted.current) return;
+                if (!res.ok) {
+                    const d = await res.json();
+                    if (res.status === 409 && d.loginUrl) {
+                        setErrors({ duplicate: d.loginUrl }); return;
+                    }
+                    setErrors({ submit: d.error || de.common.error }); return;
+                }
                 setStep(3);
-            } finally { setLoading(false); }
+            } finally { if (mounted.current) setLoading(false); }
         }
     }
 
@@ -113,10 +122,18 @@ export default function DonorRegisterPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({ email: form.email, code }),
             });
+            if (!mounted.current) return;
             if (!res.ok) { const d = await res.json(); setErrors({ otp: d.error || de.auth.errors.otpInvalid }); return; }
             localStorage.removeItem('ws_register_form');
             router.replace('/donor/dashboard');
-        } finally { setLoading(false); }
+            // NOTE: do NOT setLoading(false) here — router.replace begins
+            // unmounting this component; setting state afterwards triggers crashes.
+        } catch (err) {
+            if (mounted.current) {
+                setErrors({ otp: de.auth.errors.otpInvalid });
+                setLoading(false);
+            }
+        }
     }
 
     function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: () => void; children: React.ReactNode }) {
@@ -216,6 +233,14 @@ export default function DonorRegisterPage() {
                             <OtpStepContent email={form.email} onVerify={handleVerify} error={errors.otp} />
                         )}
 
+                        {errors.duplicate && (
+                            <div className="text-center mt-4 p-4 rounded-xl bg-red-50">
+                                <p className="text-[14px] font-bold" style={{ color: BRAND.error }}>{de.auth.errors.duplicateAccount}</p>
+                                <Link href={errors.duplicate} className="text-[13px] underline font-bold mt-1 inline-block" style={{ color: BRAND.green }}>
+                                    {de.auth.register.login}
+                                </Link>
+                            </div>
+                        )}
                         {errors.submit && <p className="text-center text-[13px] font-medium mt-4" style={{ color: BRAND.error }}>{errors.submit}</p>}
                     </div>
 
@@ -230,6 +255,13 @@ export default function DonorRegisterPage() {
                             >
                                 {loading ? de.common.loading : de.auth.register.next.toUpperCase()}
                             </button>
+                            {step > 1 && (
+                                <button onClick={() => setStep((s) => (s - 1) as Step)}
+                                    className="text-sm font-bold underline opacity-60"
+                                    style={{ color: BRAND.green }}>
+                                    {de.common.back}
+                                </button>
+                            )}
                             <p className="text-[13px] font-medium opacity-100">
                                 {de.auth.register.alreadyAccount}<br />
                                 <Link href="/donor/login" className="underline font-bold" style={{ color: BRAND.green }}>

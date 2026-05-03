@@ -79,7 +79,10 @@ export async function POST(req: NextRequest) {
             // Return the fresh rows (with donor info) for notifications.
             const donations = await tx.donation.findMany({
                 where: { id: { in: donationIds } },
-                include: { donor: { select: { email: true, firstName: true } } },
+                include: {
+                    donor:  { select: { email: true, firstName: true } },
+                    images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+                },
             });
             return donations;
         });
@@ -96,6 +99,7 @@ export async function POST(req: NextRequest) {
                     d.toyName,
                     recipientName,
                     recipientAddress,
+                    d.images[0]?.imageUrl ?? null,
                 )
             ),
             sendFamilyOrderReceivedEmail(

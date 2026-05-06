@@ -304,8 +304,28 @@ type FormShape = {
 function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: React.Dispatch<React.SetStateAction<FormShape>>; errors: Record<string, string> }) {
     const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [streetSuggestions, setStreetSuggestions] = useState<string[]>([]);
+    const [showStreetSugg, setShowStreetSugg] = useState(false);
 
-    // Swiss Post autocomplete: fetch ZIP/city from public opendatasoft API
+    // Street autocomplete
+    useEffect(() => {
+        const q = form.street.trim();
+        if (q.length < 2) { setStreetSuggestions([]); return; }
+        const ctrl = new AbortController();
+        const t = setTimeout(async () => {
+            try {
+                const zip = form.zipCode.trim();
+                const url = `/api/swiss-streets?q=${encodeURIComponent(q)}${zip.length >= 4 ? `&zip=${zip}` : ''}`;
+                const res = await fetch(url, { signal: ctrl.signal });
+                if (!res.ok) return;
+                const data = await res.json();
+                setStreetSuggestions((data.suggestions || []).map((s: { street: string }) => s.street));
+            } catch { /* silent */ }
+        }, 250);
+        return () => { ctrl.abort(); clearTimeout(t); };
+    }, [form.street, form.zipCode]);
+
+    // ZIP/city autocomplete
     useEffect(() => {
         const q = form.zipCode.trim();
         if (q.length < 2) { setSuggestions([]); return; }
@@ -332,15 +352,29 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
 
     return (
         <div className="space-y-7">
-            <div className="space-y-1">
+            <div className="relative space-y-1">
                 <div className="border-b-2 pb-2" style={{ borderColor: errors.street ? BRAND.error : '#E5E7EB' }}>
                     <label className="block mb-1" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{de.family.register.street}</label>
                     <input type="text" value={form.street}
                         placeholder="z.B. Musterstrasse 12"
+                        onFocus={() => setShowStreetSugg(true)}
+                        onBlur={() => setTimeout(() => setShowStreetSugg(false), 150)}
                         onChange={e => setForm(f => ({ ...f, street: e.target.value }))}
                         className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30" />
                 </div>
                 {errors.street && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors.street}</p>}
+                {showStreetSugg && streetSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                        {streetSuggestions.map((s, i) => (
+                            <button key={i} type="button"
+                                onMouseDown={e => e.preventDefault()}
+                                onClick={() => { setForm(f => ({ ...f, street: s })); setShowStreetSugg(false); }}
+                                className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="relative space-y-1">

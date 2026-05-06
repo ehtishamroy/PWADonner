@@ -4,9 +4,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * Server-side proxy for Swiss Post ZIP/city autocomplete.
+ * Server-side proxy for Swiss ZIP/city autocomplete via OpenPLZ API.
  * Avoids CORS restrictions when browsers (esp. via service worker) try
- * to call swisspost.opendatasoft.com directly.
+ * to call openplzapi.org directly.
  *
  * GET /api/swiss-post?q=8001
  * Returns: { suggestions: [{ zip, city }, ...] }
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ suggestions: [] });
     }
 
-    const upstream = `https://swisspost.opendatasoft.com/api/records/1.0/search/?dataset=plz_verzeichnis_v2&q=${encodeURIComponent(q)}&rows=8&facet=postleitzahl&facet=ortbez27`;
+    const upstream = `https://openplzapi.org/ch/Localities?postalCode=${encodeURIComponent('^' + q)}&pageSize=8`;
 
     try {
         const res = await fetch(upstream, {
@@ -28,10 +28,10 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ suggestions: [] }, { status: 200 });
         }
         const data = await res.json();
-        const suggestions = (data.records || [])
-            .map((r: { fields?: { postleitzahl?: string | number; ortbez27?: string } }) => ({
-                zip: String(r.fields?.postleitzahl ?? ''),
-                city: r.fields?.ortbez27 ?? '',
+        const suggestions = (Array.isArray(data) ? data : [])
+            .map((r: { postalCode?: string; name?: string }) => ({
+                zip: r.postalCode ?? '',
+                city: r.name ?? '',
             }))
             .filter((s: { zip: string; city: string }) => s.zip && s.city);
 

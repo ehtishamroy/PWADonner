@@ -16,6 +16,8 @@ export default function FamilyEditAddressPage() {
     const [form,    setForm]    = useState({ street: '', zipCode: '', city: '' });
     const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
     const [showSugg, setShowSugg] = useState(false);
+    const [streetSuggestions, setStreetSuggestions] = useState<string[]>([]);
+    const [showStreetSugg, setShowStreetSugg] = useState(false);
 
     useEffect(() => {
         fetch('/api/users/me')
@@ -30,6 +32,23 @@ export default function FamilyEditAddressPage() {
             })
             .catch(() => { setError('Fehler beim Laden'); setLoading(false); });
     }, []);
+
+    useEffect(() => {
+        const q = form.street.trim();
+        if (q.length < 2) { setStreetSuggestions([]); return; }
+        const ctrl = new AbortController();
+        const t = setTimeout(async () => {
+            try {
+                const zip = form.zipCode.trim();
+                const url = `/api/swiss-streets?q=${encodeURIComponent(q)}${zip.length >= 4 ? `&zip=${zip}` : ''}`;
+                const res = await fetch(url, { signal: ctrl.signal });
+                if (!res.ok) return;
+                const data = await res.json();
+                setStreetSuggestions((data.suggestions || []).map((s: { street: string }) => s.street));
+            } catch { /* silent */ }
+        }, 250);
+        return () => { ctrl.abort(); clearTimeout(t); };
+    }, [form.street, form.zipCode]);
 
     useEffect(() => {
         const q = form.zipCode.trim();
@@ -99,13 +118,27 @@ export default function FamilyEditAddressPage() {
                     </div>
                 ) : (
                     <form onSubmit={save} className="bg-white rounded-[8px] p-7 shadow-sm space-y-6">
-                        <div>
+                        <div className="relative">
                             <label className="text-[11px] font-bold uppercase tracking-widest opacity-40 block mb-2"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>Strasse und Nr.</label>
                             <input type="text" required value={form.street}
                                 onChange={e => setForm(f => ({ ...f, street: e.target.value }))}
+                                onFocus={() => setShowStreetSugg(true)}
+                                onBlur={() => setTimeout(() => setShowStreetSugg(false), 150)}
                                 placeholder="z.B. Musterstrasse 12"
                                 className="w-full font-bold text-[17px] bg-transparent outline-none border-b-2 border-gray-100 focus:border-gray-300 pb-2 placeholder:opacity-20" />
+                            {showStreetSugg && streetSuggestions.length > 0 && (
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                                    {streetSuggestions.map((s, i) => (
+                                        <button key={i} type="button"
+                                            onMouseDown={e => e.preventDefault()}
+                                            onClick={() => { setForm(f => ({ ...f, street: s })); setShowStreetSugg(false); }}
+                                            className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="relative">

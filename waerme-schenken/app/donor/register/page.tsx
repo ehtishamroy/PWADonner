@@ -39,6 +39,33 @@ export default function DonorRegisterPage() {
     const mounted = useRef(true);
     useEffect(() => () => { mounted.current = false; }, []);
 
+    const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
+    // ZIP/city autocomplete
+    useEffect(() => {
+        const q = form.zipCode.trim();
+        if (q.length < 2) { setSuggestions([]); return; }
+        const ctrl = new AbortController();
+        const t = setTimeout(async () => {
+            try {
+                const url = `/api/swiss-post?q=${encodeURIComponent(q)}`;
+                const res = await fetch(url, { signal: ctrl.signal });
+                if (!res.ok) return;
+                const data = await res.json();
+                const items = (data.suggestions || []) as Array<{ zip: string; city: string }>;
+                const seen = new Set<string>();
+                const unique = items.filter((i: { zip: string; city: string }) => {
+                    const k = `${i.zip}-${i.city}`;
+                    if (seen.has(k)) return false;
+                    seen.add(k); return true;
+                });
+                setSuggestions(unique);
+            } catch { /* silent */ }
+        }, 250);
+        return () => { ctrl.abort(); clearTimeout(t); };
+    }, [form.zipCode]);
+
     // Check if required fields are filled for the current step
     const isStepComplete = step === 1
         ? (form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.privacy)
@@ -189,19 +216,38 @@ export default function DonorRegisterPage() {
                                     { key: 'email',     label: de.auth.register.email,     placeholder: 'beispiel@mail.com' },
                                     { key: 'zipCode',   label: 'PLZ (optional)',            placeholder: 'z.B. 8000' },
                                 ].map(({ key, label, placeholder }) => (
-                                    <div key={key} className="space-y-1">
+                                    <div key={key} className={`${key === 'zipCode' ? 'relative ' : ''}space-y-1`}>
                                         <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
                                             <label className="block mb-1"
                                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>{label}</label>
                                             <input
                                                 type={key === 'email' ? 'email' : 'text'}
+                                                inputMode={key === 'zipCode' ? 'numeric' : undefined}
+                                                maxLength={key === 'zipCode' ? 4 : undefined}
                                                 value={(form as Record<string, unknown>)[key] as string}
                                                 placeholder={placeholder}
-                                                onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                                                onChange={e => setForm(f => ({ ...f, [key]: key === 'zipCode' ? e.target.value.replace(/\D/g, '') : e.target.value }))}
+                                                onFocus={key === 'zipCode' ? () => setShowSuggestions(true) : undefined}
+                                                onBlur={key === 'zipCode' ? () => setTimeout(() => setShowSuggestions(false), 150) : undefined}
                                                 className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30 placeholder:font-bold"
                                             />
                                         </div>
                                         {errors[key] && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors[key]}</p>}
+                                        {key === 'zipCode' && showSuggestions && suggestions.length > 0 && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                                                {suggestions.map((s, i) => (
+                                                    <button key={i} type="button"
+                                                        onMouseDown={e => e.preventDefault()}
+                                                        onClick={() => {
+                                                            setForm(f => ({ ...f, zipCode: s.zip }));
+                                                            setShowSuggestions(false);
+                                                        }}
+                                                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
+                                                        <span className="font-bold">{s.zip}</span> {s.city}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
 
@@ -257,9 +303,14 @@ export default function DonorRegisterPage() {
                             </button>
                             {step > 1 && (
                                 <button onClick={() => setStep((s) => (s - 1) as Step)}
-                                    className="text-sm font-bold underline opacity-60"
-                                    style={{ color: BRAND.green }}>
-                                    {de.common.back}
+                                    className="inline-flex items-center gap-2">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                                    </svg>
+                                    <span className="font-bold uppercase tracking-widest text-sm"
+                                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                        {de.common.back}
+                                    </span>
                                 </button>
                             )}
                             <p className="text-[13px] font-medium opacity-100">

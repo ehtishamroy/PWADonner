@@ -77,8 +77,12 @@ export async function sendDonationSelectedEmail(
     recipientAddress: string,
     toyImageUrl?: string | null
 ) {
-    const imageBlock = toyImageUrl
-        ? `<p><img src="${toyImageUrl}" alt="${toyName}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
+    const appBase = (process.env.NEXT_PUBLIC_APP_URL || 'https://app.waerme-schenken.ch').replace(/\/$/, '');
+    const absoluteImageUrl = toyImageUrl
+        ? (toyImageUrl.startsWith('http') ? toyImageUrl : `${appBase}${toyImageUrl}`)
+        : null;
+    const imageBlock = absoluteImageUrl
+        ? `<p><img src="${absoluteImageUrl}" alt="${toyName}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
         : '';
     return resend.emails.send({
         from:    FROM,

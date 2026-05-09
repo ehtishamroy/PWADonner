@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BRAND } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
-import { ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditAddressPage() {
@@ -67,9 +67,14 @@ export default function EditAddressPage() {
     return (
         <div className="min-h-screen pt-12 px-5 pb-24" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-md mx-auto">
-                <Link href="/donor/profile" className="flex items-center gap-2 mb-8 font-bold text-sm tracking-wide hover:opacity-70 transition-opacity">
-                    <ArrowLeft size={18} />
-                    Zurück
+                <Link href="/donor/profile" className="inline-flex items-center gap-2 mb-8">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                    </svg>
+                    <span className="font-bold uppercase tracking-widest text-sm"
+                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                        Zurück
+                    </span>
                 </Link>
 
                 <h1 className="mb-8"

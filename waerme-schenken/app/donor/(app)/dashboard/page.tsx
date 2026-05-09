@@ -76,11 +76,11 @@ export default async function DonorDashboardPage() {
                         { label: 'Ausgewählt',     count: selectedCount, color: STATUS_COLORS.selected },
                         { label: 'Verschickt',     count: sentCount,     color: STATUS_COLORS.sent     },
                     ].map(s => (
-                        <div key={s.label} className="rounded-[8px] p-3 text-center shadow-sm"
+                        <div key={s.label} className="rounded-[8px] p-3 flex flex-col items-center justify-center text-center shadow-sm"
                             style={{ backgroundColor: s.color }}>
                             <p className="text-[24px] font-bold leading-none"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{s.count}</p>
-                            <p className="text-[10px] font-bold uppercase tracking-wider opacity-70 mt-1"
+                            <p className="text-[10px] font-bold uppercase tracking-wider opacity-70 mt-1 text-center"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{s.label}</p>
                         </div>
                     ))}

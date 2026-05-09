@@ -15,6 +15,7 @@ export default async function DonorProfilePage() {
     if (!user) redirect('/api/auth/clear-session');
 
     const accordionItems = [
+        { label: 'Versandkosten erstatten', href: '/donor/financial-support' },
         { label: de.profile.mailings, href: '/donor/profile/mailings' },
         { label: 'Statuten',          href: '/statuten' },
         { label: de.profile.privacy,  href: '/datenschutz' },
@@ -37,6 +38,9 @@ export default async function DonorProfilePage() {
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.details}</h3>
                     <p className="font-bold text-[18px] mb-1">{user.firstName} {user.lastName}</p>
                     <p className="opacity-60 text-[15px]">{user.email}</p>
+                    {user.phoneNumber && (
+                        <p className="text-sm mt-2" style={{ color: BRAND.green }}>📱 {user.phoneNumber}</p>
+                    )}
                     <User className="absolute -bottom-5 -right-5 w-28 h-28 opacity-[0.03]" />
                 </div>
 

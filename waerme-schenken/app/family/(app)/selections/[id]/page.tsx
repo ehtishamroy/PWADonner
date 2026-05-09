@@ -35,17 +35,17 @@ export default async function SelectionDetailPage({ params }: { params: Promise<
             <div className="max-w-2xl mx-auto">
 
                 {/* Back */}
-                <div className="pt-10 px-5 flex items-center gap-3 mb-6">
+                <div className="pt-10 px-5 mb-6">
                     <Link href="/family/dashboard"
-                        className="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform">
+                        className="inline-flex items-center gap-2">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M12 5L7 10L12 15" stroke="#537D61" strokeWidth="2.5" strokeLinecap="round"/>
                         </svg>
+                        <span className="font-bold uppercase tracking-widest text-sm"
+                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                            Zurück
+                        </span>
                     </Link>
-                    <span className="font-bold uppercase tracking-widest text-sm"
-                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                        Zurück
-                    </span>
                 </div>
 
                 {/* Image */}

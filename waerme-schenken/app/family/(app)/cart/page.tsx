@@ -12,18 +12,16 @@ export default async function FamilyCartPage() {
     if (!user) redirect('/family/login');
 
     return (
-        <div className="min-h-screen pt-10 px-5 pb-28 md:pb-10 md:pl-8 md:pr-12 md:pt-12" style={{ backgroundColor: BRAND.beige }}>
-            <div className="max-w-xl mx-auto">
-                <CartView
-                    family={{
-                        firstName: user.firstName,
-                        lastName:  user.lastName,
-                        street:    user.street || '',
-                        zipCode:   user.zipCode || '',
-                        city:      user.city   || '',
-                    }}
-                />
-            </div>
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: BRAND.beige }}>
+            <CartView
+                family={{
+                    firstName: user.firstName,
+                    lastName:  user.lastName,
+                    street:    user.street || '',
+                    zipCode:   user.zipCode || '',
+                    city:      user.city   || '',
+                }}
+            />
         </div>
     );
 }

@@ -6,6 +6,7 @@ import { ConditionBadge } from '@/components/ui/StatusBadge';
 import { BRAND, CONDITION_LABELS, STATUS_COLORS } from '@/lib/constants';
 import Link from 'next/link';
 import { DonationActions } from './DonationActions';
+import { DonationSendCard } from './DonationSendCard';
 import { ImageCarousel } from './ImageCarousel';
 
 export default async function DonationDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,45 +34,24 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
         <div className="min-h-screen pb-24 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-xl w-full">
             {/* Header */}
-            <div className="pt-10 px-5 flex items-center gap-3 mb-6">
+            <div className="pt-10 px-5 mb-6">
                 <Link href="/donor/dashboard"
-                    className="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform">
+                    className="inline-flex items-center gap-2">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
                     </svg>
+                    <span className="font-bold uppercase tracking-widest text-sm"
+                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                        {donation.status === 'selected'
+                            ? de.donationDetail.whoSelected
+                            : de.common.back}
+                    </span>
                 </Link>
-                <span className="font-bold uppercase tracking-widest text-sm"
-                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                    {de.common.back}
-                </span>
             </div>
 
-            {/* If selected — show "Who selected yours?" with full shipping address */}
+            {/* If selected — show address card with tracking input + SEND */}
             {donation.status === 'selected' && (
-                <div className="px-5 mb-4">
-                    <h2 className="font-bold tracking-widest uppercase text-sm mb-4"
-                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                        {de.donationDetail.whoSelected}
-                    </h2>
-                    <div className="bg-white rounded-[24px] p-7 shadow-sm relative z-10 mb-[-40px]">
-                        <p className="text-xs font-bold uppercase tracking-widest opacity-40 mb-2"
-                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            {de.donationDetail.address}
-                        </p>
-                        {family ? (
-                            <p className="font-bold text-[16px] leading-relaxed mb-3">
-                                {family.firstName} {family.lastName}<br />
-                                {family.street}<br />
-                                {family.zipCode} {family.city}
-                            </p>
-                        ) : (
-                            <p className="font-bold text-[16px] leading-snug mb-2 opacity-60">
-                                Familie wartet auf Bestätigung
-                            </p>
-                        )}
-                        <p className="text-[14px] opacity-70">{de.donationDetail.sendTo}</p>
-                    </div>
-                </div>
+                <DonationSendCard donationId={donation.id} family={family} />
             )}
 
             {/* Content block — lila bg when selected */}

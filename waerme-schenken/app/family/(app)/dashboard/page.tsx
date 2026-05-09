@@ -3,9 +3,11 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { BRAND, STATUS_COLORS, STATUS_LABELS } from '@/lib/constants';
+import { BRAND, STATUS_COLORS } from '@/lib/constants';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 import { de } from '@/lib/i18n/de';
 import { Package } from 'lucide-react';
+import { ZebraCat } from '@/components/brand/Illustrations';
 import { OrderedBanner } from './OrderedBanner';
 
 const MAX_TOYS = 5;
@@ -43,23 +45,25 @@ export default async function FamilyDashboardPage() {
                     <OrderedBanner />
                 </Suspense>
 
-                {/* Greeting */}
-                <h1 className="mb-6"
-                    style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px' }}>
-                    {de.family.dashboard.welcome} {user.firstName}
-                </h1>
-
-                {/* News banner */}
-                {banner && (
-                    <div className="rounded-[8px] p-6 shadow-sm mb-8"
-                        style={{ backgroundColor: BRAND.lila }}>
-                        <h2 className="font-bold mb-1"
-                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
-                            {banner.title}
-                        </h2>
-                        <p className="text-[14px] opacity-80 leading-relaxed">{banner.body}</p>
+                {/* NEWS */}
+                <div className="flex justify-between items-center mb-0 px-1">
+                    <h3 className="font-medium text-[#000000] uppercase"
+                        style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
+                        {de.dashboard.news}
+                    </h3>
+                    <div style={{ position: 'relative', top: 43, left: -2 }}>
+                        <ZebraCat width={60} height={60} />
                     </div>
-                )}
+                </div>
+
+                <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
+                    <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
+                        {banner?.title || 'Wärme schenken'}
+                    </h1>
+                    <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
+                        {banner?.body || 'Herzlich willkommen!'}
+                    </p>
+                </div>
 
                 {/* Shop state */}
                 {!isOpen && shop?.openDate && (
@@ -82,7 +86,7 @@ export default async function FamilyDashboardPage() {
                         <Link href="/family/shop"
                             className="inline-flex h-10 px-6 rounded-full text-white shadow-lg"
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '13px', letterSpacing: '0.15em' }}>
-                            <span className="flex items-center">{de.family.dashboard.shopMore.toUpperCase()}</span>
+                            <span className="flex items-center">ZUR SPIELZEUGBÖRSE</span>
                         </Link>
                     </div>
                 )}
@@ -94,7 +98,7 @@ export default async function FamilyDashboardPage() {
                             style={{ backgroundColor: BRAND.lila }}>
                             <span className="text-[32px] font-bold leading-none mb-1"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                                {selections.length}
+                                {selections.length}&nbsp;<span className="text-[18px] opacity-60">/ {MAX_TOYS}</span>
                             </span>
                             <span className="text-[11px] font-bold uppercase tracking-widest opacity-80"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
@@ -116,10 +120,10 @@ export default async function FamilyDashboardPage() {
                 )}
 
                 {/* Selected toys */}
-                <h2 className="mb-4 font-medium"
+                <h3 className="font-medium text-[#000000] mb-4 px-1 uppercase"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                     {de.family.dashboard.yourPresents}
-                </h2>
+                </h3>
 
                 {selections.length === 0 ? (
                     <div className="bg-white rounded-[8px] p-6 shadow-sm text-center opacity-60">
@@ -139,16 +143,13 @@ export default async function FamilyDashboardPage() {
                                             ? <img src={thumb} alt={d.toyName} className="w-full h-full object-cover" />
                                             : <div className="w-full h-full flex items-center justify-center"><Package size={28} className="opacity-40" /></div>}
                                     </div>
-                                    <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0 flex flex-col items-start">
                                         <h3 className="font-bold text-[16px] leading-tight mb-1 line-clamp-2"
                                             style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                             {d.toyName}
                                         </h3>
                                         <p className="text-[12px] mb-2 opacity-80">{d.ageRange} · {d.category}</p>
-                                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-widest bg-white/40"
-                                            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                                            {STATUS_LABELS[d.status] || d.status}
-                                        </span>
+                                        <StatusBadge status={d.status} />
                                         {d.trackingNumber && (
                                             <p className="text-[11px] opacity-70 mt-1.5 font-mono">#{d.trackingNumber}</p>
                                         )}

@@ -119,7 +119,7 @@ export const de = {
 
     // ── Donation Detail ──
     donationDetail: {
-        whoSelected: 'Wer hat ausgewählt?',
+        whoSelected: 'Wer hat dein Spielzeug ausgewählt?',
         address: 'Adresse',
         sendTo: 'Bitte sende das Spielzeug an diese Adresse.',
         trackingNumber: 'Sendungsverfolgungsnummer (optional)',
@@ -128,6 +128,8 @@ export const de = {
         deleteConfirm: 'Möchtest du diese Spende wirklich löschen?',
         deleteConfirmBtn: 'Ja, löschen',
         cancel: 'Abbrechen',
+        cantFind: 'Kannst du dein gespendes Spielzeug nicht finden?',
+        deleteDonation: 'Spende löschen.',
     },
 
     // ── Profile ──
@@ -216,7 +218,7 @@ export const de = {
         cart: {
             heading:        'Dein Warenkorb',
             empty:          'Dein Warenkorb ist leer',
-            browseShop:     'Zur Börse',
+            browseShop:     'Zur Spielzeugbörse',
             checkout:       'Bestellen',
             shopMore:       'Weiter stöbern',
             confirmHeading: 'Deine Lieferadresse',

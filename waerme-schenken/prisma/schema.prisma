@@ -23,11 +23,13 @@ model User {
     familySpecial     Boolean   @default(false)
     newsletterConsent Boolean   @default(false)
     emailShareConsent Boolean   @default(false)
+    phoneNumber       String?
     createdAt         DateTime  @default(now())
     updatedAt         DateTime  @updatedAt
 
-    sessions  Session[]
-    donations Donation[]
+    sessions        Session[]
+    donations       Donation[]
+    reimbursements  ShippingReimbursement[]
 }
 
 model OtpCode {
@@ -78,6 +80,7 @@ model Donation {
     updatedAt        DateTime  @updatedAt
 
     images DonationImage[]
+    reimbursement ShippingReimbursement?
 
     @@index([donorId])
     @@index([status])
@@ -130,4 +133,33 @@ model SocialCardOrg {
     name      String   @unique
     sortOrder Int      @default(0)
     createdAt DateTime @default(now())
+}
+
+model ShippingReimbursement {
+    id        String   @id @default(uuid())
+    donorId   String
+    donor     User     @relation(fields: [donorId], references: [id], onDelete: Cascade)
+    donationId String   @unique
+    donation  Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+    amount    Float    // Shipping cost amount
+    status    String   @default("pending") // pending | approved | paid | rejected
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    images ReimbursementImage[]
+
+    @@index([donorId])
+    @@index([donationId])
+    @@index([status])
+}
+
+model ReimbursementImage {
+    id              String   @id @default(uuid())
+    reimbursementId String
+    reimbursement   ShippingReimbursement @relation(fields: [reimbursementId], references: [id], onDelete: Cascade)
+    imageUrl        String
+    sortOrder       Int      @default(0)
+    createdAt       DateTime @default(now())
+
+    @@index([reimbursementId])
 }

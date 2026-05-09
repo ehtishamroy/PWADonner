@@ -14,14 +14,13 @@ const STATUS_ICON_PATHS: Record<string, string> = {
 };
 
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
-    const bg    = STATUS_COLORS[status]  || '#D1D5DB';
-    const label = STATUS_LABELS[status]  || status;
+    const label = STATUS_LABELS[status] || status;
     const iconPath = STATUS_ICON_PATHS[status];
 
     return (
         <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-bold text-white ${className}`}
-            style={{ backgroundColor: bg }}
+            className={`inline-flex items-center gap-1.5 text-[13px] font-bold text-white ${className}`}
+            style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
         >
             {iconPath && <img src={iconPath} alt="" width={14} height={14} className="object-contain" />}
             {label}

@@ -33,16 +33,16 @@ export function CartAddedToast() {
         <div
             role="status"
             aria-live="polite"
-            className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-black/90 text-white pl-5 pr-2 py-2 rounded-full shadow-lg text-sm"
-            style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl"
+            style={{ backgroundColor: BRAND.greenDark, color: '#fff', width: '90vw', fontFamily: "'Bricolage Grotesque',sans-serif" }}
         >
-            <ShoppingCart size={16} />
-            <span className="font-medium">{de.family.shop.addedToast}</span>
+            <ShoppingCart size={18} className="shrink-0" />
+            <span className="text-[14px] font-bold flex-1">{de.family.shop.addedToast}</span>
             <Link
                 href="/family/cart"
                 onClick={() => setVisible(false)}
-                className="ml-1 h-8 px-4 rounded-full font-bold text-xs flex items-center"
-                style={{ backgroundColor: BRAND.green, color: '#fff' }}
+                className="h-8 px-4 rounded-full font-bold text-xs flex items-center shrink-0"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
             >
                 {de.family.shop.viewCart}
             </Link>

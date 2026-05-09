@@ -41,14 +41,8 @@ export default function AboutPage() {
                 </div>
 
                 <div>
-                    <h3 className="font-bold text-lg">Michael Müller</h3>
-                    <p className="text-xs uppercase tracking-widest opacity-50 mb-2">Kassier</p>
-                    <p className="opacity-80">Mit seiner ruhigen und analytischen Art, ist er der perfekte Gegenpol zum Rest der Truppe. Er versteht es, die Ideen einzufangen und zu strukturieren. Genauso wie er sich als Papa um das Wohl seiner beiden Damen kümmert, so setzt er sich auch mit Herzblut für "Wärme schenken" ein.</p>
-                </div>
-
-                <div>
                     <h3 className="font-bold text-lg">Vanessa Wyniger</h3>
-                    <p className="text-xs uppercase tracking-widest opacity-50 mb-2">Vereinsmitglied, Social Media</p>
+                    <p className="text-xs uppercase tracking-widest opacity-50 mb-2">Vorstandsmitglied, Kommunikation</p>
                     <p className="opacity-80">Als unser erstes Vereinsmitglied unterstützt uns Vanessa mit ihren kreativen Ideen und der Liebe fürs Detail vor allem in der Kommunikation und Social Media. Gleichzeitig freuen wir uns, dass wir unser Team für den bevorstehenden Andrang mit ihr aufrüsten durften.</p>
                 </div>
             </div>
@@ -56,10 +50,15 @@ export default function AboutPage() {
             <hr className="my-8 border-gray-100" />
             
             <div className="bg-gray-50 p-6 rounded-2xl">
-                <h3 className="font-bold mb-2">Möchtest du uns unterstützen?</h3>
+                <a href="https://www.waerme-schenken.ch/unterstuetze-uns" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    <h3 className="font-bold mb-2">Möchtest du uns unterstützen?</h3>
+                </a>
                 <p className="opacity-80 text-sm">
                     Du hast keine Spielzeuge, die du spenden kannst, aber würdest dich gerne beteiligen? Finde heraus, wie du uns unterstützen kannst. Wir freuen uns!
                 </p>
+                <a href="https://www.waerme-schenken.ch/" target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-sm font-bold hover:underline" style={{ color: '#537D61' }}>
+                    www.waerme-schenken.ch →
+                </a>
             </div>
         </article>
     );

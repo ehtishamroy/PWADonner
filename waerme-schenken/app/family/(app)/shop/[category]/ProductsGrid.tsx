@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-    ChevronLeft, Search, ChevronDown, Package, ArrowUp,
+    Search, ChevronDown, Package, ArrowUp,
 } from 'lucide-react';
 import Image from 'next/image';
 import { BRAND, CONDITION_COLORS, AGE_RANGES } from '@/lib/constants';
@@ -91,8 +91,10 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
             {/* Top bar */}
             <div className="flex items-center gap-3 mb-6 md:mb-10">
                 <Link href="/family/shop"
-                    className="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform shrink-0">
-                    <ChevronLeft size={20} color={BRAND.green} />
+                    className="shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                    </svg>
                 </Link>
 
                 {searchOpen ? (

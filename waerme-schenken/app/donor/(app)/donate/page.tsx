@@ -347,9 +347,14 @@ export default function DonorDonatePage() {
                     )}
                     {step > 1 && (
                         <button onClick={() => setStep((s) => (s - 1) as Step)}
-                            className="text-sm font-bold underline opacity-60"
-                            style={{ color: BRAND.green }}>
-                            {de.common.back}
+                            className="inline-flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                            <span className="font-bold uppercase tracking-widest text-sm"
+                                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                {de.common.back}
+                            </span>
                         </button>
                     )}
                 </div>

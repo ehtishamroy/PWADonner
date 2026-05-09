@@ -21,7 +21,7 @@ export default async function FamilyMailingsPage() {
         <div className="min-h-screen pt-12 px-5 pb-24" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-md mx-auto">
                 <Link href="/family/profile"
-                    className="inline-flex items-center gap-2 mb-8 opacity-60 hover:opacity-100 transition-opacity">
+                    className="inline-flex items-center gap-2 mb-8">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round" />
                     </svg>

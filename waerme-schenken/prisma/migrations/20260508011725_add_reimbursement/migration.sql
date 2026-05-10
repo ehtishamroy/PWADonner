@@ -1,6 +1,3 @@
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "phoneNumber" TEXT;
-
 -- CreateTable
 CREATE TABLE "ShippingReimbursement" (
     "id" TEXT NOT NULL,

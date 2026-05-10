@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { db } from '@/lib/db';
 import { AdminHeader } from '@/app/admin/components/AdminHeader';
 import { OrgManager } from './OrgManager';

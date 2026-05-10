@@ -35,6 +35,11 @@ export async function DELETE(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID erforderlich.' }, { status: 400 });
-    await (db as any).socialCardOrg.delete({ where: { id } });
+    try {
+        await (db as any).socialCardOrg.delete({ where: { id } });
+    } catch (e: any) {
+        if (e?.code === 'P2025') return NextResponse.json({ error: 'Nicht gefunden.' }, { status: 404 });
+        throw e;
+    }
     return NextResponse.json({ ok: true });
 }

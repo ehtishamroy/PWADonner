@@ -77,7 +77,7 @@ export async function sendDonationSelectedEmail(
     recipientAddress: string,
     toyImageUrl?: string | null
 ) {
-    const appBase = (process.env.NEXT_PUBLIC_APP_URL || 'https://app.waerme-schenken.ch').replace(/\/$/, '');
+    const appBase = (process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://app.waerme-schenken.ch').replace(/\/$/, '');
     const absoluteImageUrl = toyImageUrl
         ? (toyImageUrl.startsWith('http') ? toyImageUrl : `${appBase}${toyImageUrl}`)
         : null;

@@ -45,10 +45,32 @@ export default function FamilyRegisterPage() {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [emailChecking, setEmailChecking] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [orgs, setOrgs] = useState<string[]>([]);
     const mounted = useRef(true);
     useEffect(() => () => { mounted.current = false; }, []);
+
+    async function checkEmailExists(email: string) {
+        if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+        setEmailChecking(true);
+        try {
+            const res = await fetch('/api/auth/check-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            if (!mounted.current) return;
+            if (res.status === 409) {
+                const d = await res.json();
+                setErrors(prev => ({ ...prev, email: de.auth.errors.duplicateAccount, duplicate: d.loginUrl }));
+            } else {
+                setErrors(prev => { const next = { ...prev }; delete next.email; delete next.duplicate; return next; });
+            }
+        } catch { /* silent */ } finally {
+            if (mounted.current) setEmailChecking(false);
+        }
+    }
 
     // Load persisted state
     useEffect(() => {
@@ -56,7 +78,10 @@ export default function FamilyRegisterPage() {
         if (saved) {
             try {
                 const { form: savedForm, step: savedStep } = JSON.parse(saved);
-                if (savedForm) setForm(savedForm);
+                if (savedForm) {
+                    setForm(savedForm);
+                    if (savedForm.email) checkEmailExists(savedForm.email);
+                }
                 if (savedStep) setStep(savedStep);
             } catch (e) {
                 console.error('Failed to parse saved form', e);
@@ -116,6 +141,8 @@ export default function FamilyRegisterPage() {
 
     async function handleNext() {
         if (step === 1) {
+            if (emailChecking) return;
+            if (errors.duplicate) return;
             const e = validate1(); if (Object.keys(e).length) { setErrors(e); return; }
             setErrors({}); setStep(2); return;
         }
@@ -220,10 +247,21 @@ export default function FamilyRegisterPage() {
                                             <input type={key === 'email' ? 'email' : 'text'}
                                                 value={(form as Record<string, unknown>)[key] as string}
                                                 placeholder={placeholder}
-                                                onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                                                onChange={e => {
+                                                    setForm(f => ({ ...f, [key]: e.target.value }));
+                                                    if (key === 'email') setErrors(prev => { const next = { ...prev }; delete next.email; delete next.duplicate; return next; });
+                                                }}
+                                                onBlur={key === 'email' ? (e) => checkEmailExists(e.target.value) : undefined}
                                                 className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30" />
                                         </div>
-                                        {errors[key] && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors[key]}</p>}
+                                        {errors[key] && (
+                                            <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>
+                                                {errors[key]}
+                                                {key === 'email' && errors.duplicate && (
+                                                    <> &mdash; <Link href={errors.duplicate} className="underline font-bold">{de.family.register.login}</Link></>
+                                                )}
+                                            </p>
+                                        )}
                                     </div>
                                 ))}
                                 <Checkbox checked={form.privacy} onChange={() => setForm(f => ({ ...f, privacy: !f.privacy }))}>

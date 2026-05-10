@@ -136,7 +136,7 @@ export default async function FamilyDashboardPage() {
                             const thumb = d.images[0]?.imageUrl;
                             return (
                                 <Link key={d.id} href={`/family/selections/${d.id}`}
-                                    className="rounded-[8px] p-4 flex gap-4 shadow-sm active:scale-[0.98] transition-transform block"
+                                    className="rounded-[8px] p-4 flex gap-4 shadow-sm active:scale-[0.98] transition-transform block relative"
                                     style={{ backgroundColor: bg }}>
                                     <div className="w-20 h-20 bg-white rounded-[8px] overflow-hidden shrink-0">
                                         {thumb
@@ -154,6 +154,11 @@ export default async function FamilyDashboardPage() {
                                             <p className="text-[11px] opacity-70 mt-1.5 font-mono">#{d.trackingNumber}</p>
                                         )}
                                     </div>
+                                    {d.status === 'selected' && (
+                                        <div className="absolute bottom-4 right-4">
+                                            <img src="/images/icon-selected-action.png" alt="" width={35} height={35} className="object-contain" />
+                                        </div>
+                                    )}
                                 </Link>
                             );
                         })}

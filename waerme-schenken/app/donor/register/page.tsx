@@ -36,8 +36,30 @@ export default function DonorRegisterPage() {
     });
     const [errors, setErrors]   = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [emailChecking, setEmailChecking] = useState(false);
     const mounted = useRef(true);
     useEffect(() => () => { mounted.current = false; }, []);
+
+    async function checkEmailExists(email: string) {
+        if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+        setEmailChecking(true);
+        try {
+            const res = await fetch('/api/auth/check-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            if (!mounted.current) return;
+            if (res.status === 409) {
+                const d = await res.json();
+                setErrors(prev => ({ ...prev, email: de.auth.errors.duplicateAccount, duplicate: d.loginUrl }));
+            } else {
+                setErrors(prev => { const next = { ...prev }; delete next.email; delete next.duplicate; return next; });
+            }
+        } catch { /* silent */ } finally {
+            if (mounted.current) setEmailChecking(false);
+        }
+    }
 
     const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -78,7 +100,10 @@ export default function DonorRegisterPage() {
         if (saved) {
             try {
                 const { form: savedForm, step: savedStep } = JSON.parse(saved);
-                if (savedForm) setForm(savedForm);
+                if (savedForm) {
+                    setForm(savedForm);
+                    if (savedForm.email) checkEmailExists(savedForm.email);
+                }
                 if (savedStep) setStep(savedStep);
             } catch (e) {
                 console.error('Failed to parse saved form', e);
@@ -107,6 +132,8 @@ export default function DonorRegisterPage() {
 
     async function handleNext() {
         if (step === 1) {
+            if (emailChecking) return;
+            if (errors.duplicate) return;
             const e = validate();
             if (Object.keys(e).length) { setErrors(e); return; }
             setErrors({});
@@ -226,13 +253,26 @@ export default function DonorRegisterPage() {
                                                 maxLength={key === 'zipCode' ? 4 : undefined}
                                                 value={(form as Record<string, unknown>)[key] as string}
                                                 placeholder={placeholder}
-                                                onChange={e => setForm(f => ({ ...f, [key]: key === 'zipCode' ? e.target.value.replace(/\D/g, '') : e.target.value }))}
+                                                onChange={e => {
+                                                    setForm(f => ({ ...f, [key]: key === 'zipCode' ? e.target.value.replace(/\D/g, '') : e.target.value }));
+                                                    if (key === 'email') setErrors(prev => { const next = { ...prev }; delete next.email; delete next.duplicate; return next; });
+                                                }}
                                                 onFocus={key === 'zipCode' ? () => setShowSuggestions(true) : undefined}
-                                                onBlur={key === 'zipCode' ? () => setTimeout(() => setShowSuggestions(false), 150) : undefined}
+                                                onBlur={
+                                                    key === 'email' ? (e) => checkEmailExists(e.target.value) :
+                                                    key === 'zipCode' ? () => setTimeout(() => setShowSuggestions(false), 150) : undefined
+                                                }
                                                 className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30 placeholder:font-bold"
                                             />
                                         </div>
-                                        {errors[key] && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors[key]}</p>}
+                                        {errors[key] && (
+                                            <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>
+                                                {errors[key]}
+                                                {key === 'email' && errors.duplicate && (
+                                                    <> &mdash; <Link href={errors.duplicate} className="underline font-bold">{de.auth.register.login}</Link></>
+                                                )}
+                                            </p>
+                                        )}
                                         {key === 'zipCode' && showSuggestions && suggestions.length > 0 && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
                                                 {suggestions.map((s, i) => (

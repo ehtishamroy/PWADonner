@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/brand/Logo';
-import { Teddy, Gift, Duck } from '@/components/brand/Illustrations';
+import { Car, Gift, Duck } from '@/components/brand/Illustrations';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
 
@@ -60,20 +60,20 @@ export default function FamilyIntroPage() {
 
             {/* Floating illustrations + CTA — always pinned to bottom */}
             <div className="w-full max-w-sm mx-auto relative mt-auto pt-2 md:max-w-none">
-                {/* Floating icons — family variant: Teddy left, Gift right, Duck bottom */}
-                <div className="absolute top-[-10px] left-[-30px] md:left-20 drop-shadow-md rotate-[-8deg] z-0">
-                    <Teddy width={95} height={95} />
+                {/* Floating icons */}
+                <div className="absolute top-0 left-[-30px] md:left-20 drop-shadow-md rotate-[-5deg] z-0">
+                    <Car width={137} height={90} />
                 </div>
-                <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[10deg] z-0">
-                    <Gift width={90} height={80} />
+                <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[12deg] z-0">
+                    <Gift width={115} height={82} />
                 </div>
                 {/* Duck only visible on mobile */}
                 <div className="absolute bottom-[-10px] right-[-30px] drop-shadow-md md:hidden z-0">
-                    <Duck width={72} height={63} />
+                    <Duck width={100} height={71} />
                 </div>
 
                 {/* CTA buttons — centered */}
-                <div className="flex flex-col items-center gap-3 relative z-20 pt-20 pb-2">
+                <div className="flex flex-col items-center gap-3 relative z-20 pt-16 pb-2">
                     <button
                         onClick={() => router.push('/family/register')}
                         className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center"

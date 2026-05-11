@@ -19,7 +19,8 @@ type Props = {
     images: string[];
 };
 
-export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images }: Props) {
+export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images: rawImages }: Props) {
+    const images = rawImages.filter(Boolean);
     const [idx, setIdx] = useState(0);
     const [limitToast, setLimitToast] = useState(false);
     const touchStartX = useRef<number | null>(null);

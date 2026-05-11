@@ -30,6 +30,7 @@ export default async function AdminShopSchedulePage() {
                 <ScheduleForm
                     openDate={toLocalInput(shop?.openDate)}
                     closeDate={toLocalInput(shop?.closeDate)}
+                    isOpen={isOpen}
                 />
             </main>
         </>

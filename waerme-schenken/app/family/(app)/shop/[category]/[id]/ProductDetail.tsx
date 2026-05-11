@@ -20,7 +20,7 @@ type Props = {
 };
 
 export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images }: Props) {
-    const validImages = images.filter(Boolean);
+    const validImages = images.filter(img => typeof img === 'string' && img.trim().length > 0);
     const [idx, setIdx] = useState(0);
     const [limitToast, setLimitToast] = useState(false);
     const touchStartX = useRef<number | null>(null);

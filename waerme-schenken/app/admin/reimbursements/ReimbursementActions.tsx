@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { BRAND } from '@/lib/constants';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 
 export function ReimbursementActions({ id, onUpdate }: { id: string; onUpdate: () => void }) {
     const [loading, setLoading] = useState<string | null>(null);
@@ -17,8 +17,19 @@ export function ReimbursementActions({ id, onUpdate }: { id: string; onUpdate: (
         }
     }
 
+    async function deleteRecord() {
+        if (!confirm('Diesen Erstattungsantrag wirklich vollständig löschen?')) return;
+        setLoading('delete');
+        try {
+            await fetch(`/api/admin/reimbursements/${id}/delete`, { method: 'POST' });
+            onUpdate();
+        } finally {
+            setLoading(null);
+        }
+    }
+
     return (
-        <div className="flex gap-3 mt-4 pt-4 border-t">
+        <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t">
             <button
                 onClick={() => act('approve')}
                 disabled={!!loading}
@@ -43,6 +54,14 @@ export function ReimbursementActions({ id, onUpdate }: { id: string; onUpdate: (
             >
                 {loading === 'reject' && <Loader2 size={14} className="animate-spin" />}
                 Ablehnen
+            </button>
+            <button
+                onClick={deleteRecord}
+                disabled={!!loading}
+                className="ml-auto px-4 py-2 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black disabled:opacity-50 flex items-center gap-2"
+            >
+                {loading === 'delete' ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                Löschen
             </button>
         </div>
     );

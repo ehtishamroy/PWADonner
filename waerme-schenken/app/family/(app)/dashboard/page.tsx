@@ -15,6 +15,7 @@ const MAX_TOYS = 5;
 export default async function FamilyDashboardPage() {
     const session = await getSession();
     if (!session) redirect('/family/login');
+    if (session.role && session.role !== 'family') redirect('/donor/dashboard');
 
     const [user, selections, shop, banner] = await Promise.all([
         db.user.findUnique({ where: { id: session.userId } }),

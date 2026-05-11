@@ -53,10 +53,10 @@ export async function verifyOtp(email: string, code: string): Promise<boolean> {
 
 // ── Session JWT ─────────────────────────────────────────────────────────────
 
-export async function createSession(userId: string): Promise<string> {
+export async function createSession(userId: string, role?: string): Promise<string> {
     const expiresAt = new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000);
 
-    const token = await new SignJWT({ userId })
+    const token = await new SignJWT({ userId, role: role ?? '' })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime(`${SESSION_DURATION_DAYS}d`)
         .setIssuedAt()
@@ -69,7 +69,7 @@ export async function createSession(userId: string): Promise<string> {
     return token;
 }
 
-export async function getSession(): Promise<{ userId: string } | null> {
+export async function getSession(): Promise<{ userId: string; role?: string } | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get('ws_session')?.value;
     if (!token) return null;
@@ -87,7 +87,7 @@ export async function getSession(): Promise<{ userId: string } | null> {
 
         if (!session) return null;
 
-        return { userId: payload.userId as string };
+        return { userId: payload.userId as string, role: payload.role as string | undefined };
     } catch {
         return null;
     }

@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Benutzer nicht gefunden.' }, { status: 404 });
         }
 
-        const token = await createSession(user.id);
+        const token = await createSession(user.id, user.role);
         const cookie = setSessionCookie(token);
 
         // Email #5: first-time family registration — send only once

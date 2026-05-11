@@ -14,6 +14,7 @@ import { Suspense } from 'react';
 export default async function DonorDashboardPage() {
     const session = await getSession();
     if (!session) redirect('/api/auth/clear-session');
+    if (session.role && session.role !== 'donor') redirect('/family/dashboard');
 
     const [user, donations, banner, myStatusCounts, globalApprovedCount, globalSelectedCount] = await Promise.all([
         db.user.findUnique({ where: { id: session.userId } }),

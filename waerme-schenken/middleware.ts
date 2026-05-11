@@ -1,7 +1,23 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
-export function middleware(request: NextRequest) {
+const JWT_SECRET = new TextEncoder().encode(
+    process.env.JWT_SECRET || 'dev-secret-change-in-production-32chars!!'
+);
+
+async function getRoleFromToken(request: NextRequest): Promise<string | null> {
+    const token = request.cookies.get('ws_session')?.value;
+    if (!token) return null;
+    try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        return (payload.role as string) || null;
+    } catch {
+        return null;
+    }
+}
+
+export async function middleware(request: NextRequest) {
     const hasToken = request.cookies.has('ws_session');
     const hasAdminToken = request.cookies.has('ws_admin_session');
     const path = request.nextUrl.pathname;
@@ -21,10 +37,11 @@ export function middleware(request: NextRequest) {
         '/family/intro',
     ].includes(path);
 
-    // Logged-in users hitting auth pages → redirect (role determined client-side, default to donor)
+    // Logged-in users hitting auth pages → redirect to their correct dashboard by role
     if (hasToken && (isSharedAuthPath || isDonorAuthPath || isFamilyAuthPath)) {
-        // Can't tell role from cookie alone; donor dashboard does its own role check
-        return NextResponse.redirect(new URL('/donor/dashboard', request.url));
+        const role = await getRoleFromToken(request);
+        const dest = role === 'family' ? '/family/dashboard' : '/donor/dashboard';
+        return NextResponse.redirect(new URL(dest, request.url));
     }
 
     // ── Admin Protection ──

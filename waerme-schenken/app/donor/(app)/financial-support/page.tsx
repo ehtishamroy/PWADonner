@@ -165,14 +165,14 @@ export default function FinancialSupportPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: BRAND.beige }}>
+            <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="animate-spin" size={32} />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen pt-12 px-5 pb-24" style={{ backgroundColor: BRAND.beige }}>
+        <div className="pt-12 px-5 pb-24 overflow-x-hidden">
             <div className="max-w-md mx-auto">
                 {/* Back */}
                 <Link href="/donor/dashboard" className="inline-flex items-center gap-2 mb-6">

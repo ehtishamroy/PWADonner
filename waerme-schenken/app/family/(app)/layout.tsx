@@ -26,7 +26,7 @@ export default async function FamilyLayout({ children }: { children: React.React
     return (
         <div className="min-h-screen flex bg-[#F5F0EA]">
             <FamilySidebar />
-            <main className="flex-1 md:ml-64 min-h-screen">
+            <main className="flex-1 md:ml-64 min-h-screen min-w-0 overflow-x-hidden">
                 {children}
             </main>
             <FamilyBottomNav />

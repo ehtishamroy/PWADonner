@@ -13,7 +13,7 @@ export default function DonorLayout({ children }: { children: React.ReactNode })
             <DonorSidebar />
 
             {/* Main content area — offset by sidebar width on desktop */}
-            <main className="flex-1 md:ml-64 min-h-screen">
+            <main className="flex-1 md:ml-64 min-h-screen min-w-0 overflow-x-hidden">
                 {children}
             </main>
 

@@ -12,9 +12,9 @@ export async function PATCH(req: NextRequest) {
     try {
         const { phoneNumber } = await req.json();
 
-        // Basic validation - Swiss phone format (optional but validated)
-        if (phoneNumber && !/^\+?[\d\s\-]{10,}$/.test(phoneNumber)) {
-            return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
+        // Basic validation - allow any reasonable phone format
+        if (phoneNumber && !/^[\+\d][\d\s\-\/\(\)]{7,}$/.test(phoneNumber.trim())) {
+            return NextResponse.json({ error: 'Ungültige Telefonnummer.' }, { status: 400 });
         }
 
         const user = await db.user.update({

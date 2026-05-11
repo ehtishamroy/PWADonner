@@ -28,6 +28,7 @@ export default function FinancialSupportPage() {
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [phoneLoading, setPhoneLoading] = useState(false);
     const [phoneSaved, setPhoneSaved] = useState(false);
+    const [phoneError, setPhoneError] = useState('');
 
     const [donations, setDonations] = useState<Donation[]>([]);
     const [reimbursements, setReimbursements] = useState<Reimbursement[]>([]);
@@ -66,16 +67,24 @@ export default function FinancialSupportPage() {
 
     async function savePhone() {
         setPhoneLoading(true);
+        setPhoneError('');
         try {
             const res = await fetch('/api/donor/phone', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber })
+                body: JSON.stringify({ phoneNumber: phoneNumber.trim() })
             });
             if (res.ok) {
+                const d = await res.json();
+                setPhoneNumber(d.phoneNumber || phoneNumber);
                 setPhoneSaved(true);
-                setTimeout(() => setPhoneSaved(false), 2000);
+                setTimeout(() => setPhoneSaved(false), 2500);
+            } else {
+                const d = await res.json();
+                setPhoneError(d.error || 'Speichern fehlgeschlagen.');
             }
+        } catch {
+            setPhoneError('Netzwerkfehler. Bitte erneut versuchen.');
         } finally {
             setPhoneLoading(false);
         }
@@ -195,23 +204,25 @@ export default function FinancialSupportPage() {
                     <p className="text-sm opacity-70 mb-4">
                         Wir erstatten die Versandkosten via Twint. Bitte gib deine Mobilnummer ein.
                     </p>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                         <input
                             type="tel"
                             value={phoneNumber}
-                            onChange={e => setPhoneNumber(e.target.value)}
+                            onChange={e => { setPhoneNumber(e.target.value); setPhoneSaved(false); setPhoneError(''); }}
+                            onKeyDown={e => e.key === 'Enter' && savePhone()}
                             placeholder="+41 79 123 45 67"
-                            className="flex-1 font-bold text-[17px] bg-transparent outline-none border-b-2 border-gray-100 focus:border-gray-300 pb-2"
+                            className="flex-1 min-w-0 font-bold text-[17px] bg-transparent outline-none border-b-2 border-gray-100 focus:border-gray-300 pb-2"
                         />
                         <button
                             onClick={savePhone}
-                            disabled={phoneLoading}
-                            className="px-4 py-2 rounded-full text-white font-bold text-sm"
-                            style={{ backgroundColor: BRAND.green }}
+                            disabled={phoneLoading || !phoneNumber.trim()}
+                            className="shrink-0 px-4 py-2 rounded-full text-white font-bold text-sm disabled:opacity-50"
+                            style={{ backgroundColor: phoneSaved ? '#16a34a' : BRAND.green }}
                         >
-                            {phoneLoading ? <Loader2 size={16} className="animate-spin" /> : phoneSaved ? '✓' : 'Speichern'}
+                            {phoneLoading ? <Loader2 size={16} className="animate-spin" /> : phoneSaved ? '✓ Gespeichert' : 'Speichern'}
                         </button>
                     </div>
+                    {phoneError && <p className="text-xs font-medium mt-2" style={{ color: BRAND.error }}>{phoneError}</p>}
                 </div>
 
                 {/* Success message */}

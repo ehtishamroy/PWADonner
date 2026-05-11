@@ -3,7 +3,6 @@ import { db } from '@/lib/db';
 import { AdminHeader } from '../../components/AdminHeader';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import Link from 'next/link';
-import Image from 'next/image';
 import ReviewActions from './ReviewActions';
 import { DonationImage } from '@prisma/client';
 
@@ -44,17 +43,18 @@ export default async function AdminReviewDetailPage({ params }: { params: Promis
                         {donation.images.length > 0 ? (
                             <>
                                 <div className="relative w-full aspect-square rounded-[24px] overflow-hidden shadow-sm bg-gray-50">
-                                    <Image
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
                                         src={donation.images[0].imageUrl}
                                         alt={donation.toyName}
-                                        fill
-                                        className="object-cover"
+                                        className="absolute inset-0 w-full h-full object-cover"
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 gap-3">
                                     {donation.images.slice(1).map((img: DonationImage) => (
                                         <div key={img.id} className="relative aspect-square rounded-[12px] overflow-hidden bg-gray-50">
-                                            <Image src={img.imageUrl} alt="" fill className="object-cover" />
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={img.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
                                         </div>
                                     ))}
                                 </div>

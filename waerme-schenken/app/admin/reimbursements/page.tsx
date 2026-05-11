@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AdminHeader } from '../components/AdminHeader';
 import { BRAND } from '@/lib/constants';
-import { CheckCircle2, Clock, Ban, Loader2 } from 'lucide-react';
+import { CheckCircle2, Clock, Ban, Loader2, Trash2 } from 'lucide-react';
 
 type ReimbursementItem = {
     id: string;
@@ -94,7 +94,24 @@ function ReimbursementCard({ r, onUpdate }: { r: ReimbursementItem; onUpdate: ()
                 </div>
             )}
 
-            <p className="text-xs opacity-50 mt-4">Antrag vom {new Date(r.createdAt).toLocaleDateString('de-CH')}</p>
+            <div className="flex items-center justify-between mt-4 pt-3 border-t">
+                <p className="text-xs opacity-50">Antrag vom {new Date(r.createdAt).toLocaleDateString('de-CH')}</p>
+                <button
+                    onClick={async () => {
+                        if (!confirm('Diesen Erstattungsantrag wirklich vollständig löschen?')) return;
+                        setLoading('delete');
+                        try {
+                            await fetch(`/api/admin/reimbursements/${r.id}/delete`, { method: 'POST' });
+                            onUpdate();
+                        } finally { setLoading(null); }
+                    }}
+                    disabled={!!loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 font-bold text-xs disabled:opacity-50 transition-colors"
+                >
+                    {loading === 'delete' ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                    Löschen
+                </button>
+            </div>
         </div>
     );
 }

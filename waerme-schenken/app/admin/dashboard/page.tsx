@@ -2,7 +2,6 @@ import { db } from '@/lib/db';
 import { AdminHeader } from '../components/AdminHeader';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +17,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     // Oldest first for all tabs per spec 7.1
     const donations = await db.donation.findMany({
         where: { status: tab },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
         include: {
             images: { orderBy: { sortOrder: 'asc' }, take: 1 },
             donor: { select: { firstName: true, lastName: true, email: true } }
@@ -82,11 +81,11 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
                                 {/* Thumbnail */}
                                 <div className="relative w-full aspect-video rounded-[16px] overflow-hidden bg-gray-50 mb-4">
                                     {donation.images[0] ? (
-                                        <Image
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
                                             src={donation.images[0].imageUrl}
                                             alt={donation.toyName}
-                                            fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     ) : (
                                         <div className="absolute inset-0 flex items-center justify-center opacity-30 text-sm">

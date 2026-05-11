@@ -1,17 +1,38 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Plus, Trash2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { BRAND } from '@/lib/constants';
 
 type Category = { name: string };
 
-export function CategoryManager({ categories }: { categories: Category[] }) {
-    const router = useRouter();
+export function CategoryManager({ categories: initial }: { categories: Category[] }) {
+    const [categories, setCategories] = useState<Category[]>(initial);
     const [newName, setNewName] = useState('');
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
+    const dragIdx = useRef<number | null>(null);
+    const dragOverIdx = useRef<number | null>(null);
+
+    function onDragStart(i: number) { dragIdx.current = i; }
+    function onDragEnter(i: number) { dragOverIdx.current = i; }
+    function onDragOver(e: React.DragEvent) { e.preventDefault(); }
+    async function onDrop() {
+        const from = dragIdx.current;
+        const to = dragOverIdx.current;
+        if (from == null || to == null || from === to) return;
+        const reordered = [...categories];
+        const [moved] = reordered.splice(from, 1);
+        reordered.splice(to, 0, moved);
+        setCategories(reordered);
+        dragIdx.current = null;
+        dragOverIdx.current = null;
+        await fetch('/api/admin/categories/manage', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: reordered.map(c => c.name) }),
+        });
+    }
 
     async function addCategory() {
         const name = newName.trim();
@@ -26,8 +47,8 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
             });
             const data = await res.json();
             if (!res.ok) { setError(data.error || 'Fehler'); return; }
+            setCategories(prev => [...prev, { name: data.category.name }]);
             setNewName('');
-            router.refresh();
         } finally {
             setBusy(false);
         }
@@ -41,7 +62,7 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
             const res = await fetch(`/api/admin/categories/manage?name=${encodeURIComponent(name)}`, {
                 method: 'DELETE',
             });
-            if (res.ok) router.refresh();
+            if (res.ok) setCategories(prev => prev.filter(c => c.name !== name));
         } finally {
             setBusy(false);
         }
@@ -77,20 +98,29 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
             {error && <p className="text-[12px] font-medium mb-3" style={{ color: BRAND.error }}>{error}</p>}
 
             {/* Category list */}
-            <div className="flex flex-wrap gap-2">
-                {categories.map(cat => (
+            <div className="space-y-2">
+                {categories.map((cat, i) => (
                     <div key={cat.name}
-                        className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5">
-                        <span className="text-[13px] font-medium" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                        draggable
+                        onDragStart={() => onDragStart(i)}
+                        onDragEnter={() => onDragEnter(i)}
+                        onDragOver={onDragOver}
+                        onDrop={onDrop}
+                        className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-[8px] px-4 py-3 cursor-default">
+                        <span className="cursor-grab text-gray-300 hover:text-gray-500 shrink-0" title="Ziehen zum Sortieren">
+                            <GripVertical size={16} />
+                        </span>
+                        <span className="flex-1 text-[14px] font-bold" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                             {cat.name}
                         </span>
                         <button
                             onClick={() => deleteCategory(cat.name)}
                             disabled={busy}
-                            className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-40"
+                            className="p-1.5 rounded-full hover:opacity-80 transition-opacity disabled:opacity-40"
+                            style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}
                             title={`"${cat.name}" löschen`}
                         >
-                            <Trash2 size={13} />
+                            <Trash2 size={14} />
                         </button>
                     </div>
                 ))}

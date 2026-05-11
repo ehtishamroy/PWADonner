@@ -24,7 +24,16 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    const { id, name } = await req.json();
+    const body = await req.json();
+    // Reorder: { order: string[] }
+    if (Array.isArray(body.order)) {
+        await Promise.all(body.order.map((id: string, i: number) =>
+            (db as any).socialCardOrg.update({ where: { id }, data: { sortOrder: i } })
+        ));
+        return NextResponse.json({ ok: true });
+    }
+    // Rename: { id, name }
+    const { id, name } = body;
     if (!id || !name?.trim()) return NextResponse.json({ error: 'ID und Name erforderlich.' }, { status: 400 });
     const org = await (db as any).socialCardOrg.update({ where: { id }, data: { name: name.trim() } });
     return NextResponse.json(org);

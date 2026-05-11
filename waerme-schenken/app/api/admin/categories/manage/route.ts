@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 
@@ -34,6 +34,16 @@ export async function POST(req: Request) {
     const sortOrder = (maxOrder._max.sortOrder ?? -1) + 1;
     const category = await db.toyCategory.create({ data: { name: trimmed, sortOrder } });
     return NextResponse.json({ ok: true, category });
+}
+
+export async function PATCH(req: NextRequest) {
+    if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { order } = await req.json();
+    if (!Array.isArray(order)) return NextResponse.json({ error: 'order array required' }, { status: 400 });
+    await Promise.all(order.map((name: string, i: number) =>
+        db.toyCategory.update({ where: { name }, data: { sortOrder: i } })
+    ));
+    return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: Request) {

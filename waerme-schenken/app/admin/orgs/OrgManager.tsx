@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2, Check, X, Plus } from 'lucide-react';
+import { Pencil, Trash2, Check, X, Plus, GripVertical } from 'lucide-react';
 import { BRAND } from '@/lib/constants';
 
 interface Org { id: string; name: string }
@@ -14,6 +14,28 @@ export function OrgManager({ orgs: initial }: { orgs: Org[] }) {
     const [editId, setEditId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [busy, setBusy] = useState(false);
+    const dragIdx = useRef<number | null>(null);
+    const dragOverIdx = useRef<number | null>(null);
+
+    function onDragStart(i: number) { dragIdx.current = i; }
+    function onDragEnter(i: number) { dragOverIdx.current = i; }
+    function onDragOver(e: React.DragEvent) { e.preventDefault(); }
+    async function onDrop() {
+        const from = dragIdx.current;
+        const to = dragOverIdx.current;
+        if (from == null || to == null || from === to) return;
+        const reordered = [...orgs];
+        const [moved] = reordered.splice(from, 1);
+        reordered.splice(to, 0, moved);
+        setOrgs(reordered);
+        dragIdx.current = null;
+        dragOverIdx.current = null;
+        await fetch('/api/admin/orgs', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: reordered.map(o => o.id) }),
+        });
+    }
 
     async function add() {
         if (!newName.trim()) return;
@@ -75,9 +97,17 @@ export function OrgManager({ orgs: initial }: { orgs: Org[] }) {
         <div className="space-y-3">
             {/* Existing orgs */}
             <div className="space-y-2">
-                {orgs.map(org => (
+                {orgs.map((org, i) => (
                     <div key={org.id}
-                        className="flex items-center gap-3 bg-white rounded-[8px] px-4 py-3 shadow-sm">
+                        draggable
+                        onDragStart={() => onDragStart(i)}
+                        onDragEnter={() => onDragEnter(i)}
+                        onDragOver={onDragOver}
+                        onDrop={onDrop}
+                        className="flex items-center gap-3 bg-white rounded-[8px] px-4 py-3 shadow-sm cursor-default">
+                        <span className="cursor-grab text-gray-300 hover:text-gray-500 shrink-0" title="Ziehen zum Sortieren">
+                            <GripVertical size={16} />
+                        </span>
                         {editId === org.id ? (
                             <>
                                 <input

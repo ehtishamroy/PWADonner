@@ -20,7 +20,6 @@ type Props = {
 };
 
 export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images }: Props) {
-    const validImages = images.filter(img => typeof img === 'string' && img.trim().length > 0);
     const [idx, setIdx] = useState(0);
     const [limitToast, setLimitToast] = useState(false);
     const touchStartX = useRef<number | null>(null);
@@ -30,15 +29,15 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
         touchStartX.current = e.touches[0].clientX;
     }
     function onTouchEnd(e: React.TouchEvent) {
-        if (touchStartX.current == null || validImages.length < 2) return;
+        if (touchStartX.current == null || images.length < 2) return;
         const dx = e.changedTouches[0].clientX - touchStartX.current;
         touchStartX.current = null;
         if (Math.abs(dx) < 40) return;
-        if (dx < 0) setIdx(i => Math.min(i + 1, validImages.length - 1));
+        if (dx < 0) setIdx(i => Math.min(i + 1, images.length - 1));
         else        setIdx(i => Math.max(i - 1, 0));
     }
     const added = cart.has(id);
-    const current = validImages[idx];
+    const current = images[idx];
     const condShort = condition === 'neu_originalverpackt' ? 'neu'
                     : condition === 'wie_neu' ? 'wie neu'
                     : 'gebraucht';
@@ -90,9 +89,9 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                         <Package size={120} className="opacity-30" />
                     )}
                 </div>
-                {validImages.length > 1 && (
+                {images.length > 1 && (
                     <div className="flex justify-center gap-2 mt-4">
-                        {validImages.map((_, i) => (
+                        {images.map((_, i) => (
                             <button key={i} onClick={() => setIdx(i)}
                                 className="rounded-full transition-all"
                                 style={{

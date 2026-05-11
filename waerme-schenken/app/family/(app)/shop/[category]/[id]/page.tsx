@@ -24,7 +24,7 @@ export default async function FamilyProductDetailPage({ params }: { params: Prom
                 condition={donation.condition}
                 description={donation.description}
                 condColor={CONDITION_COLORS[donation.condition] || BRAND.mustard}
-                images={donation.images.map(i => i.imageUrl).filter(url => typeof url === 'string' && url.trim().length > 0)}
+                images={donation.images.map(i => i.imageUrl)}
             />
         </div>
     );

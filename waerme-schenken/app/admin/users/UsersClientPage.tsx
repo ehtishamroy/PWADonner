@@ -9,6 +9,7 @@ type User = {
     firstName:         string;
     lastName:          string;
     email:             string;
+    role:              string;
     newsletterConsent: boolean;
     createdAt:         string;
 };
@@ -16,21 +17,19 @@ type User = {
 type Props = {
     users:            User[];
     filter:           'all' | 'newsletter';
+    page:             number;
     totalAll:         number;
     totalNewsletter:  number;
+    totalFiltered:    number;
+    pageSize:         number;
 };
 
-export function UsersClientPage({ users, filter, totalAll, totalNewsletter }: Props) {
+export function UsersClientPage({ users, filter, page, totalAll, totalNewsletter, totalFiltered, pageSize }: Props) {
+    const totalPages = Math.ceil(totalFiltered / pageSize);
+    function pageUrl(p: number) { return `/admin/users?filter=${filter}&page=${p}`; }
 
     function downloadCsv() {
         window.location.href = `/api/admin/users?filter=${filter}&format=csv`;
-    }
-
-    function copyEmails() {
-        const emails = users.map(u => u.email).join(', ');
-        navigator.clipboard.writeText(emails).then(() => {
-            alert(`${users.length} E-Mail-Adressen kopiert!`);
-        });
     }
 
     return (
@@ -46,14 +45,6 @@ export function UsersClientPage({ users, filter, totalAll, totalNewsletter }: Pr
 
                 {/* Action buttons */}
                 <div className="flex gap-3 flex-wrap">
-                    <button
-                        onClick={copyEmails}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full border-2 text-sm font-bold transition-opacity hover:opacity-80"
-                        style={{ borderColor: BRAND.green, color: BRAND.green }}
-                    >
-                        <Mail size={15} />
-                        E-Mails kopieren
-                    </button>
                     <button
                         onClick={downloadCsv}
                         className="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-bold transition-opacity hover:opacity-90"
@@ -124,6 +115,7 @@ export function UsersClientPage({ users, filter, totalAll, totalNewsletter }: Pr
                             <tr className="border-b border-gray-100">
                                 <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Name</th>
                                 <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>E-Mail</th>
+                                <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Typ</th>
                                 <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Newsletter</th>
                                 <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Registriert</th>
                             </tr>
@@ -146,6 +138,15 @@ export function UsersClientPage({ users, filter, totalAll, totalNewsletter }: Pr
                                             {user.email}
                                         </a>
                                     </td>
+                                    <td className="px-6 py-3.5 text-center">
+                                        {user.role === 'donor' ? (
+                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Spender</span>
+                                        ) : user.role === 'family' ? (
+                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.mustard }}>Familie</span>
+                                        ) : (
+                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 opacity-50">{user.role}</span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-3.5 text-center hidden md:table-cell">
                                         {user.newsletterConsent ? (
                                             <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Ja</span>
@@ -160,6 +161,34 @@ export function UsersClientPage({ users, filter, totalAll, totalNewsletter }: Pr
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6">
+                    <p className="text-sm opacity-50">
+                        {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalFiltered)} von {totalFiltered}
+                    </p>
+                    <div className="flex gap-2">
+                        <Link
+                            href={pageUrl(page - 1)}
+                            aria-disabled={page <= 1}
+                            className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-opacity ${page <= 1 ? 'opacity-30 pointer-events-none' : 'hover:opacity-80'}`}
+                            style={{ borderColor: BRAND.green, color: BRAND.green }}
+                        >
+                            ← Zurück
+                        </Link>
+                        <span className="px-4 py-2 text-sm font-bold opacity-50">{page} / {totalPages}</span>
+                        <Link
+                            href={pageUrl(page + 1)}
+                            aria-disabled={page >= totalPages}
+                            className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-opacity ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'hover:opacity-80'}`}
+                            style={{ borderColor: BRAND.green, color: BRAND.green }}
+                        >
+                            Weiter →
+                        </Link>
+                    </div>
                 </div>
             )}
         </>

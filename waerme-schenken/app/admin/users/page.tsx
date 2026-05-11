@@ -5,29 +5,38 @@ import { UsersClientPage } from './UsersClientPage';
 
 export const dynamic = 'force-dynamic';
 
+const PAGE_SIZE = 25;
+
 export default async function AdminUsersPage({
     searchParams,
 }: {
-    searchParams: Promise<{ filter?: string }>;
+    searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
     const params = await searchParams;
     const filter = params.filter === 'newsletter' ? 'newsletter' : 'all';
+    const page   = Math.max(1, parseInt(params.page ?? '1', 10) || 1);
+    const where  = filter === 'newsletter' ? { newsletterConsent: true } : undefined;
 
-    const users = await db.user.findMany({
-        where: filter === 'newsletter' ? { newsletterConsent: true } : undefined,
-        select: {
-            id:                true,
-            firstName:         true,
-            lastName:          true,
-            email:             true,
-            newsletterConsent: true,
-            createdAt:         true,
-        },
-        orderBy: { createdAt: 'desc' },
-    });
-
-    const totalAll        = await db.user.count();
-    const totalNewsletter = await db.user.count({ where: { newsletterConsent: true } });
+    const [users, totalAll, totalNewsletter, totalFiltered] = await Promise.all([
+        db.user.findMany({
+            where,
+            select: {
+                id:                true,
+                firstName:         true,
+                lastName:          true,
+                email:             true,
+                role:              true,
+                newsletterConsent: true,
+                createdAt:         true,
+            },
+            orderBy: { createdAt: 'desc' },
+            skip:  (page - 1) * PAGE_SIZE,
+            take:  PAGE_SIZE,
+        }),
+        db.user.count(),
+        db.user.count({ where: { newsletterConsent: true } }),
+        db.user.count({ where }),
+    ]);
 
     return (
         <>
@@ -36,8 +45,11 @@ export default async function AdminUsersPage({
                 <UsersClientPage
                     users={users as any}
                     filter={filter}
+                    page={page}
                     totalAll={totalAll}
                     totalNewsletter={totalNewsletter}
+                    totalFiltered={totalFiltered}
+                    pageSize={PAGE_SIZE}
                 />
             </main>
         </>

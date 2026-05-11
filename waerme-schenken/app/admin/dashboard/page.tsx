@@ -7,22 +7,29 @@ export const dynamic = 'force-dynamic';
 
 const VALID_TABS = ['waiting', 'approved', 'rejected'] as const;
 type Tab = typeof VALID_TABS[number];
+const PAGE_SIZE = 12;
 
-export default async function AdminDashboardPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+export default async function AdminDashboardPage({ searchParams }: { searchParams: Promise<{ tab?: string; page?: string }> }) {
     const params = await searchParams;
     const tab: Tab = (VALID_TABS as readonly string[]).includes(params.tab ?? '')
         ? (params.tab as Tab)
         : 'waiting';
+    const page = Math.max(1, parseInt(params.page ?? '1', 10) || 1);
 
-    // Oldest first for all tabs per spec 7.1
-    const donations = await db.donation.findMany({
-        where: { status: tab },
-        orderBy: { createdAt: 'desc' },
-        include: {
-            images: { orderBy: { sortOrder: 'asc' }, take: 1 },
-            donor: { select: { firstName: true, lastName: true, email: true } }
-        },
-    });
+    const [donations, total] = await Promise.all([
+        db.donation.findMany({
+            where: { status: tab },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                images: { orderBy: { sortOrder: 'asc' }, take: 1 },
+                donor: { select: { firstName: true, lastName: true, email: true } }
+            },
+            skip: (page - 1) * PAGE_SIZE,
+            take: PAGE_SIZE,
+        }),
+        db.donation.count({ where: { status: tab } }),
+    ]);
+    const totalPages = Math.ceil(total / PAGE_SIZE);
 
     const tabLabels: Record<Tab, string> = {
         waiting:  'Ausstehend',
@@ -118,6 +125,34 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
                                 </div>
                             </Link>
                         ))}
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-8">
+                        <p className="text-sm opacity-50">
+                            {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} von {total}
+                        </p>
+                        <div className="flex gap-2">
+                            <Link
+                                href={`/admin/dashboard?tab=${tab}&page=${page - 1}`}
+                                aria-disabled={page <= 1}
+                                className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-opacity ${page <= 1 ? 'opacity-30 pointer-events-none' : 'hover:opacity-80'}`}
+                                style={{ borderColor: BRAND.green, color: BRAND.green }}
+                            >
+                                ← Zurück
+                            </Link>
+                            <span className="px-4 py-2 text-sm font-bold opacity-50">{page} / {totalPages}</span>
+                            <Link
+                                href={`/admin/dashboard?tab=${tab}&page=${page + 1}`}
+                                aria-disabled={page >= totalPages}
+                                className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-opacity ${page >= totalPages ? 'opacity-30 pointer-events-none' : 'hover:opacity-80'}`}
+                                style={{ borderColor: BRAND.green, color: BRAND.green }}
+                            >
+                                Weiter →
+                            </Link>
+                        </div>
                     </div>
                 )}
             </main>

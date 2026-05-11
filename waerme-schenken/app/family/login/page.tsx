@@ -13,6 +13,7 @@ export default function FamilyLoginPage() {
     const [email, setEmail] = useState('');
     const [code,  setCode]  = useState('');
     const [error, setError] = useState('');
+    const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
 
     async function sendOtp() {
@@ -20,14 +21,19 @@ export default function FamilyLoginPage() {
             setError(de.auth.errors.emailInvalid);
             return;
         }
-        setLoading(true); setError('');
+        setLoading(true); setError(''); setNotFound(false);
         try {
             const res = await fetch('/api/auth/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, action: 'login' }),
             });
-            if (!res.ok) { const d = await res.json(); setError(d.error || de.common.error); return; }
+            if (!res.ok) {
+                const d = await res.json();
+                if (d.userNotFound) { setNotFound(true); return; }
+                setError(d.error || de.common.error);
+                return;
+            }
             setStep(2);
         } finally { setLoading(false); }
     }
@@ -87,6 +93,14 @@ export default function FamilyLoginPage() {
                                 style={{ borderColor: error ? BRAND.error : '#E5E7EB', fontFamily: 'monospace' }}
                                 placeholder="000000" autoFocus />
                         </div>
+                    )}
+                    {notFound && (
+                        <p className="text-[13px] font-medium mt-3" style={{ color: BRAND.error }}>
+                            Diese E-Mail-Adresse ist nicht registriert.{' '}
+                            <Link href="/family/register" className="underline font-bold" style={{ color: BRAND.green }}>
+                                Jetzt registrieren
+                            </Link>
+                        </p>
                     )}
                     {error && <p className="text-[12px] font-medium mt-3" style={{ color: BRAND.error }}>{error}</p>}
                 </div>

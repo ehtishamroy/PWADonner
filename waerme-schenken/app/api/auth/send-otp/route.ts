@@ -88,8 +88,7 @@ export async function POST(req: NextRequest) {
             // Login — user must exist
             const exists = await db.user.findUnique({ where: { email } });
             if (!exists) {
-                // Silently succeed to prevent user enumeration
-                return NextResponse.json({ ok: true });
+                return NextResponse.json({ userNotFound: true }, { status: 404 });
             }
         }
 

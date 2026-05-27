@@ -14,7 +14,7 @@ export default function DonorIntroPage() {
 
     return (
         <div
-            className="flex flex-col items-center min-h-screen pt-12 px-8 pb-8 relative overflow-x-hidden"
+            className="flex flex-col items-center min-h-[100dvh] pt-12 px-8 pb-8 relative overflow-x-hidden"
             style={{ backgroundColor: BRAND.beige }}
         >
             <div className="max-w-4xl w-full flex-1">

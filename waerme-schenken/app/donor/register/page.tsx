@@ -207,7 +207,7 @@ export default function DonorRegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: BRAND.beige }}>
+        <div className="min-h-[100dvh] flex flex-col" style={{ backgroundColor: BRAND.beige }}>
             {/* Top Section — Beige */}
             <div className="max-w-md w-full mx-auto pt-12 px-8">
                 <StepBar step={step} />

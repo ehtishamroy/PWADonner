@@ -60,7 +60,7 @@ export default function DonorLoginPage() {
     }
 
     return (
-        <div className="min-h-screen pt-12 px-8 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
+        <div className="min-h-[100dvh] pt-12 px-8 flex flex-col items-center" style={{ backgroundColor: BRAND.beige }}>
             <div className="max-w-md w-full">
                 <div className="flex justify-center mb-8">
                     <Link href="/" className="inline-block">

@@ -29,12 +29,12 @@ export default function WelcomePage() {
         <>
             {/* ── MOBILE LAYOUT ── fits within one viewport height ── */}
             <div
-                className="md:hidden flex flex-col h-[100dvh] px-6 pt-6 pb-6"
+                className="md:hidden flex flex-col h-[100dvh] pt-12 px-8 pb-8"
                 style={{ backgroundColor: BRAND.beige }}
             >
                 {/* Logo */}
-                <div className="flex justify-center mb-3">
-                    <Logo size={60} animated={false} />
+                <div className="flex justify-center mb-5">
+                    <Logo size={72} animated={false} />
                 </div>
 
                 {/* Heading */}

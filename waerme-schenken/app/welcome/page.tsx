@@ -29,7 +29,7 @@ export default function WelcomePage() {
         <>
             {/* ── MOBILE LAYOUT ── fits within one viewport height ── */}
             <div
-                className="md:hidden flex flex-col h-[100dvh] pt-12 px-8 pb-8"
+                className="md:hidden flex flex-col min-h-[100dvh] pt-12 px-8 pb-8"
                 style={{ backgroundColor: BRAND.beige }}
             >
                 {/* Logo */}
@@ -64,9 +64,9 @@ export default function WelcomePage() {
                 </p>
 
                 {/* Photo + Buttons — pinned to bottom as a group */}
-                <div className="mt-auto pt-4 flex-1 flex flex-col min-h-0">
-                <div className="relative w-full flex-1 overflow-visible mb-8 min-h-[20vh]">
-                    <div className="absolute inset-0 overflow-hidden shadow-lg bg-gray-100">
+                <div className="mt-auto pt-14">
+                <div className="relative w-full overflow-visible mb-8" style={{ height: '48vh', minHeight: '320px' }}>
+                    <div className="w-full h-full overflow-hidden shadow-lg relative bg-gray-100">
                         <Image
                             src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
                             alt="Kind mit Spielzeug"

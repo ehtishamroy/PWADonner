@@ -18,11 +18,15 @@ export function SuccessToast({ message }: { message: string }) {
             setVisible(true);
             // Remove ?success=1 from URL without reload
             router.replace(pathname, { scroll: false });
-            // Auto-dismiss after 4s
-            const timer = setTimeout(() => setVisible(false), 4000);
-            return () => clearTimeout(timer);
         }
     }, [searchParams, router, pathname]);
+
+    useEffect(() => {
+        if (visible) {
+            const timer = setTimeout(() => setVisible(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [visible]);
 
     if (!visible) return null;
 

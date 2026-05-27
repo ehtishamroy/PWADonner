@@ -18,7 +18,7 @@ export function CartAddedToast() {
         function onAdded() {
             setVisible(true);
             if (timer) clearTimeout(timer);
-            timer = setTimeout(() => setVisible(false), 3500);
+            timer = setTimeout(() => setVisible(false), 3000);
         }
         window.addEventListener('cart:added', onAdded);
         return () => {

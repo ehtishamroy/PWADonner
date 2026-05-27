@@ -74,8 +74,8 @@ export function PWAInstallBanner() {
             style={{ backgroundColor: BRAND.greenDark, color: '#fff', maxWidth: '420px', margin: '0 auto' }}
         >
             {/* Icon */}
-            <div className="w-10 h-10 rounded-[10px] shrink-0 overflow-hidden bg-white/20 flex items-center justify-center">
-                <img src="/favicon.png" alt="App Icon" className="w-full h-full object-cover" />
+            <div className="w-10 h-10 rounded-[10px] shrink-0 overflow-hidden bg-[#F5F0EA] flex items-center justify-center">
+                <img src={`/icons/icon-192x192.png?v=${Date.now()}`} alt="App Icon" className="w-full h-full object-cover" />
             </div>
 
             {/* Content */}

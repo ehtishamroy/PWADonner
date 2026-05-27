@@ -232,7 +232,7 @@ export default function FamilyRegisterPage() {
             </div>
 
             <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
-                <div className="w-full mx-auto px-8 py-8 flex flex-col flex-grow">
+                <div className="w-full mx-auto px-8 pt-8 pb-5 flex flex-col flex-grow">
                     <div className="flex-grow">
                         {step === 1 && (
                             <div className="space-y-7">
@@ -304,7 +304,7 @@ export default function FamilyRegisterPage() {
                     </div>
 
                     {step < 5 && (
-                        <div className="mt-auto pt-6 flex flex-col items-center gap-4">
+                        <div className="mt-auto pt-6 flex flex-col items-center gap-3">
                             <button onClick={handleNext} disabled={loading}
                                 className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
                                 style={{ backgroundColor: isStepComplete ? BRAND.green : 'rgba(155,155,155,0.25)', fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>

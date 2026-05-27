@@ -75,7 +75,7 @@ export function PWAInstallBanner() {
         >
             {/* Icon */}
             <div className="w-10 h-10 rounded-[10px] shrink-0 overflow-hidden bg-[#F5F0EA] flex items-center justify-center">
-                <img src={`/icons/icon-192x192.png?v=2`} alt="App Icon" className="w-full h-full object-cover" />
+                <img src={`/icons/icon-192x192.png?v=3`} alt="App Icon" className="w-full h-full object-cover" />
             </div>
 
             {/* Content */}

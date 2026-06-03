@@ -9,12 +9,12 @@ function requireAdmin(cookieStore: Awaited<ReturnType<typeof cookies>>) {
     return null;
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const cookieStore = await cookies();
     const authError = requireAdmin(cookieStore);
     if (authError) return authError;
 
-    const { id } = params;
+    const { id } = await params;
 
     try {
         const user = await db.user.findUnique({ where: { id } });

@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { BRAND } from '@/lib/constants';
-import { Download, Mail, Users } from 'lucide-react';
+import { Download, Mail, Trash2, Users } from 'lucide-react';
 
 type User = {
     id:                string;
@@ -25,11 +27,40 @@ type Props = {
 };
 
 export function UsersClientPage({ users, filter, page, totalAll, totalNewsletter, totalFiltered, pageSize }: Props) {
+    const router = useRouter();
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [deleteError, setDeleteError] = useState('');
+
     const totalPages = Math.ceil(totalFiltered / pageSize);
     function pageUrl(p: number) { return `/admin/users?filter=${filter}&page=${p}`; }
 
     function downloadCsv() {
         window.location.href = `/api/admin/users?filter=${filter}&format=csv`;
+    }
+
+    async function deleteUser(user: User) {
+        if (user.role === 'admin') return;
+        if (!confirm(`Diesen Nutzer wirklich löschen?\n${user.firstName} ${user.lastName} (${user.email})`)) return;
+
+        setDeleteError('');
+        setDeletingId(user.id);
+        try {
+            const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                let message = 'Löschen fehlgeschlagen.';
+                try {
+                    const data = await res.json();
+                    if (data?.error) message = data.error;
+                } catch {
+                    // ignore JSON parse errors
+                }
+                setDeleteError(message);
+                return;
+            }
+            router.refresh();
+        } finally {
+            setDeletingId(null);
+        }
     }
 
     return (
@@ -109,59 +140,81 @@ export function UsersClientPage({ users, filter, page, totalAll, totalNewsletter
                     <p className="opacity-60 font-medium">Keine Nutzer gefunden.</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100">
-                                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Name</th>
-                                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>E-Mail</th>
-                                <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Typ</th>
-                                <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Newsletter</th>
-                                <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Registriert</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user, i) => (
-                                <tr
-                                    key={user.id}
-                                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="px-6 py-3.5 font-bold">
-                                        {user.firstName} {user.lastName}
-                                    </td>
-                                    <td className="px-6 py-3.5">
-                                        <a
-                                            href={`mailto:${user.email}`}
-                                            className="hover:underline"
-                                            style={{ color: BRAND.green }}
-                                        >
-                                            {user.email}
-                                        </a>
-                                    </td>
-                                    <td className="px-6 py-3.5 text-center">
-                                        {user.role === 'donor' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Spender</span>
-                                        ) : user.role === 'family' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.mustard }}>Familie</span>
-                                        ) : (
-                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 opacity-50">{user.role}</span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-3.5 text-center hidden md:table-cell">
-                                        {user.newsletterConsent ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Ja</span>
-                                        ) : (
-                                            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 opacity-50">Nein</span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-3.5 text-right text-xs opacity-50 hidden md:table-cell">
-                                        {new Date(user.createdAt).toLocaleDateString('de-CH')}
-                                    </td>
+                <>
+                    {deleteError && (
+                        <div className="mb-4 mx-1 px-4 py-2 rounded-[12px] text-sm font-medium" style={{ backgroundColor: '#FEE2E2', color: '#B91C1C' }}>
+                            {deleteError}
+                        </div>
+                    )}
+                    <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100">
+                                    <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Name</th>
+                                    <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>E-Mail</th>
+                                    <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Typ</th>
+                                    <th className="text-center px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Newsletter</th>
+                                    <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40 hidden md:table-cell" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Registriert</th>
+                                    <th className="text-right px-6 py-4 text-[11px] font-bold uppercase tracking-widest opacity-40" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Aktion</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {users.map((user) => (
+                                    <tr
+                                        key={user.id}
+                                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <td className="px-6 py-3.5 font-bold">
+                                            {user.firstName} {user.lastName}
+                                        </td>
+                                        <td className="px-6 py-3.5">
+                                            <a
+                                                href={`mailto:${user.email}`}
+                                                className="hover:underline"
+                                                style={{ color: BRAND.green }}
+                                            >
+                                                {user.email}
+                                            </a>
+                                        </td>
+                                        <td className="px-6 py-3.5 text-center">
+                                            {user.role === 'donor' ? (
+                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Spender</span>
+                                            ) : user.role === 'family' ? (
+                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.mustard }}>Familie</span>
+                                            ) : (
+                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 opacity-50">{user.role}</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-center hidden md:table-cell">
+                                            {user.newsletterConsent ? (
+                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: BRAND.green }}>Ja</span>
+                                            ) : (
+                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 opacity-50">Nein</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-right text-xs opacity-50 hidden md:table-cell">
+                                            {new Date(user.createdAt).toLocaleDateString('de-CH')}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-right">
+                                            {user.role === 'admin' ? (
+                                                <span className="text-[11px] font-bold opacity-40">Admin</span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => deleteUser(user)}
+                                                    disabled={!!deletingId}
+                                                    className="inline-flex items-center gap-1 text-[11px] font-bold text-red-600 hover:text-red-800 disabled:opacity-40"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    Löschen
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
             )}
 
             {/* Pagination */}

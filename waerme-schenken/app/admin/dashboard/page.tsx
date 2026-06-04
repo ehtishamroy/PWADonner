@@ -19,7 +19,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     const [donations, total] = await Promise.all([
         db.donation.findMany({
             where: { status: tab },
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: 'asc' },
             include: {
                 images: { orderBy: { sortOrder: 'asc' }, take: 1 },
                 donor: { select: { firstName: true, lastName: true, email: true } }

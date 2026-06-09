@@ -14,6 +14,24 @@ const nextConfig: NextConfig = {
         unoptimized: process.env.NODE_ENV === 'development',
     },
     serverExternalPackages: ['fs', 'path'],
+
+    // Prevent browsers / CDNs from caching HTML responses.
+    // After a deploy the page shell must always be re-fetched so that the
+    // correct hashed JS/CSS chunk URLs are sent to the client.
+    async headers() {
+        return [
+            {
+                source: '/((?!_next/static|_next/image|icons|images|uploads|favicon).*)',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-store, must-revalidate',
+                    },
+                ],
+            },
+        ];
+    },
 };
 
 export default nextConfig;
+

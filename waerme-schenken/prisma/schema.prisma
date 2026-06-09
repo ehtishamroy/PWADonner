@@ -48,6 +48,8 @@ model OtpCode {
 model AppSettings {
     id                      String    @id @default("singleton")
     familyApprovalRequired  Boolean   @default(true)
+    lastResetAt             DateTime? // when the last season reset was executed
+    nextSeasonFrom          DateTime? // date from which the reset button re-enables
     updatedAt               DateTime  @updatedAt
 }
 

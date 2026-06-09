@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { AdminHeader } from '../components/AdminHeader';
 import { BRAND } from '@/lib/constants';
 import { SettingsToggle } from './SettingsToggle';
+import { SeasonResetPanel } from './SeasonResetPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +53,16 @@ export default async function AdminSettingsPage() {
                         ))}
                     </div>
                 </div>
+
+                {/* Season Reset — danger zone */}
+                <div>
+                    <SeasonResetPanel
+                        initialLastResetAt={settings.lastResetAt?.toISOString() ?? null}
+                        initialNextSeasonFrom={settings.nextSeasonFrom?.toISOString() ?? null}
+                    />
+                </div>
             </main>
         </>
     );
 }
+

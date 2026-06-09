@@ -6,6 +6,7 @@ import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
 import { Edit2, User, ChevronRight } from 'lucide-react';
 import { LogoutRow } from './LogoutRow';
+import { SocialCardUpdate } from './SocialCardUpdate';
 
 export default async function FamilyProfilePage() {
     const session = await getSession();
@@ -38,6 +39,13 @@ export default async function FamilyProfilePage() {
                     <p className="opacity-60 text-[15px]">{user.email}</p>
                     <User className="absolute -bottom-5 -right-5 w-28 h-28 opacity-[0.03]" />
                 </div>
+
+                {/* Social Card */}
+                <SocialCardUpdate
+                    currentUrl={user.socialCardUrl ?? null}
+                    currentOrg={user.socialCardOrg ?? null}
+                    isApproved={user.familyApproved}
+                />
 
                 {/* Address */}
                 <div className="bg-white rounded-[8px] p-7 shadow-sm mb-6 relative">

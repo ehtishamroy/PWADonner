@@ -14,7 +14,6 @@ export default function DonorLoginPage() {
     const [code,  setCode]  = useState('');
     const [error, setError] = useState('');
     const [notFound, setNotFound] = useState(false);
-    const [showRoleModal, setShowRoleModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
     async function sendOtp() {
@@ -131,71 +130,17 @@ export default function DonorLoginPage() {
                     </button>
                     <p className="text-[12px] font-medium opacity-100">
                         {de.auth.login.noAccount}<br />
-                        <button
-                            onClick={() => setShowRoleModal(true)}
-                            className="underline font-bold bg-transparent border-0 p-0 cursor-pointer"
+                        <Link
+                            href="/welcome"
+                            className="underline font-bold"
                             style={{ color: BRAND.green }}
                         >
                             {de.auth.login.register}
-                        </button>
+                        </Link>
                     </p>
                 </div>
             </div>
 
-            {/* Role Selection Modal */}
-            {showRoleModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowRoleModal(false)}>
-                    <div className="bg-white rounded-[20px] p-8 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-xl font-bold mb-2 text-center" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                            Als was möchtest du dich registrieren?
-                        </h3>
-                        <p className="text-sm opacity-60 text-center mb-6">Wähle deine Rolle aus</p>
-
-                        <div className="space-y-3">
-                            <Link
-                                href="/donor/register"
-                                onClick={() => setShowRoleModal(false)}
-                                className="block w-full p-4 rounded-xl border-2 hover:border-green-500 hover:bg-green-50 transition-colors"
-                                style={{ borderColor: '#e5e7eb' }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: BRAND.green }}>
-                                        <span className="text-white font-bold text-lg">S</span>
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold">Spender</p>
-                                        <p className="text-xs opacity-60">Spielzeug spenden</p>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            <Link
-                                href="/family/register"
-                                onClick={() => setShowRoleModal(false)}
-                                className="block w-full p-4 rounded-xl border-2 hover:border-yellow-500 hover:bg-yellow-50 transition-colors"
-                                style={{ borderColor: '#e5e7eb' }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: BRAND.mustard }}>
-                                        <span className="text-white font-bold text-lg">F</span>
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold">Familie</p>
-                                        <p className="text-xs opacity-60">Spielzeug erhalten</p>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-
-                        <button
-                            onClick={() => setShowRoleModal(false)}
-                            className="w-full mt-6 py-3 rounded-full font-bold text-sm opacity-60 hover:opacity-100 transition-opacity"
-                        >
-                            Abbrechen
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

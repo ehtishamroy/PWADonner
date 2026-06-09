@@ -20,10 +20,21 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
     if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
+
+    // Build update payload — only include provided fields
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: Record<string, any> = {};
+    if ('familyApprovalRequired' in body) {
+        updateData.familyApprovalRequired = !!body.familyApprovalRequired;
+    }
+    if ('nextSeasonFrom' in body) {
+        updateData.nextSeasonFrom = body.nextSeasonFrom ? new Date(body.nextSeasonFrom) : null;
+    }
+
     const s = await db.appSettings.upsert({
         where:  { id: 'singleton' },
-        create: { id: 'singleton', familyApprovalRequired: !!body.familyApprovalRequired },
-        update: { familyApprovalRequired: !!body.familyApprovalRequired },
+        create: { id: 'singleton', familyApprovalRequired: true, ...updateData },
+        update: updateData,
     });
     return NextResponse.json(s);
 }

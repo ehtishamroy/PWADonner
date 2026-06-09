@@ -1,7 +1,7 @@
 // Service worker for PWA installability
 // Only caches immutable static assets — HTML always comes from the network
 
-const CACHE_NAME = 'waerme-schenken-v2';
+const CACHE_NAME = 'waerme-schenken-v3';
 
 // Nothing to pre-cache — static assets are cached on first fetch
 self.addEventListener('install', () => {

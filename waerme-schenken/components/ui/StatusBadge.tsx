@@ -6,11 +6,11 @@ interface StatusBadgeProps {
 }
 
 const STATUS_ICON_PATHS: Record<string, string> = {
-    waiting:  '/images/icon-status-waiting.png',
-    approved: '/images/icon-status-approved.png',
-    selected: '/images/icon-status-selected.png',
-    sent:     '/images/icon-status-sent.png',
-    rejected: '/images/icon-status-rejected.png',
+    waiting:  '/api/img/icon-status-waiting',
+    approved: '/api/img/icon-status-approved',
+    selected: '/api/img/icon-status-selected',
+    sent:     '/api/img/icon-status-sent',
+    rejected: '/api/img/icon-status-rejected',
 };
 
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {

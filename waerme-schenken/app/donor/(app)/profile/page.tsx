@@ -57,7 +57,7 @@ export default async function DonorProfilePage() {
                     <Link
                         href="/donor/profile/edit-address"
                         className="absolute top-7 right-7 flex items-center justify-center">
-                        <img src="/images/icon-profile-edit.png" alt="" width={35} height={35} className="object-contain" />
+                        <img src="/api/img/icon-profile-edit" alt="" width={35} height={35} className="object-contain" />
                     </Link>
                 </div>
 

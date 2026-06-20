@@ -68,7 +68,7 @@ export function DonorSidebar() {
                 <div className="mt-auto pt-6 border-t border-black/5">
                     <p className="text-[10px] font-bold tracking-widest uppercase opacity-20"
                         style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                        Wärme schenken v1.0
+                        Wärme Schenken v1.0
                     </p>
                 </div>
             </aside>

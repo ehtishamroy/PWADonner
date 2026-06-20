@@ -59,7 +59,7 @@ export default async function FamilyDashboardPage() {
 
                 <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
                     <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
-                        {banner?.title || 'Wärme schenken'}
+                        {banner?.title || 'Wärme Schenken'}
                     </h1>
                     <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
                         {banner?.body || 'Herzlich willkommen!'}
@@ -157,7 +157,7 @@ export default async function FamilyDashboardPage() {
                                     </div>
                                     {d.status === 'selected' && (
                                         <div className="absolute bottom-4 right-4">
-                                            <img src="/images/icon-selected-action.png" alt="" width={35} height={35} className="object-contain" />
+                                            <img src="/api/img/icon-selected-action" alt="" width={35} height={35} className="object-contain" />
                                         </div>
                                     )}
                                 </Link>

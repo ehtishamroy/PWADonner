@@ -61,7 +61,7 @@ export default async function DonorDashboardPage() {
 
             <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
                 <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
-                    {banner?.title || 'Wärme schenken'}
+                    {banner?.title || 'Wärme Schenken'}
                 </h1>
                 <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
                     {banner?.body || 'Herzlich willkommen!'}
@@ -136,7 +136,7 @@ export default async function DonorDashboardPage() {
                                     {/* Ship button for selected */}
                                     {d.status === 'selected' && (
                                         <div className="absolute bottom-4 right-4">
-                                            <img src="/images/icon-selected-action.png" alt="" width={35} height={35} className="object-contain" />
+                                            <img src="/api/img/icon-selected-action" alt="" width={35} height={35} className="object-contain" />
                                         </div>
                                     )}
                                 </div>
@@ -155,7 +155,7 @@ export default async function DonorDashboardPage() {
                 style={{ backgroundColor: '#335E52' }}>
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
                     <div style={{ width: 90, height: 80, position: 'relative' }}>
-                        <Image src="/images/gift-dashboard.png" alt="Gift" fill className="object-contain" unoptimized />
+                        <Image src="/api/img/ill-gift-dashboard" alt="Gift" fill className="object-contain" unoptimized />
                     </div>
                 </div>
                 <div className="absolute -bottom-6 -left-2 z-10" style={{ transform: 'scaleX(-1)' }}>

@@ -1,12 +1,12 @@
 // All German UI strings — single source of truth
 export const de = {
     // ── App ──
-    appName: 'Wärme schenken',
+    appName: 'Wärme Schenken',
     appTagline: 'Freude weitergeben',
 
     // ── Splash ──
     splash: {
-        title: 'Wärme\nschenken',
+        title: 'Wärme\nSchenken',
     },
 
     // ── Split Screen ──
@@ -142,7 +142,7 @@ export const de = {
         save: 'Speichern',
         mailings: 'Mailings',
         privacy: 'Datenschutz',
-        about: 'Über Wärme schenken',
+        about: 'Über Wärme Schenken',
         deleteProfile: 'Profil löschen',
         deleteConfirm: 'Möchtest du dein Profil wirklich löschen? Alle Daten werden gelöscht.',
     },

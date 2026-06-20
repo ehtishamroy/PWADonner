@@ -1,12 +1,12 @@
 export const metadata = {
-    title: 'Über Wärme schenken',
+    title: 'Über Wärme Schenken',
 };
 
 export default function AboutPage() {
     return (
         <article className="prose prose-sm md:prose-base max-w-none">
             <h1 className="text-2xl font-bold mb-6" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                Über Wärme schenken
+                Über Wärme Schenken
             </h1>
             
             <p className="italic opacity-80 mb-8 border-l-4 pl-4 border-mustard">

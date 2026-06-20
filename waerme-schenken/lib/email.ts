@@ -264,7 +264,7 @@ export async function sendOtpEmail(to: string, code: string) {
     return resend.emails.send({
         from:    FROM,
         to,
-        subject: 'Dein Einmalpasswort — Wärme schenken',
+        subject: 'Dein Einmalpasswort — Wärme Schenken',
         html: `
           <p>Hallo,</p>
           <p>Dein Einmalpasswort lautet:</p>

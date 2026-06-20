@@ -25,8 +25,8 @@ export function Logo({ size = 80, animated = false }: LogoProps) {
                 style={{ width: size, height: Math.round(size * 0.92), position: 'relative' }}
             >
                 <Image
-                    src="/images/logo.png"
-                    alt="Wärme schenken Logo"
+                    src="/api/img/logo"
+                    alt="Wärme Schenken Logo"
                     fill
                     className="object-contain"
                     unoptimized

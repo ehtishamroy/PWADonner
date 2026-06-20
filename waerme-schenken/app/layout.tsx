@@ -14,7 +14,7 @@ try {
 } catch (e) {}
 
 export const metadata: Metadata = {
-    title:       'Wärme schenken',
+    title:       'Wärme Schenken',
     description: 'Freude weitergeben — Spielzeug spenden für Familien in Not.',
     manifest:    '/manifest.json', // manifest cannot easily take query strings without breaking on some devices
     icons: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     appleWebApp: {
         capable:         true,
         statusBarStyle:  'black-translucent',
-        title:           'Wärme schenken',
+        title:           'Wärme Schenken',
     },
     openGraph: {
-        title:       'Wärme schenken',
+        title:       'Wärme Schenken',
         description: 'Gemeinsam Freude schenken.',
         type:        'website',
     },

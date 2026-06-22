@@ -38,7 +38,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
     async function handleFile(file: File | undefined) {
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
-            setErrorMsg('Datei zu gross (max. 5 MB).');
+            setErrorMsg('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
             setPhase('error');
             return;
         }
@@ -48,8 +48,14 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
             const fd = new FormData();
             fd.append('file', file);
             const res  = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
+            if (!res.ok) {
+                if (res.status === 413) {
+                    throw new Error('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
+                }
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || `Upload fehlgeschlagen (HTTP ${res.status}).`);
+            }
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Upload fehlgeschlagen.');
             setUploadedUrl(data.url);
             setPhase('idle');
         } catch (e: unknown) {

@@ -44,7 +44,7 @@ export default async function DonorProfilePage() {
                     <p className="font-bold text-[18px] mb-1">{user.firstName} {user.lastName}</p>
                     <p className="opacity-60 text-[15px]">{user.email}</p>
                     {user.phoneNumber && (
-                        <p className="text-sm mt-2" style={{ color: BRAND.green }}>📱 {user.phoneNumber}</p>
+                        <p className="text-sm mt-2" style={{ color: BRAND.green }}>Telefonnummer: {user.phoneNumber}</p>
                     )}
                     <User className="absolute -bottom-5 -right-5 w-28 h-28 opacity-[0.03]" />
                 </div>

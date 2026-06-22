@@ -476,13 +476,15 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
 function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setForm: React.Dispatch<React.SetStateAction<FormShape>>; errors: Record<string, string>; orgs: string[] }) {
     const [orgOpen, setOrgOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [uploadError, setUploadError] = useState('');
     const fileRef = useRef<HTMLInputElement>(null);
     const uploaded = !!form.socialCardUrl;
 
     async function handleFile(file: File | undefined) {
         if (!file) return;
+        setUploadError('');
         if (file.size > 5 * 1024 * 1024) {
-            alert('Datei zu gross (max. 5 MB).');
+            setUploadError('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
             return;
         }
         setUploading(true);
@@ -495,16 +497,20 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
                 setForm(f => ({ ...f, socialCardUrl: url }));
             } else {
                 let msg = `Upload fehlgeschlagen (HTTP ${res.status}).`;
-                try {
-                    const data = await res.json();
-                    if (data?.error) msg = data.error;
-                } catch { /* ignore json parse errors */ }
+                if (res.status === 413) {
+                    msg = 'Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.';
+                } else {
+                    try {
+                        const data = await res.json();
+                        if (data?.error) msg = data.error;
+                    } catch { /* ignore json parse errors */ }
+                }
                 console.error('[family register] upload failed:', res.status, msg);
-                alert(msg);
+                setUploadError(msg);
             }
         } catch (err) {
             console.error('[family register] upload exception:', err);
-            alert('Netzwerkfehler beim Hochladen.');
+            setUploadError('Netzwerkfehler beim Hochladen.');
         } finally { setUploading(false); }
     }
 
@@ -555,7 +561,11 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
             </button>
             <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" hidden
                 onChange={e => handleFile(e.target.files?.[0])} />
-            {errors.socialCardUrl && <p className="text-[12px] font-medium mt-3" style={{ color: BRAND.error }}>{errors.socialCardUrl}</p>}
+            {(errors.socialCardUrl || uploadError) && (
+                <p className="text-[13px] font-medium mt-3" style={{ color: BRAND.error }}>
+                    {uploadError || errors.socialCardUrl}
+                </p>
+            )}
 
             <p className="text-[12px] text-center opacity-40 mt-5 leading-relaxed italic">{de.family.register.acceptedCards}</p>
         </div>

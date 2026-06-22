@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { sendDonationSentEmail, sendToyDeletedEmail } from '@/lib/email';
+import { sendDonationSentEmail, sendToyDeletedEmail, sendDonorDonationSentConfirmationEmail } from '@/lib/email';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -48,6 +48,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             sendDonationSentEmail(
                 family.email,
                 family.firstName,
+                donation.toyName,
+                body.trackingNumber || null,
+            ).catch(console.error);
+        }
+    }
+
+    // Email #10: confirm to the donor that donation was marked as sent
+    if (body.status === 'sent') {
+        const donor = await db.user.findUnique({ where: { id: session.userId } });
+        if (donor) {
+            sendDonorDonationSentConfirmationEmail(
+                donor.email,
+                donor.firstName,
                 donation.toyName,
                 body.trackingNumber || null,
             ).catch(console.error);

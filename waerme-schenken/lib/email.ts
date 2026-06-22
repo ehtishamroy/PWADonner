@@ -259,6 +259,33 @@ export async function sendDonationSentEmail(
     });
 }
 
+// ── #10: Donor confirmation — Donation marked as sent ────────────────────
+export async function sendDonorDonationSentConfirmationEmail(
+    to: string,
+    donorName: string,
+    toyName: string,
+    trackingNumber?: string | null,
+) {
+    const trackingBlock = trackingNumber
+        ? `<p><strong>Deine Tracking-Nummer:</strong> <span style="font-family:monospace;">${trackingNumber}</span></p>`
+        : '';
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: 'Vielen Dank — dein Paket ist auf dem Weg!',
+        html: `
+          <span style="display:none;max-height:0;overflow:hidden;">Dein Paket wurde erfolgreich als verschickt markiert.</span>
+          <h2>Vielen Dank, dass du dein Paket verschickt hast!</h2>
+          <p>Liebe*r ${donorName}</p>
+          <p>Du hast dein Geschenk <strong>&ldquo;${toyName}&rdquo;</strong> soeben als verschickt markiert. Die Familie wurde bereits benachrichtigt und freut sich sicher sehr darauf.</p>
+          ${trackingBlock}
+          <p>Du hast damit einer Familie eine grosse Freude bereitet. Vielen herzlichen Dank für dein Engagement!</p>
+          <p>Wir wünschen dir eine wunderbare Weihnachtszeit.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+
 // ── OTP email ──────────────────────────────────────────────────────────────
 export async function sendOtpEmail(to: string, code: string) {
     return resend.emails.send({

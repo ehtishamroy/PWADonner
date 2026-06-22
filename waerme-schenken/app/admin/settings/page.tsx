@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminSettingsPage() {
     const settings = await db.appSettings.upsert({
         where:  { id: 'singleton' },
-        create: { id: 'singleton', familyApprovalRequired: true },
+        create: { id: 'singleton', familyApprovalRequired: true, financialSupportEnabled: true },
         update: {},
     });
 
@@ -30,7 +30,18 @@ export default async function AdminSettingsPage() {
                     <p className="text-sm opacity-60 mb-6 leading-relaxed max-w-xl">
                         Wenn aktiviert, müssen neu registrierte Familien von dir freigegeben werden, bevor sie auf die Spielzeugbörse zugreifen können. Wenn deaktiviert, können Familien nach der Registrierung direkt stöbern.
                     </p>
-                    <SettingsToggle initial={settings.familyApprovalRequired} />
+                    <SettingsToggle initial={settings.familyApprovalRequired} fieldKey="familyApprovalRequired" />
+                </div>
+
+                {/* Financial support toggle */}
+                <div className="bg-white rounded-[8px] p-6 md:p-8 shadow-sm border border-gray-100">
+                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                        Finanzielle Unterstützung
+                    </h3>
+                    <p className="text-sm opacity-60 mb-6 leading-relaxed max-w-xl">
+                        Wenn aktiviert, können Spender im Profil Versandkosten zur Erstattung einreichen. Deaktiviere diese Option, wenn das Angebot in der aktuellen Saison nicht verfügbar ist.
+                    </p>
+                    <SettingsToggle initial={settings.financialSupportEnabled} fieldKey="financialSupportEnabled" />
                 </div>
 
                 {/* Quick links */}

@@ -172,7 +172,7 @@ export default function FinancialSupportPage() {
             <div className="max-w-md mx-auto">
 
                 {/* Back */}
-                <Link href="/donor/dashboard" className="inline-flex items-center gap-2 mb-6">
+                <Link href="/donor/profile" className="inline-flex items-center gap-2 mb-6">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
                     </svg>

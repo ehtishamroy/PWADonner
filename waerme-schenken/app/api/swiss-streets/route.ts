@@ -36,10 +36,16 @@ export async function GET(req: NextRequest) {
         const data = await res.json();
         const seen = new Set<string>();
         const suggestions = (Array.isArray(data) ? data : [])
-            .map((r: { name?: string }) => ({ street: r.name ?? '' }))
-            .filter((s: { street: string }) => {
-                if (!s.street || seen.has(s.street)) return false;
-                seen.add(s.street);
+            .map((r: { name?: string; postalCode?: string; locality?: string }) => ({
+                street: r.name       ?? '',
+                zip:    r.postalCode ?? '',
+                city:   r.locality   ?? '',
+            }))
+            .filter((s: { street: string; zip: string; city: string }) => {
+                if (!s.street) return false;
+                const key = `${s.street}-${s.zip}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
                 return true;
             });
 

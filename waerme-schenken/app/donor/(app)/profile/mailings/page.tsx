@@ -4,9 +4,10 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import NewsletterToggle from './NewsletterToggle';
+import EmailShareToggle from './EmailShareToggle';
 
 export const metadata = {
-    title: 'Newsletter',
+    title: 'Einwilligungen',
 };
 
 export default async function MailingsPage() {
@@ -15,7 +16,7 @@ export default async function MailingsPage() {
 
     const user = await db.user.findUnique({
         where: { id: session.userId },
-        select: { newsletterConsent: true, email: true }
+        select: { newsletterConsent: true, emailShareConsent: true, email: true }
     });
 
     if (!user) redirect('/api/auth/clear-session');
@@ -32,16 +33,30 @@ export default async function MailingsPage() {
                     </span>
                 </Link>
 
+                {/* Newsletter section */}
                 <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm mb-6">
                     <h1 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                        Anmeldung zum Infomailing
+                        Infomailing
                     </h1>
-                    
+
                     <p className="opacity-80 leading-relaxed">
                         Wir versenden keine regelmässigen Newsletter, sondern nur punktuell bei wichtigen Neuigkeiten. Keine Angst, uns fehlt die Zeit, deine Inbox zu spammen.
                     </p>
 
                     <NewsletterToggle initialConsent={user.newsletterConsent} />
+                </div>
+
+                {/* Email share consent section */}
+                <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm mb-6">
+                    <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                        E-Mail-Weitergabe
+                    </h2>
+
+                    <p className="opacity-80 leading-relaxed">
+                        Du kannst Wärme Schenken erlauben, deine E-Mail-Adresse an Familien weiterzugeben, die dein Spielzeug erhalten haben — damit sie sich persönlich bedanken können.
+                    </p>
+
+                    <EmailShareToggle initialConsent={user.emailShareConsent} />
                 </div>
             </div>
         </div>

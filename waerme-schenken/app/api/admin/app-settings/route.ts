@@ -27,6 +27,9 @@ export async function PATCH(req: NextRequest) {
     if ('familyApprovalRequired' in body) {
         updateData.familyApprovalRequired = !!body.familyApprovalRequired;
     }
+    if ('financialSupportEnabled' in body) {
+        updateData.financialSupportEnabled = !!body.financialSupportEnabled;
+    }
     if ('nextSeasonFrom' in body) {
         updateData.nextSeasonFrom = body.nextSeasonFrom ? new Date(body.nextSeasonFrom) : null;
     }

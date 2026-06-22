@@ -347,7 +347,7 @@ type FormShape = {
 function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: React.Dispatch<React.SetStateAction<FormShape>>; errors: Record<string, string> }) {
     const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [streetSuggestions, setStreetSuggestions] = useState<string[]>([]);
+    const [streetSuggestions, setStreetSuggestions] = useState<Array<{ street: string; zip: string; city: string }>>([]);
     const [showStreetSugg, setShowStreetSugg] = useState(false);
 
     // Street autocomplete
@@ -362,7 +362,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
                 const res = await fetch(url, { signal: ctrl.signal });
                 if (!res.ok) return;
                 const data = await res.json();
-                setStreetSuggestions((data.suggestions || []).map((s: { street: string }) => s.street));
+                setStreetSuggestions((data.suggestions || []) as Array<{ street: string; zip: string; city: string }>);
             } catch { /* silent */ }
         }, 250);
         return () => { ctrl.abort(); clearTimeout(t); };
@@ -411,9 +411,18 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
                         {streetSuggestions.map((s, i) => (
                             <button key={i} type="button"
                                 onMouseDown={e => e.preventDefault()}
-                                onClick={() => { setForm(f => ({ ...f, street: s })); setShowStreetSugg(false); }}
+                                onClick={() => {
+                                    setForm(f => ({
+                                        ...f,
+                                        street: s.street,
+                                        ...(s.zip  ? { zipCode: s.zip }  : {}),
+                                        ...(s.city ? { city:    s.city } : {}),
+                                    }));
+                                    setShowStreetSugg(false);
+                                }}
                                 className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
-                                {s}
+                                <span className="font-bold">{s.street}</span>
+                                {s.zip && <span className="opacity-50 ml-2 text-xs">{s.zip} {s.city}</span>}
                             </button>
                         ))}
                     </div>

@@ -11,11 +11,16 @@ export default async function DonorProfilePage() {
     const session = await getSession();
     if (!session) redirect('/api/auth/clear-session');
 
-    const user = await db.user.findUnique({ where: { id: session.userId } });
+    const [user, settings] = await Promise.all([
+        db.user.findUnique({ where: { id: session.userId } }),
+        db.appSettings.findUnique({ where: { id: 'singleton' } }),
+    ]);
     if (!user) redirect('/api/auth/clear-session');
 
+    const financialSupportEnabled = settings?.financialSupportEnabled ?? true;
+
     const accordionItems = [
-        { label: 'Versandkosten erstatten', href: '/donor/financial-support' },
+        ...(financialSupportEnabled ? [{ label: 'Versandkosten erstatten', href: '/donor/financial-support' }] : []),
         { label: de.profile.mailings, href: '/donor/profile/mailings' },
         { label: 'Statuten',          href: '/statuten' },
         { label: de.profile.privacy,  href: '/datenschutz' },
@@ -49,7 +54,7 @@ export default async function DonorProfilePage() {
                     <h3 className="mb-4"
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.address}</h3>
                     {user.zipCode ? (
-                        <p className="font-bold text-[18px]">{user.zipCode}</p>
+                        <p className="font-bold text-[18px]">{user.zipCode}{user.city ? ` ${user.city}` : ''}</p>
                     ) : (
                         <p className="opacity-50 text-[14px]">Noch keine Adresse</p>
                     )}

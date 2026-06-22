@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { BRAND } from '@/lib/constants';
 
-export function SettingsToggle({ initial }: { initial: boolean }) {
+interface SettingsToggleProps {
+    initial: boolean;
+    fieldKey: string;
+}
+
+export function SettingsToggle({ initial, fieldKey }: SettingsToggleProps) {
     const [on, setOn] = useState(initial);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -16,7 +21,7 @@ export function SettingsToggle({ initial }: { initial: boolean }) {
             const res = await fetch('/api/admin/app-settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ familyApprovalRequired: next }),
+                body: JSON.stringify({ [fieldKey]: next }),
             });
             if (!res.ok) { setOn(!next); return; }
             setSaved(true);

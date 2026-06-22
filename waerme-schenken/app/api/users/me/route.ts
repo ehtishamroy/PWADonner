@@ -25,10 +25,11 @@ export async function PATCH(req: Request) {
         const body = await req.json();
         
         // Update user (zipCode, and optionally full address for family)
-        const data: { zipCode?: string; street?: string; city?: string } = {};
+        const data: { zipCode?: string; street?: string; city?: string; emailShareConsent?: boolean } = {};
         if (typeof body.zipCode === 'string') data.zipCode = body.zipCode;
         if (typeof body.street  === 'string') data.street  = body.street;
         if (typeof body.city    === 'string') data.city    = body.city;
+        if (typeof body.emailShareConsent === 'boolean') data.emailShareConsent = body.emailShareConsent;
 
         await db.user.update({
             where: { id: session.userId },

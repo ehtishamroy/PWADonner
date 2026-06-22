@@ -9,7 +9,7 @@ import { UploadCloud, X } from 'lucide-react';
 type Step = 1 | 2 | 3;
 
 const MAX_IMAGES = 3;
-const MAX_SIZE_MB = 3;
+const MAX_SIZE_MB = 10;
 
 function StepBar({ step }: { step: Step }) {
     return (
@@ -98,7 +98,15 @@ export default function DonorDonatePage() {
                 const fd = new FormData();
                 fd.append('file', img.file);
                 const res = await fetch('/api/upload', { method: 'POST', body: fd });
-                if (res.ok) { const { url } = await res.json(); imageUrls.push(url); }
+                if (res.ok) { 
+                    const { url } = await res.json(); 
+                    imageUrls.push(url); 
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    setErrors({ submit: `Fehler beim Bild-Upload: ${data.error || 'Bitte versuche es erneut.'}` });
+                    setLoading(false);
+                    return;
+                }
             }
             const res = await fetch('/api/donations', {
                 method: 'POST',
@@ -276,7 +284,7 @@ export default function DonorDonatePage() {
                             )}
                         </div>
 
-                        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden
+                        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,.heic,.heif" multiple hidden
                             onChange={e => handleImageAdd(e.target.files)} />
 
                         {errors.images && (

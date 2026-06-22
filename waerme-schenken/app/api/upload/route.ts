@@ -22,18 +22,24 @@ export async function POST(req: NextRequest) {
 
         // Validate type
         const fileType = (file as File).type;
-        if (!fileType.startsWith('image/')) {
+        const fileName = (file as File).name || '';
+        const extMatch = fileName.match(/\.([^.]+)$/);
+        const fileExt = extMatch ? extMatch[1].toLowerCase() : '';
+
+        const isImage = fileType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'].includes(fileExt);
+
+        if (!isImage) {
             return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
         }
 
-        // Validate size (5 MB max to accommodate mobile photos)
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'Datei zu gross (max. 5 MB).' }, { status: 400 });
+        // Validate size (10 MB max to accommodate mobile photos)
+        if (file.size > 10 * 1024 * 1024) {
+            return NextResponse.json({ error: 'Datei zu gross (max. 10 MB).' }, { status: 400 });
         }
 
-        // Sanitize extension: only allow jpg/png/webp/gif/heic
-        const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
-        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic']);
+        // Sanitize extension: only allow jpg/png/webp/gif/heic/heif
+        const rawExt = (fileType ? fileType.split('/')[1]?.split('+')[0]?.toLowerCase() : null) || fileExt || 'jpg';
+        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif']);
         const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
         const filename = `${session.userId}-${Date.now()}.${ext}`;
         const filepath = path.join(UPLOAD_DIR, filename);

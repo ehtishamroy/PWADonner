@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
                     newsletterConsent:  !!newsletter,
                     emailShareConsent:  !!emailShare,
                     zipCode:            zipCode || null,
+                    city:               city    || null,
                 },
             });
         } else if (action === 'register-family') {

@@ -30,6 +30,7 @@ export default function DonorRegisterPage() {
         lastName: '',
         email: '',
         zipCode: '',
+        city: '',
         newsletter: false,
         emailShare: false,
         privacy: false,
@@ -61,28 +62,26 @@ export default function DonorRegisterPage() {
         }
     }
 
+    // ZIP/city autocomplete
     const [suggestions, setSuggestions] = useState<Array<{ zip: string; city: string }>>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    // ZIP/city autocomplete
     useEffect(() => {
         const q = form.zipCode.trim();
         if (q.length < 2) { setSuggestions([]); return; }
         const ctrl = new AbortController();
         const t = setTimeout(async () => {
             try {
-                const url = `/api/swiss-post?q=${encodeURIComponent(q)}`;
-                const res = await fetch(url, { signal: ctrl.signal });
+                const res = await fetch(`/api/swiss-post?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
                 if (!res.ok) return;
                 const data = await res.json();
                 const items = (data.suggestions || []) as Array<{ zip: string; city: string }>;
                 const seen = new Set<string>();
-                const unique = items.filter((i: { zip: string; city: string }) => {
+                setSuggestions(items.filter((i) => {
                     const k = `${i.zip}-${i.city}`;
                     if (seen.has(k)) return false;
                     seen.add(k); return true;
-                });
-                setSuggestions(unique);
+                }));
             } catch { /* silent */ }
         }, 250);
         return () => { ctrl.abort(); clearTimeout(t); };
@@ -114,7 +113,6 @@ export default function DonorRegisterPage() {
 
     // Persist state on change
     useEffect(() => {
-        // We only persist steps 1 and 2. Step 3 (OTP) shouldn't be persisted to avoid confusion if the code expires.
         if (isLoaded && step < 3) {
             localStorage.setItem('ws_register_form', JSON.stringify({ form, step }));
         }
@@ -145,14 +143,15 @@ export default function DonorRegisterPage() {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body:    JSON.stringify({
-                        email: form.email,
+                        email:     form.email,
                         firstName: form.firstName,
-                        lastName: form.lastName,
-                        zipCode: form.zipCode,
+                        lastName:  form.lastName,
+                        zipCode:   form.zipCode,
+                        city:      form.city,
                         newsletter: form.newsletter,
                         emailShare: form.emailShare,
-                        privacy: form.privacy,
-                        action: 'register',
+                        privacy:    form.privacy,
+                        action:     'register',
                     }),
                 });
                 if (!mounted.current) return;
@@ -180,8 +179,6 @@ export default function DonorRegisterPage() {
             if (!res.ok) { const d = await res.json(); setErrors({ otp: d.error || de.auth.errors.otpInvalid }); return; }
             localStorage.removeItem('ws_register_form');
             router.replace('/donor/dashboard');
-            // NOTE: do NOT setLoading(false) here — router.replace begins
-            // unmounting this component; setting state afterwards triggers crashes.
         } catch (err) {
             if (mounted.current) {
                 setErrors({ otp: de.auth.errors.otpInvalid });
@@ -229,39 +226,33 @@ export default function DonorRegisterPage() {
                 )}
             </div>
 
-            {/* Bottom Section — White, extends to bottom with margins */}
+            {/* Bottom Section — White */}
             <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
                 <div className="w-full mx-auto px-8 pt-8 pb-5 flex flex-col flex-grow">
-                    
+
                     <div className="flex-grow">
                         {/* Step 1 — Personal details */}
                         {step === 1 && (
                             <div className="space-y-7">
+                                {/* Standard text fields */}
                                 {[
                                     { key: 'firstName', label: de.auth.register.firstName, placeholder: 'Dein Vorname' },
                                     { key: 'lastName',  label: de.auth.register.lastName,  placeholder: 'Dein Nachname' },
                                     { key: 'email',     label: de.auth.register.email,     placeholder: 'beispiel@mail.com' },
-                                    { key: 'zipCode',   label: 'PLZ (optional)',            placeholder: 'z.B. 8000' },
                                 ].map(({ key, label, placeholder }) => (
-                                    <div key={key} className={`${key === 'zipCode' ? 'relative ' : ''}space-y-1`}>
+                                    <div key={key} className="space-y-1">
                                         <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
                                             <label className="block mb-1"
                                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>{label}</label>
                                             <input
                                                 type={key === 'email' ? 'email' : 'text'}
-                                                inputMode={key === 'zipCode' ? 'numeric' : undefined}
-                                                maxLength={key === 'zipCode' ? 4 : undefined}
                                                 value={(form as Record<string, unknown>)[key] as string}
                                                 placeholder={placeholder}
                                                 onChange={e => {
-                                                    setForm(f => ({ ...f, [key]: key === 'zipCode' ? e.target.value.replace(/\D/g, '') : e.target.value }));
+                                                    setForm(f => ({ ...f, [key]: e.target.value }));
                                                     if (key === 'email') setErrors(prev => { const next = { ...prev }; delete next.email; delete next.duplicate; return next; });
                                                 }}
-                                                onFocus={key === 'zipCode' ? () => setShowSuggestions(true) : undefined}
-                                                onBlur={
-                                                    key === 'email' ? (e) => checkEmailExists(e.target.value) :
-                                                    key === 'zipCode' ? () => setTimeout(() => setShowSuggestions(false), 150) : undefined
-                                                }
+                                                onBlur={key === 'email' ? (e) => checkEmailExists(e.target.value) : undefined}
                                                 className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30 placeholder:font-bold"
                                             />
                                         </div>
@@ -273,13 +264,37 @@ export default function DonorRegisterPage() {
                                                 )}
                                             </p>
                                         )}
-                                        {key === 'zipCode' && showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                                    </div>
+                                ))}
+
+                                {/* PLZ field with autocomplete */}
+                                <div className="space-y-1">
+                                    <div className="relative">
+                                        <div className="border-b-2 pb-2" style={{ borderColor: '#E5E7EB' }}>
+                                            <label className="block mb-1"
+                                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>
+                                                PLZ <span className="opacity-40 font-normal text-[13px]">(optional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                maxLength={4}
+                                                value={form.zipCode}
+                                                placeholder="z.B. 8000"
+                                                onChange={e => setForm(f => ({ ...f, zipCode: e.target.value.replace(/\D/g, ''), city: '' }))}
+                                                onFocus={() => setShowSuggestions(true)}
+                                                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                                                className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30 placeholder:font-bold"
+                                            />
+                                        </div>
+                                        {/* Dropdown */}
+                                        {showSuggestions && suggestions.length > 0 && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-56 overflow-y-auto">
                                                 {suggestions.map((s, i) => (
                                                     <button key={i} type="button"
                                                         onMouseDown={e => e.preventDefault()}
                                                         onClick={() => {
-                                                            setForm(f => ({ ...f, zipCode: s.zip }));
+                                                            setForm(f => ({ ...f, zipCode: s.zip, city: s.city }));
                                                             setShowSuggestions(false);
                                                         }}
                                                         className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
@@ -289,7 +304,20 @@ export default function DonorRegisterPage() {
                                             </div>
                                         )}
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* City — read-only, auto-filled from ZIP selection */}
+                                {form.city && (
+                                    <div className="space-y-1">
+                                        <div className="border-b-2 pb-2" style={{ borderColor: BRAND.greenBright }}>
+                                            <label className="block mb-1"
+                                                style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>
+                                                Ort
+                                            </label>
+                                            <p className="font-bold text-[17px]" style={{ color: BRAND.green }}>{form.city}</p>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Privacy checkbox */}
                                 <Checkbox checked={form.privacy} onChange={() => setForm(f => ({ ...f, privacy: !f.privacy }))}>
@@ -330,7 +358,7 @@ export default function DonorRegisterPage() {
                         {errors.submit && <p className="text-center text-[13px] font-medium mt-4" style={{ color: BRAND.error }}>{errors.submit}</p>}
                     </div>
 
-                    {/* Navigation Buttons — sticky at bottom */}
+                    {/* Navigation Buttons */}
                     {step < 3 && (
                         <div className="mt-auto pt-6 flex flex-col items-center gap-3">
                             <button
@@ -365,7 +393,6 @@ export default function DonorRegisterPage() {
             </div>
         </div>
     );
-
 }
 
 function OtpStepContent({ email, onVerify, error }: { email: string; onVerify: (code: string) => void; error?: string }) {

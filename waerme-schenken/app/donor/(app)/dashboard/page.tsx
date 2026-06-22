@@ -29,8 +29,8 @@ export default async function DonorDashboardPage() {
             where: { donorId: session.userId },
             _count: true,
         }),
-        db.donation.count({ where: { status: 'approved' } }),
-        db.donation.count({ where: { status: 'selected' } }),
+        db.donation.count({ where: { status: { in: ['approved', 'selected', 'sent'] } } }),
+        db.donation.count({ where: { status: { in: ['selected', 'sent'] } } }),
     ]);
 
     const myCounts = Object.fromEntries(myStatusCounts.map(s => [s.status, s._count])) as Record<string, number>;
@@ -95,11 +95,11 @@ export default async function DonorDashboardPage() {
             </h3>
 
             {donations.length === 0 ? (
-                <div className="text-center py-12 opacity-60">
-                    <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px' }}>{de.dashboard.empty}</p>
+                <div className="text-center py-12">
+                    <p className="opacity-60" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px' }}>{de.dashboard.empty}</p>
                     <Link href="/donor/donate"
                         className="h-10 min-w-[143px] px-6 rounded-full text-white text-[13px] font-bold flex items-center justify-center mx-auto mt-4 transition-transform active:scale-95 shadow-sm"
-                        style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
+                        style={{ backgroundColor: BRAND.lila, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                         {de.dashboard.addFirst}
                     </Link>
                 </div>
@@ -166,13 +166,13 @@ export default async function DonorDashboardPage() {
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                             {globalApprovedCount.toLocaleString('de-CH')}
                         </p>
-                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsCount}</p>
+                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">Spenden wurden freigegeben.</p>
                     </div>
                     <div className="text-center">
                         <p className="text-[40px] font-bold leading-none mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                             {globalSelectedCount.toLocaleString('de-CH')}
                         </p>
-                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">{de.dashboard.factsSelected}</p>
+                        <p className="text-[12px] opacity-80 mx-auto max-w-[120px]">Spenden wurden von Familien ausgewählt.</p>
                     </div>
                 </div>
             </div>
@@ -180,14 +180,12 @@ export default async function DonorDashboardPage() {
             </div> {/* max-w container */}
 
             {/* Floating + button */}
-            {donations.length > 0 && (
-                <Link href="/donor/donate"
-                    aria-label="Neue Spende hinzufügen"
-                    className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
-                    style={{ backgroundColor: BRAND.lila }}>
-                    <Plus size={28} strokeWidth={2.5} />
-                </Link>
-            )}
+            <Link href="/donor/donate"
+                aria-label="Neue Spende hinzufügen"
+                className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
+                style={{ backgroundColor: BRAND.lila }}>
+                <Plus size={28} strokeWidth={2.5} />
+            </Link>
         </div>
     );
 }

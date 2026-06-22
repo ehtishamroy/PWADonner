@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
             firstName:         true,
             lastName:          true,
             email:             true,
+            zipCode:           true,
             newsletterConsent: true,
             createdAt:         true,
         },
@@ -37,12 +38,13 @@ export async function GET(req: NextRequest) {
     });
 
     if (format === 'csv') {
-        const header = 'Vorname,Nachname,E-Mail,Newsletter,Registriert am';
+        const header = 'Vorname,Nachname,E-Mail,PLZ/Ort,Newsletter,Registriert am';
         const rows = users.map((u: any) =>
             [
                 `"${u.firstName}"`,
                 `"${u.lastName}"`,
                 `"${u.email}"`,
+                `"${u.zipCode || ''}"`,
                 u.newsletterConsent ? 'Ja' : 'Nein',
                 new Date(u.createdAt).toLocaleDateString('de-CH'),
             ].join(',')

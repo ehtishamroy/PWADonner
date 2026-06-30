@@ -14,13 +14,13 @@ export async function sendDonationReceivedEmail(
     return resend.emails.send({
         from:    FROM,
         to,
-        subject: `Vielen Dank für deine Spende ${userName}`,
+        subject: `Vielen Dank für deine Spielzeugspende ${userName}`,
         html: `
-          <span style="display:none;max-height:0;overflow:hidden;">Deine Spende wird gerade noch überprüft</span>
-          <h2>Herzlichen Dank für deine Spende!</h2>
+          <span style="display:none;max-height:0;overflow:hidden;">Deine Spielzeugspende wird gerade noch überprüft</span>
+          <h2>Herzlichen Dank für deine Spielzeugspende!</h2>
           <p>Liebe*r ${userName}</p>
-          <p>Wir haben deine Spielzeugspende <strong>${toyName}</strong> erhalten und werden sie schnellstmöglich prüfen. Sobald deine Spende für die Spielzeugbörse freigegeben ist, siehst du sie auch in deinem persönlichen Spendeportal.</p>
-          <p>Weihnachten ist noch etwas hin. Bitte halte die gespendeten Spielsachen ab <strong>${openingDate}</strong> griffbereit, da wir die Börse dann öffnen. Sobald dein Spielzeug ausgewählt wurde, erhältst du eine E-Mail mit den entsprechenden Versanddetails.</p>
+          <p>Wir haben deine Spielzeugspende <strong>${toyName}</strong> erhalten und werden sie schnellstmöglich prüfen. Sobald deine Spende für die Spielzeugbörse freigegeben ist, siehst du sie auch in deinem persönlichen Spendenportal.</p>
+          <p>Weihnachten ist noch etwas hin. Bitte halte die gespendeten Spielsachen ab <strong>${openingDate}</strong> griffbereit, da wir die Börse dann für die Familien öffnen. Sobald dein Spielzeug ausgewählt wurde, erhältst du eine E-Mail mit den entsprechenden Versanddetails.</p>
           <p>Schön, dass du Teil unseres Projekts bist.</p>
           ${SIGNATURE}
         `,
@@ -36,13 +36,13 @@ export async function sendDonationApprovedEmail(
     return resend.emails.send({
         from:    FROM,
         to,
-        subject: `Deine Spende ${toyName} ist nun freigeschaltet`,
+        subject: `Deine Spielzeugspende ${toyName} ist nun freigeschaltet`,
         html: `
-          <span style="display:none;max-height:0;overflow:hidden;">Deine Spende macht unsere Börse bunter.</span>
+          <span style="display:none;max-height:0;overflow:hidden;">Deine Spielzeugspende macht unsere Börse bunter.</span>
           <h2>Glückwunsch!</h2>
           <p>Liebe*r ${userName}</p>
           <p>Wir haben deine Spende <strong>${toyName}</strong> mit Freude für die Spielzeugbörse freigeschaltet. Sie hat unsere interne Qualitätsprüfung überstanden und wartet nun darauf, von einem Kind ausgesucht zu werden.</p>
-          <p>Ab sofort siehst du deine Spende in deinem persönlichen Spendeportal, wenn du dich auf unserer Webseite anmeldest. Da kannst du sie auch bearbeiten oder schlimmstenfalls auch löschen.</p>
+          <p>Ab sofort siehst du deine Spende in deinem persönlichen Spendenportal, wenn du dich in unserer App anmeldest. Da kannst du sie auch bearbeiten oder schlimmstenfalls auch löschen.</p>
           ${SIGNATURE}
         `,
     });
@@ -96,7 +96,7 @@ export async function sendDonationSelectedEmail(
           <p><strong>Hier ist die Versandadresse:</strong></p>
           <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${recipientName}<br/>${recipientAddress}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Tracking Nummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });
@@ -126,7 +126,7 @@ export async function sendDonationReminderEmail(
           <p><strong>Hier ist die Versandadresse:</strong></p>
           <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${recipientName}<br/>${recipientAddress}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Tracking Nummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });
@@ -172,7 +172,7 @@ export async function sendFamilyRegistrationApprovedEmail(
           <p>Nach erfolgreicher Prüfung deiner Registrierung, haben wir dir deinen Zugang nun freigeschaltet.</p>
           <p>Melde dich hier an und gelange zu deinem Portal:</p>
           <p><a href="${loginUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zur Spielzeugbörse</a></p>
-          <p>Dort siehst du, wie viele und welche Spielsachen du ausgewählt hast. Du kannst auch den Status deiner Spielsachen verfolgen: Spender*innen können angeben, ob sie das Spielzeug verpackt haben, das Päckli bereits zur Post gebracht haben und sie können die Trackingnummer hinterlegen. So bleibst du stets auf dem Laufenden.</p>
+          <p>Dort siehst du, wie viele und welche Spielsachen du ausgewählt hast. Du kannst auch den Status deiner Spielsachen verfolgen: Spender*innen können angeben, ob sie das Spielzeug verpackt haben, das Päckli bereits zur Post gebracht haben und sie können die Sendungsnummer hinterlegen. So bleibst du stets auf dem Laufenden.</p>
           <p><strong>Achtung:</strong> Die Spielzeugbörse öffnet am ${openingDate}.</p>
           <p>Falls du deinen Wohnsitz wechseln solltest, kannst du die Adresse ganz einfach in deinem Profil aktualisieren. Damit die Pakete bei dir ankommen, ist es wichtig, dass die Adresse stimmt.</p>
           <p>Wir wünschen dir viel Spass und schön, bist du mit dabei!</p>
@@ -237,7 +237,7 @@ export async function sendDonationSentEmail(
     portalUrl = 'https://app.waerme-schenken.ch/family/dashboard',
 ) {
     const trackingBlock = trackingNumber
-        ? `<p><strong>Tracking ID:</strong> ${trackingNumber}</p>`
+        ? `<p><strong>Sendungsnummer:</strong> ${trackingNumber}</p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -247,7 +247,7 @@ export async function sendDonationSentEmail(
           <span style="display:none;max-height:0;overflow:hidden;">Das Paket wurde von dem/der Spender*in verschickt.</span>
           <h2>Dein Geschenk ist auf dem Weg zu dir!</h2>
           <p>Liebe*r ${userName}</p>
-          <p>Die/Der Spender*in von deinem Geschenk <strong>&ldquo;${toyName}&rdquo;</strong> hat das Paket soeben zur Post gebracht. Bald sollte es bei dir eintreffen. Du kannst den Status und die Tracking ID deines Pakets im Portal verfolgen.</p>
+          <p>Die/Der Spender*in von deinem Geschenk <strong>&ldquo;${toyName}&rdquo;</strong> hat das Paket soeben zur Post gebracht. Bald sollte es bei dir eintreffen. Du kannst den Status und die Sendungsnummer deines Pakets im Portal verfolgen.</p>
           ${trackingBlock}
           <p><a href="${portalUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zum Familienportal</a></p>
           <p>Solltest du in deinem Päckli eine Karte mit den Kontaktangaben des Spender-Kindes finden, würde sich dieses Kind über ein kleines "Danke" in Form von ein paar Worten oder vielleicht einer Zeichnung freuen.</p>
@@ -267,7 +267,7 @@ export async function sendDonorDonationSentConfirmationEmail(
     trackingNumber?: string | null,
 ) {
     const trackingBlock = trackingNumber
-        ? `<p><strong>Deine Tracking-Nummer:</strong> <span style="font-family:monospace;">${trackingNumber}</span></p>`
+        ? `<p><strong>Deine Sendungsnummer:</strong> <span style="font-family:monospace;">${trackingNumber}</span></p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -291,12 +291,12 @@ export async function sendOtpEmail(to: string, code: string) {
     return resend.emails.send({
         from:    FROM,
         to,
-        subject: 'Dein Einmalpasswort — Wärme Schenken',
+        subject: 'Dein einmaliger Code für die Anmeldung',
         html: `
           <p>Hallo,</p>
-          <p>Dein Einmalpasswort lautet:</p>
+          <p>Dein Anmeldecode lautet:</p>
           <h1 style="font-size:36px;letter-spacing:8px;font-family:monospace;">${code}</h1>
-          <p>Es ist 10 Minuten gültig.</p>
+          <p>Er ist 10 Minuten gültig.</p>
           <p>Falls du keine Anmeldung angefordert hast, ignoriere diese E-Mail.</p>
           ${SIGNATURE}
         `,

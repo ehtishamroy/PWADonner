@@ -33,7 +33,7 @@ export function DonationActions({ donationId, status, trackingNumber: initialTra
                     {initialTracking ? (
                         <p className="font-mono text-[15px] font-bold">{initialTracking}</p>
                     ) : (
-                        <p className="text-[14px] opacity-40">Keine Tracking-Nummer</p>
+                        <p className="text-[14px] opacity-40">Keine Sendungsnummer</p>
                     )}
                 </div>
             </div>

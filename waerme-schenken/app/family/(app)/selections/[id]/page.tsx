@@ -119,7 +119,7 @@ export default async function SelectionDetailPage({ params }: { params: Promise<
                             <div>
                                 <p className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
                                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                                    Tracking-Nummer
+                                    Sendungsnummer
                                 </p>
                                 <p className="font-mono text-[14px] font-bold">{donation.trackingNumber}</p>
                             </div>

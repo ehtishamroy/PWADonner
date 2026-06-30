@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title:       'Wärme Schenken',
-        description: 'Gemeinsam Freude schenken.',
+        description: 'Wärme schenken einfach gemacht',
         type:        'website',
     },
 };

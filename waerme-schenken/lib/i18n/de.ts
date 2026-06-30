@@ -12,9 +12,9 @@ export const de = {
     // ── Split Screen ──
     split: {
         heading: 'Freude weitergeben',
-        body: 'Gemeinsam Freude schenken. Mit dieser App kannst du Spielzeug spenden oder als Familie in schwieriger Lage auswählen.',
+        body: 'Wärme schenken einfach gemacht: Mit dieser App kannst du deine Spielsachen spenden oder als von Armut betroffene Familie Spielzeug auswählen.',
         family: 'Familie',
-        donor: 'Spender',
+        donor: 'Spender*in',
     },
 
     // ── Intro ──
@@ -122,7 +122,7 @@ export const de = {
         whoSelected: 'Wer hat dein Spielzeug ausgewählt?',
         address: 'Adresse',
         sendTo: 'Bitte sende das Spielzeug an diese Adresse.',
-        trackingNumber: 'Sendungsverfolgungsnummer (optional)',
+        trackingNumber: 'Sendungsnummer (optional)',
         markSent: 'Als gesendet markieren',
         delete: 'Spende löschen',
         deleteConfirm: 'Möchtest du diese Spende wirklich löschen?',
@@ -192,7 +192,7 @@ export const de = {
             alreadyAccount: 'Bereits ein Konto?',
             login:          'Jetzt einloggen',
             pendingTitle:   'Fast geschafft!',
-            pendingBody:    'Deine Registrierung wurde erhalten. Wir prüfen deine Angaben innerhalb von 48 Stunden und senden dir eine E-Mail, sobald dein Zugang aktiv ist.',
+            pendingBody:    'Danke für deine Registrierung. Wir prüfen deine Angaben innerhalb von 48 Stunden und senden dir eine E-Mail, sobald dein Zugang aktiv ist.',
         },
         nav: {
             home:    'Home',

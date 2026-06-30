@@ -480,17 +480,47 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
     const fileRef = useRef<HTMLInputElement>(null);
     const uploaded = !!form.socialCardUrl;
 
+    async function compressIfNeeded(file: File): Promise<File> {
+        // Only compress raster images; skip HEIC/HEIF (browser can't decode them anyway)
+        const compressible = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!compressible.includes(file.type) || file.size <= 4 * 1024 * 1024) return file;
+        return new Promise((resolve) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                const canvas = document.createElement('canvas');
+                const MAX_DIM = 2048;
+                let { width, height } = img;
+                if (width > MAX_DIM || height > MAX_DIM) {
+                    if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+                    else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+                    else resolve(file);
+                }, 'image/jpeg', 0.82);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+            img.src = url;
+        });
+    }
+
     async function handleFile(file: File | undefined) {
         if (!file) return;
         setUploadError('');
-        if (file.size > 5 * 1024 * 1024) {
-            setUploadError('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
+        if (file.size > 15 * 1024 * 1024) {
+            setUploadError('Die Datei ist zu gross. Bitte wähle ein Bild unter 15 MB.');
             return;
         }
         setUploading(true);
         try {
+            const processed = await compressIfNeeded(file);
             const fd = new FormData();
-            fd.append('file', file);
+            fd.append('file', processed);
             const res = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
             if (res.ok) {
                 const { url } = await res.json();
@@ -559,7 +589,7 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
                     {uploading ? 'Wird hochgeladen...' : uploaded ? de.family.register.uploaded : de.family.register.uploadHint}
                 </span>
             </button>
-            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" hidden
+            <input ref={fileRef} type="file" accept="image/*" hidden
                 onChange={e => handleFile(e.target.files?.[0])} />
             {(errors.socialCardUrl || uploadError) && (
                 <p className="text-[13px] font-medium mt-3" style={{ color: BRAND.error }}>

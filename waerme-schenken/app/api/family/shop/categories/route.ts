@@ -13,7 +13,15 @@ export async function GET(req: Request) {
 
     const counts = await db.donation.groupBy({
         by:     ['category'],
-        where:  { status: 'approved', ...(age ? { ageRange: age } : {}) },
+        where:  { 
+            status: 'approved', 
+            ...(age ? { ageRange: age } : {}),
+            OR: [
+                { reservedUntil: null },
+                { reservedUntil: { lt: new Date() } },
+                { reservedByFamilyId: session.userId }
+            ]
+        },
         _count: true,
     });
 

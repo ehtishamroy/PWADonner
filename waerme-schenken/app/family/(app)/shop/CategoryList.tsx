@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Search, ChevronRight, ChevronDown, Package, X } from 'lucide-react';
+import { Search, ChevronRight, ChevronDown, Package, X, Minus } from 'lucide-react';
+import Image from 'next/image';
 import { BRAND, AGE_RANGES, CONDITION_COLORS } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { useFamilyCart, CART_MAX } from '@/lib/familyCart';
@@ -71,10 +72,13 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
         return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
     }, [search]);
 
-    function handleAdd(id: string) {
+    async function handleAdd(id: string) {
         if (!isSpecial && cart.count >= CART_MAX) { setLimitModal(true); return; }
-        const r = cart.add(id);
-        if (!r.ok && r.reason === 'limit') { setLimitModal(true); }
+        const r = await cart.add(id);
+        if (!r.ok) {
+            if (r.reason === 'limit') setLimitModal(true);
+            else if (r.reason === 'reserved') alert('Dieses Spielzeug wurde soeben von einer anderen Familie reserviert.');
+        }
     }
 
     const isSearching = search.trim().length > 0;
@@ -176,10 +180,25 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                                     </Link>
                                     <button
                                         onClick={() => added ? cart.remove(p.id) : handleAdd(p.id)}
-                                        className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors"
-                                        style={{ backgroundColor: added ? BRAND.greenBright : '#F3F4F6' }}
+                                        className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors bg-white/70"
                                         aria-label={added ? 'Entfernen' : 'In Warenkorb'}>
-                                        <span className="text-[16px] leading-none">{added ? '✓' : '+'}</span>
+                                        {added ? (
+                                            <div className="relative w-[18px] h-[18px] flex items-center justify-center">
+                                                <div style={{
+                                                    WebkitMaskImage: 'url(/images/cart.png)',
+                                                    WebkitMaskSize: 'contain',
+                                                    WebkitMaskRepeat: 'no-repeat',
+                                                    WebkitMaskPosition: 'center',
+                                                    backgroundColor: BRAND.green,
+                                                    width: '100%', height: '100%'
+                                                }} />
+                                                <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50 shadow-sm">
+                                                    <Minus size={10} color={BRAND.green} strokeWidth={4} />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <Image src="/images/shopcart.png" alt="" width={20} height={20} />
+                                        )}
                                     </button>
                                 </div>
                             );

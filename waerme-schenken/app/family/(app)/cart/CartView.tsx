@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, ShoppingCart, X } from 'lucide-react';
+import { Package, ShoppingCart, X, Clock } from 'lucide-react';
 import { BRAND, CONDITION_COLORS } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { useFamilyCart } from '@/lib/familyCart';
@@ -11,8 +11,9 @@ import { useFamilyCart } from '@/lib/familyCart';
 type FamilyInfo = { firstName: string; lastName: string; street: string; zipCode: string; city: string };
 
 type CartDonation = {
-    id: string; toyName: string; ageRange: string; condition: string;
     category: string; status: string;
+    reservedUntil?: string | null;
+    reservedByFamilyId?: string | null;
     images: { imageUrl: string }[];
 };
 
@@ -42,6 +43,37 @@ export function CartView({ family }: { family: FamilyInfo }) {
     const [step, setStep]           = useState<1 | 2>(1);
     const [confirming, setConfirming] = useState(false);
     const [error, setError]         = useState('');
+    const [userId, setUserId]       = useState<string | null>(null);
+    const [timeLeft, setTimeLeft]   = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!userId || items.length === 0) return;
+        const reservedItems = items.filter(i => 
+            i.reservedByFamilyId === userId && 
+            i.reservedUntil && 
+            new Date(i.reservedUntil).getTime() > Date.now()
+        );
+        if (reservedItems.length === 0) {
+            setTimeLeft(null);
+            return;
+        }
+        const minTime = Math.min(...reservedItems.map(i => new Date(i.reservedUntil!).getTime()));
+        const update = () => {
+            const left = minTime - Date.now();
+            if (left <= 0) setTimeLeft(null);
+            else setTimeLeft(left);
+        };
+        update();
+        const interval = setInterval(update, 1000);
+        return () => clearInterval(interval);
+    }, [items, userId]);
+
+    const formatTime = (ms: number) => {
+        const totalSecs = Math.floor(ms / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         if (cart.ids.length === 0) {
@@ -54,6 +86,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
             body: JSON.stringify({ ids: cart.ids }),
         }).then(r => r.ok ? r.json() : { items: [] }).then(data => {
             setItems(data.items || []);
+            setUserId(data.userId || null);
         }).finally(() => setLoading(false));
     }, [cart.ids.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -189,11 +222,23 @@ export function CartView({ family }: { family: FamilyInfo }) {
             <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
                 <div className="px-8 pt-8 pb-28 md:pb-8 flex flex-col flex-grow">
                     <div className="flex-grow space-y-3">
+                        {timeLeft !== null && (
+                            <div className="bg-yellow-50 text-yellow-800 text-[13px] leading-relaxed p-4 rounded-[8px] mb-4 border border-yellow-200">
+                                <div className="flex items-center gap-2 mb-1 font-bold">
+                                    <Clock size={16} />
+                                    <span>Reserviert ({formatTime(timeLeft)})</span>
+                                </div>
+                                Die Spielsachen in deinem Warenkorb sind für 30 Minuten reserviert. Wenn du die Bestellung nicht innerhalb dieses Zeitfensters abschliesst, landen die Spielsachen wieder zurück in der Börse.
+                            </div>
+                        )}
                         {items.map(p => {
                             const cond = CONDITION_SHORT[p.condition] || p.condition;
                             const condColor = CONDITION_COLORS[p.condition] || BRAND.lila;
                             const thumb = p.images[0]?.imageUrl;
-                            const stale = p.status !== 'approved';
+                            
+                            // It's stale if not approved, OR if it's reserved by someone else and not expired
+                            const isReservedByOther = p.reservedByFamilyId && p.reservedByFamilyId !== userId && p.reservedUntil && new Date(p.reservedUntil).getTime() > Date.now();
+                            const stale = p.status !== 'approved' || isReservedByOther;
 
                             return (
                                 <div key={p.id} className="bg-gray-50 rounded-[8px] flex items-center overflow-hidden"

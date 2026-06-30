@@ -43,17 +43,19 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                     : condition === 'wie_neu' ? 'wie neu'
                     : 'gebraucht';
 
-    function toggle() {
+    async function toggle() {
         if (added) { cart.remove(id); return; }
-        const r = cart.add(id);
-        if (!r.ok && r.reason === 'limit') {
-            setLimitToast(true);
-            setTimeout(() => setLimitToast(false), 3000);
+        const r = await cart.add(id);
+        if (!r.ok) {
+            if (r.reason === 'limit') {
+                setLimitToast(true);
+                setTimeout(() => setLimitToast(false), 3000);
+            } else if (r.reason === 'reserved') {
+                alert('Dieses Spielzeug wurde soeben von einer anderen Familie reserviert.');
+            }
             return;
         }
-        if (r.ok) {
-            window.dispatchEvent(new CustomEvent('cart:added'));
-        }
+        window.dispatchEvent(new CustomEvent('cart:added'));
     }
 
     return (

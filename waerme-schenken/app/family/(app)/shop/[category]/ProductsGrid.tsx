@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-    Search, ChevronDown, Package, ArrowUp,
+    Search, ChevronDown, Package, ArrowUp, Minus
 } from 'lucide-react';
 import Image from 'next/image';
 import { BRAND, CONDITION_COLORS, AGE_RANGES } from '@/lib/constants';
@@ -77,13 +77,15 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
         !query || p.toyName.toLowerCase().includes(query.toLowerCase())
     );
 
-    function handleAdd(id: string) {
+    async function handleAdd(id: string) {
         if (!isSpecial && cart.count >= CART_MAX) { setLimitModal(true); return; }
-        const r = cart.add(id);
-        if (!r.ok && r.reason === 'limit') { setLimitModal(true); return; }
-        if (r.ok) {
-            window.dispatchEvent(new CustomEvent('cart:added'));
+        const r = await cart.add(id);
+        if (!r.ok) {
+            if (r.reason === 'limit') setLimitModal(true);
+            else if (r.reason === 'reserved') alert('Dieses Spielzeug wurde soeben von einer anderen Familie reserviert.');
+            return;
         }
+        window.dispatchEvent(new CustomEvent('cart:added'));
     }
 
     return (
@@ -191,9 +193,23 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
                                 <button onClick={e => { e.stopPropagation(); added ? cart.remove(p.id) : handleAdd(p.id); }}
                                     className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/70"
                                     aria-label={added ? 'Entfernen' : 'Hinzufügen'}>
-                                    {added
-                                        ? <Image src="/images/cart.png" alt="" width={18} height={18} style={{ filter: 'brightness(0) saturate(100%) invert(40%) sepia(50%) saturate(400%) hue-rotate(100deg)' }} />
-                                        : <Image src="/images/shopcart.png" alt="" width={20} height={20} />}
+                                    {added ? (
+                                        <div className="relative w-[18px] h-[18px] flex items-center justify-center">
+                                            <div style={{
+                                                WebkitMaskImage: 'url(/images/cart.png)',
+                                                WebkitMaskSize: 'contain',
+                                                WebkitMaskRepeat: 'no-repeat',
+                                                WebkitMaskPosition: 'center',
+                                                backgroundColor: BRAND.green,
+                                                width: '100%', height: '100%'
+                                            }} />
+                                            <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50 shadow-sm">
+                                                <Minus size={10} color={BRAND.green} strokeWidth={4} />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Image src="/images/shopcart.png" alt="" width={20} height={20} />
+                                    )}
                                 </button>
                             </div>
                         );

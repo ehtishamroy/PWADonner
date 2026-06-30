@@ -9,7 +9,7 @@ import { UploadCloud, X } from 'lucide-react';
 type Step = 1 | 2 | 3;
 
 const MAX_IMAGES = 3;
-const MAX_SIZE_MB = 10;
+const MAX_SIZE_MB = 15; // client-side hard reject; large images are compressed automatically
 
 function StepBar({ step }: { step: Step }) {
     return (
@@ -54,6 +54,34 @@ export default function DonorDonatePage() {
         return e;
     }
 
+    async function compressIfNeeded(file: File): Promise<File> {
+        const compressible = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!compressible.includes(file.type) || file.size <= 4 * 1024 * 1024) return file;
+        return new Promise((resolve) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                const canvas = document.createElement('canvas');
+                const MAX_DIM = 2048;
+                let { width, height } = img;
+                if (width > MAX_DIM || height > MAX_DIM) {
+                    if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+                    else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+                    else resolve(file);
+                }, 'image/jpeg', 0.82);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+            img.src = url;
+        });
+    }
+
     function handleImageAdd(files: FileList | null) {
         if (!files) return;
 
@@ -96,7 +124,8 @@ export default function DonorDonatePage() {
             const imageUrls: string[] = [];
             for (const img of images) {
                 const fd = new FormData();
-                fd.append('file', img.file);
+                const processed = await compressIfNeeded(img.file);
+                fd.append('file', processed);
                 const res = await fetch('/api/upload', { method: 'POST', body: fd });
                 if (res.ok) { 
                     const { url } = await res.json(); 
@@ -284,7 +313,7 @@ export default function DonorDonatePage() {
                             )}
                         </div>
 
-                        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,.heic,.heif" multiple hidden
+                        <input ref={fileRef} type="file" accept="image/*" multiple hidden
                             onChange={e => handleImageAdd(e.target.files)} />
 
                         {errors.images && (

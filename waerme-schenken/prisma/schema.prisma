@@ -79,6 +79,8 @@ model Donation {
     selectedByFamilyId String?
     selectedAt       DateTime?
     sentAt           DateTime?
+    reservedByFamilyId String?
+    reservedUntil    DateTime?
     createdAt        DateTime  @default(now())
     updatedAt        DateTime  @updatedAt
 

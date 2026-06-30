@@ -36,16 +36,35 @@ export function useFamilyCart() {
         };
     }, []);
 
-    const add = useCallback((id: string): { ok: boolean; reason?: 'limit' } => {
+    const add = useCallback(async (id: string): Promise<{ ok: boolean; reason?: 'limit' | 'reserved' }> => {
         const cur = readCart();
         if (cur.includes(id)) return { ok: true };
         if (cur.length >= CART_MAX) return { ok: false, reason: 'limit' };
+        
+        try {
+            const res = await fetch('/api/family/cart/reserve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+            if (!res.ok) {
+                return { ok: false, reason: 'reserved' };
+            }
+        } catch {
+            return { ok: false, reason: 'reserved' };
+        }
+
         writeCart([...cur, id]);
         return { ok: true };
     }, []);
 
     const remove = useCallback((id: string) => {
         writeCart(readCart().filter(x => x !== id));
+        fetch('/api/family/cart/unreserve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id }),
+        }).catch(() => {});
     }, []);
 
     const clear = useCallback(() => writeCart([]), []);

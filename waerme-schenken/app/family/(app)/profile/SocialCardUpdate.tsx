@@ -35,22 +35,51 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
             .catch(() => {});
     }, []);
 
+    async function compressIfNeeded(file: File): Promise<File> {
+        const compressible = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!compressible.includes(file.type) || file.size <= 4 * 1024 * 1024) return file;
+        return new Promise((resolve) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                const canvas = document.createElement('canvas');
+                const MAX_DIM = 2048;
+                let { width, height } = img;
+                if (width > MAX_DIM || height > MAX_DIM) {
+                    if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+                    else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+                    else resolve(file);
+                }, 'image/jpeg', 0.82);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+            img.src = url;
+        });
+    }
+
     async function handleFile(file: File | undefined) {
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) {
-            setErrorMsg('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
+        if (file.size > 15 * 1024 * 1024) {
+            setErrorMsg('Die Datei ist zu gross. Bitte wähle ein Bild unter 15 MB.');
             setPhase('error');
             return;
         }
         setPhase('uploading');
         setErrorMsg('');
         try {
+            const processed = await compressIfNeeded(file);
             const fd = new FormData();
-            fd.append('file', file);
+            fd.append('file', processed);
             const res  = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
             if (!res.ok) {
                 if (res.status === 413) {
-                    throw new Error('Die Datei ist zu gross. Bitte wähle ein Bild unter 5 MB.');
+                    throw new Error('Die Datei ist zu gross. Bitte wähle ein kleineres Bild.');
                 }
                 const data = await res.json().catch(() => ({}));
                 throw new Error(data.error || `Upload fehlgeschlagen (HTTP ${res.status}).`);
@@ -240,13 +269,13 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                                 ? hasNewCard
                                     ? 'Neues Bild bereit ✓'
                                     : 'Aktuelles Bild'
-                                : 'Sozialausweis hochladen (JPG, PNG, max. 5 MB)'}
+                                : 'Sozialausweis hochladen (JPG, PNG, HEIC, max. 15 MB)'}
                         </span>
                     </button>
                     <input
                         ref={fileRef}
                         type="file"
-                        accept="image/jpeg,image/png,image/webp"
+                        accept="image/*"
                         hidden
                         onChange={e => handleFile(e.target.files?.[0])}
                     />

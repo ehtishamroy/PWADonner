@@ -52,13 +52,17 @@ export async function POST(req: NextRequest) {
             // Acquire row locks — fail fast if any row is not approved.
             // Using parameterized IN clause via $queryRawUnsafe would be risky; use a loop of safe queries.
             for (const id of donationIds) {
-                const rows = await tx.$queryRaw<Array<{ id: string; status: string }>>`
-                    SELECT id, status FROM "Donation" WHERE id = ${id} FOR UPDATE
+                const rows = await tx.$queryRaw<Array<{ id: string; status: string; reservedByFamilyId: string | null; reservedUntil: Date | null }>>`
+                    SELECT id, status, "reservedByFamilyId", "reservedUntil" FROM "Donation" WHERE id = ${id} FOR UPDATE
                 `;
                 if (rows.length === 0) {
                     throw new Error('NOT_FOUND');
                 }
-                if (rows[0].status !== 'approved') {
+                const row = rows[0];
+                if (row.status !== 'approved') {
+                    throw new Error('CONFLICT');
+                }
+                if (row.reservedByFamilyId && row.reservedByFamilyId !== family.id && row.reservedUntil && row.reservedUntil > new Date()) {
                     throw new Error('CONFLICT');
                 }
             }

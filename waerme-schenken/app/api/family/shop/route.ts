@@ -20,12 +20,14 @@ export async function GET(req: NextRequest) {
     const limit    = Math.min(parseInt(searchParams.get('limit') || '24', 10), 48);
     const skip     = parseInt(searchParams.get('skip')  || '0',  10);
 
-    const where: {
-        status: 'approved';
-        category?: string;
-        ageRange?: string;
-        toyName?: { contains: string; mode: 'insensitive' };
-    } = { status: 'approved' };
+    const where: any = { 
+        status: 'approved',
+        OR: [
+            { reservedUntil: null },
+            { reservedUntil: { lt: new Date() } },
+            { reservedByFamilyId: user.id }
+        ]
+    };
     if (category) where.category = category;
     if (ageRange) where.ageRange = ageRange;
     if (query)    where.toyName  = { contains: query, mode: 'insensitive' };

@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'Datei zu gross (max. 5 MB).' }, { status: 400 });
+        if (file.size > 10 * 1024 * 1024) {
+            return NextResponse.json({ error: 'Datei zu gross (max. 10 MB).' }, { status: 400 });
         }
 
         const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';

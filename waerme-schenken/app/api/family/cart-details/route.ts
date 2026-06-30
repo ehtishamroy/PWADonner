@@ -18,5 +18,5 @@ export async function POST(req: NextRequest) {
         include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } },
     });
 
-    return NextResponse.json({ items });
+    return NextResponse.json({ items, userId: session.userId });
 }

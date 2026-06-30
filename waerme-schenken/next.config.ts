@@ -9,15 +9,23 @@ const nextConfig: NextConfig = {
             { protocol: 'http', hostname: 'localhost' },
             { protocol: 'http', hostname: '127.0.0.1' },
         ],
-        // Images stored in /public are served statically — no remotePattern needed
-        // For uploaded images: use unoptimized if served from VPS directly
-        unoptimized: process.env.NODE_ENV === 'development',
+        // Optimize uploaded images in all environments for performance at scale
+        unoptimized: false,
+        // Resize images to smaller sizes for thumbnails
+        deviceSizes: [640, 750, 828, 1080, 1200],
+        imageSizes: [64, 128, 256, 384],
     },
     serverExternalPackages: ['fs', 'path'],
 
+    // Raise the body-size limit for all API routes to 10 MB so that
+    // mobile photo uploads (HEIC, large JPEG etc.) are accepted.
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '10mb',
+        },
+    },
+
     // Prevent browsers / CDNs from caching HTML responses.
-    // After a deploy the page shell must always be re-fetched so that the
-    // correct hashed JS/CSS chunk URLs are sent to the client.
     async headers() {
         return [
             {
@@ -35,4 +43,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

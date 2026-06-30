@@ -5,34 +5,34 @@ import { UploadCloud, Check, ChevronDown, AlertTriangle, CheckCircle2, Loader2, 
 import { BRAND } from '@/lib/constants';
 
 type Props = {
-    currentUrl:  string | null;
-    currentOrg:  string | null;
-    isApproved:  boolean;
+    currentUrl: string | null;
+    currentOrg: string | null;
+    isApproved: boolean;
 };
 
 type Phase = 'idle' | 'uploading' | 'saving' | 'done' | 'error';
 
 export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) {
-    const [orgs, setOrgs]               = useState<string[]>([]);
-    const [orgOpen, setOrgOpen]         = useState(false);
+    const [orgs, setOrgs] = useState<string[]>([]);
+    const [orgOpen, setOrgOpen] = useState(false);
     const [selectedOrg, setSelectedOrg] = useState<string>(currentOrg ?? '');
     const [uploadedUrl, setUploadedUrl] = useState<string>(currentUrl ?? '');
-    const [phase, setPhase]             = useState<Phase>('idle');
-    const [errorMsg, setErrorMsg]       = useState('');
-    const [showForm, setShowForm]       = useState(!currentUrl); // auto-open if no card
+    const [phase, setPhase] = useState<Phase>('idle');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [showForm, setShowForm] = useState(!currentUrl); // auto-open if no card
 
     const fileRef = useRef<HTMLInputElement>(null);
 
-    const hasNewCard   = !!uploadedUrl && uploadedUrl !== currentUrl;
-    const hasNewOrg    = selectedOrg !== (currentOrg ?? '');
-    const isDirty      = hasNewCard || hasNewOrg;
-    const canSave      = !!uploadedUrl && !!selectedOrg && isDirty;
+    const hasNewCard = !!uploadedUrl && uploadedUrl !== currentUrl;
+    const hasNewOrg = selectedOrg !== (currentOrg ?? '');
+    const isDirty = hasNewCard || hasNewOrg;
+    const canSave = !!uploadedUrl && !!selectedOrg && isDirty;
 
     useEffect(() => {
         fetch('/api/orgs')
             .then(r => r.json())
             .then(d => setOrgs(d.orgs || []))
-            .catch(() => {});
+            .catch(() => { });
     }, []);
 
     async function compressIfNeeded(file: File): Promise<File> {
@@ -76,7 +76,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
             const processed = await compressIfNeeded(file);
             const fd = new FormData();
             fd.append('file', processed);
-            const res  = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
+            const res = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
             if (!res.ok) {
                 if (res.status === 413) {
                     throw new Error('Die Datei ist zu gross. Bitte wähle ein kleineres Bild.');
@@ -98,10 +98,10 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
         setPhase('saving');
         setErrorMsg('');
         try {
-            const res  = await fetch('/api/family/social-card', {
-                method:  'PATCH',
+            const res = await fetch('/api/family/social-card', {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ socialCardUrl: uploadedUrl, socialCardOrg: selectedOrg }),
+                body: JSON.stringify({ socialCardUrl: uploadedUrl, socialCardOrg: selectedOrg }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Speichern fehlgeschlagen.');
@@ -114,8 +114,8 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
     }
 
     const isUploading = phase === 'uploading';
-    const isSaving    = phase === 'saving';
-    const uploaded    = !!uploadedUrl;
+    const isSaving = phase === 'saving';
+    const uploaded = !!uploadedUrl;
 
     // Hide entirely for approved families — nothing to do until next season reset
     if (isApproved && phase !== 'done') return null;
@@ -171,7 +171,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                     className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border transition-colors"
                     style={{
                         borderColor: BRAND.green,
-                        color:       BRAND.green,
+                        color: BRAND.green,
                     }}
                 >
                     <RefreshCw size={12} />
@@ -226,8 +226,8 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                                         onClick={() => { setSelectedOrg(o); setOrgOpen(false); }}
                                         className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors hover:bg-gray-50 ${i < orgs.length - 1 ? 'border-b border-gray-50' : ''}`}
                                         style={{
-                                            color:           o === selectedOrg ? BRAND.green : '#000',
-                                            fontFamily:      "'Bricolage Grotesque',sans-serif",
+                                            color: o === selectedOrg ? BRAND.green : '#000',
+                                            fontFamily: "'Bricolage Grotesque',sans-serif",
                                             backgroundColor: o === selectedOrg ? 'rgba(83,125,97,0.08)' : '#fff',
                                         }}
                                     >
@@ -253,23 +253,23 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                             {isUploading
                                 ? <Loader2 size={22} color="#fff" className="animate-spin" />
                                 : uploaded
-                                ? <Check size={24} color="#fff" strokeWidth={3} />
-                                : <UploadCloud size={24} color="#fff" />}
+                                    ? <Check size={24} color="#fff" strokeWidth={3} />
+                                    : <UploadCloud size={24} color="#fff" />}
                         </div>
                         <span
                             className="text-sm"
                             style={{
-                                color:      uploaded ? BRAND.green : 'rgb(73,69,79)',
+                                color: uploaded ? BRAND.green : 'rgb(73,69,79)',
                                 fontWeight: uploaded ? 600 : 400,
                             }}
                         >
                             {isUploading
                                 ? 'Wird hochgeladen…'
                                 : uploaded
-                                ? hasNewCard
-                                    ? 'Neues Bild bereit ✓'
-                                    : 'Aktuelles Bild'
-                                : 'Sozialausweis hochladen (JPG, PNG, HEIC, max. 15 MB)'}
+                                    ? hasNewCard
+                                        ? 'Neues Bild bereit ✓'
+                                        : 'Aktuelles Bild'
+                                    : 'Sozialausweis hochladen (JPG, PNG, HEIC, max. 15 MB)'}
                         </span>
                     </button>
                     <input

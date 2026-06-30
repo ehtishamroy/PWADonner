@@ -23,27 +23,27 @@ function StepBar({ step }: { step: Step }) {
 }
 
 export default function DonorDonatePage() {
-    const router   = useRouter();
-    const [step, setStep]   = useState<Step>(1);
-    const [form, setForm]   = useState({
+    const router = useRouter();
+    const [step, setStep] = useState<Step>(1);
+    const [form, setForm] = useState({
         toyName: '', category: '', ageRange: '', condition: '', description: '',
     });
-    const [images, setImages]   = useState<{ file: File; url: string }[]>([]);
-    const [errors, setErrors]   = useState<Record<string, string>>({});
+    const [images, setImages] = useState<{ file: File; url: string }[]>([]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
-    const fileRef               = useRef<HTMLInputElement>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
     const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || [])).catch(() => {});
+        fetch('/api/categories').then(r => r.json()).then(d => setCategories(d.categories || [])).catch(() => { });
     }, []);
 
     function validateStep1() {
         const e: Record<string, string> = {};
-        if (!form.toyName.trim())     e.toyName     = de.auth.errors.required;
-        if (!form.category)           e.category    = de.auth.errors.required;
-        if (!form.ageRange)           e.ageRange    = 'Bitte wähle eine Altersgruppe.';
-        if (!form.condition)          e.condition   = 'Bitte wähle einen Zustand.';
+        if (!form.toyName.trim()) e.toyName = de.auth.errors.required;
+        if (!form.category) e.category = de.auth.errors.required;
+        if (!form.ageRange) e.ageRange = 'Bitte wähle eine Altersgruppe.';
+        if (!form.condition) e.condition = 'Bitte wähle einen Zustand.';
         if (!form.description.trim()) e.description = de.auth.errors.required;
         return e;
     }
@@ -127,9 +127,9 @@ export default function DonorDonatePage() {
                 const processed = await compressIfNeeded(img.file);
                 fd.append('file', processed);
                 const res = await fetch('/api/upload', { method: 'POST', body: fd });
-                if (res.ok) { 
-                    const { url } = await res.json(); 
-                    imageUrls.push(url); 
+                if (res.ok) {
+                    const { url } = await res.json();
+                    imageUrls.push(url);
                 } else {
                     const data = await res.json().catch(() => ({}));
                     setErrors({ submit: `Fehler beim Bild-Upload: ${data.error || 'Bitte versuche es erneut.'}` });
@@ -225,9 +225,9 @@ export default function DonorDonatePage() {
                                         onClick={() => setForm(f => ({ ...f, ageRange: a }))}
                                         className="px-3 py-1.5 rounded-full text-[12px] font-bold border-2 transition-colors"
                                         style={{
-                                            borderColor:     form.ageRange === a ? BRAND.green : '#E5E7EB',
+                                            borderColor: form.ageRange === a ? BRAND.green : '#E5E7EB',
                                             backgroundColor: form.ageRange === a ? BRAND.green : 'transparent',
-                                            color:           form.ageRange === a ? '#fff' : '#000',
+                                            color: form.ageRange === a ? '#fff' : '#000',
                                         }}>
                                         {a}
                                     </button>
@@ -246,9 +246,9 @@ export default function DonorDonatePage() {
                                         onClick={() => setForm(f => ({ ...f, condition: c }))}
                                         className="px-3 py-1.5 rounded-full text-[12px] font-bold border-2 transition-colors text-center"
                                         style={{
-                                            borderColor:     form.condition === c ? BRAND.green : '#E5E7EB',
+                                            borderColor: form.condition === c ? BRAND.green : '#E5E7EB',
                                             backgroundColor: form.condition === c ? BRAND.green : 'transparent',
-                                            color:           form.condition === c ? '#fff' : '#000',
+                                            color: form.condition === c ? '#fff' : '#000',
                                         }}>
                                         {CONDITION_LABELS[c]}
                                     </button>
@@ -329,10 +329,10 @@ export default function DonorDonatePage() {
                             {de.donate.reviewTitle}
                         </h2>
                         {[
-                            { label: de.donate.toyName,    value: form.toyName },
-                            { label: de.donate.category,   value: form.category },
-                            { label: de.donate.ageRange,   value: form.ageRange },
-                            { label: de.donate.condition,  value: CONDITION_LABELS[form.condition] || form.condition },
+                            { label: de.donate.toyName, value: form.toyName },
+                            { label: de.donate.category, value: form.category },
+                            { label: de.donate.ageRange, value: form.ageRange },
+                            { label: de.donate.condition, value: CONDITION_LABELS[form.condition] || form.condition },
                             { label: de.donate.description, value: form.description },
                         ].map(({ label, value }) => (
                             <div key={label} className="border-b border-gray-100 pb-3">
@@ -386,7 +386,7 @@ export default function DonorDonatePage() {
                         <button onClick={() => setStep((s) => (s - 1) as Step)}
                             className="inline-flex items-center gap-2">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                                <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round" />
                             </svg>
                             <span className="font-bold uppercase tracking-widest text-sm"
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>

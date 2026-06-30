@@ -95,7 +95,7 @@ export default function FamilyRegisterPage() {
         fetch('/api/orgs', { signal: ctrl.signal })
             .then(r => r.json())
             .then(d => { if (mounted.current) setOrgs(d.orgs || []); })
-            .catch(() => {});
+            .catch(() => { });
         return () => ctrl.abort();
     }, []);
 
@@ -109,15 +109,15 @@ export default function FamilyRegisterPage() {
     const isStepComplete = step === 1
         ? (form.firstName.trim() && form.lastName.trim() && form.email.trim() && form.privacy)
         : step === 2
-        ? (form.street.trim() && form.zipCode.trim() && form.city.trim())
-        : step === 3
-        ? (form.socialCardOrg && form.socialCardUrl)
-        : true; // step 4 (newsletter) is always complete (optional)
+            ? (form.street.trim() && form.zipCode.trim() && form.city.trim())
+            : step === 3
+                ? (form.socialCardOrg && form.socialCardUrl)
+                : true; // step 4 (newsletter) is always complete (optional)
 
     function validate1() {
         const e: Record<string, string> = {};
         if (!form.firstName.trim()) e.firstName = de.auth.errors.required;
-        if (!form.lastName.trim())  e.lastName  = de.auth.errors.required;
+        if (!form.lastName.trim()) e.lastName = de.auth.errors.required;
         if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
             e.email = de.auth.errors.emailInvalid;
         if (!form.privacy) e.privacy = de.auth.errors.required;
@@ -165,10 +165,10 @@ export default function FamilyRegisterPage() {
                         action: 'register-family',
                         email: form.email,
                         firstName: form.firstName,
-                        lastName:  form.lastName,
-                        street:    form.street,
-                        zipCode:   form.zipCode,
-                        city:      form.city,
+                        lastName: form.lastName,
+                        street: form.street,
+                        zipCode: form.zipCode,
+                        city: form.city,
                         socialCardUrl: form.socialCardUrl,
                         socialCardOrg: form.socialCardOrg,
                         newsletter: form.newsletter,
@@ -194,7 +194,7 @@ export default function FamilyRegisterPage() {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ email: form.email, code }),
+                body: JSON.stringify({ email: form.email, code }),
             });
             if (!mounted.current) return;
             if (!res.ok) {
@@ -238,8 +238,8 @@ export default function FamilyRegisterPage() {
                             <div className="space-y-7">
                                 {[
                                     { key: 'firstName', label: de.family.register.firstName, placeholder: 'Dein Vorname' },
-                                    { key: 'lastName',  label: de.family.register.lastName,  placeholder: 'Dein Nachname' },
-                                    { key: 'email',     label: de.family.register.email,     placeholder: 'beispiel@mail.com' },
+                                    { key: 'lastName', label: de.family.register.lastName, placeholder: 'Dein Nachname' },
+                                    { key: 'email', label: de.family.register.email, placeholder: 'beispiel@mail.com' },
                                 ].map(({ key, label, placeholder }) => (
                                     <div key={key} className="space-y-1">
                                         <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
@@ -314,7 +314,7 @@ export default function FamilyRegisterPage() {
                                 <button onClick={() => setStep((s) => (s - 1) as Step)}
                                     className="inline-flex items-center gap-2">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round"/>
+                                        <path d="M12 5L7 10L12 15" stroke={BRAND.green} strokeWidth="2.5" strokeLinecap="round" />
                                     </svg>
                                     <span className="font-bold uppercase tracking-widest text-sm"
                                         style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
@@ -415,8 +415,8 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
                                     setForm(f => ({
                                         ...f,
                                         street: s.street,
-                                        ...(s.zip  ? { zipCode: s.zip }  : {}),
-                                        ...(s.city ? { city:    s.city } : {}),
+                                        ...(s.zip ? { zipCode: s.zip } : {}),
+                                        ...(s.city ? { city: s.city } : {}),
                                     }));
                                     setShowStreetSugg(false);
                                 }}

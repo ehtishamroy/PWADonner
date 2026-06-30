@@ -11,7 +11,7 @@ import { useFamilyCart } from '@/lib/familyCart';
 type FamilyInfo = { firstName: string; lastName: string; street: string; zipCode: string; city: string };
 
 type CartDonation = {
-    category: string; status: string;
+    id: string; toyName: string; category: string; condition: string; status: string;
     reservedUntil?: string | null;
     reservedByFamilyId?: string | null;
     images: { imageUrl: string }[];

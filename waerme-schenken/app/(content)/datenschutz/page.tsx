@@ -8,7 +8,7 @@ export default function PrivacyPage() {
             <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                 Datenschutzerklärung
             </h1>
-            <p className="text-xs opacity-50 mb-8">Zuletzt aktualisiert am 20. Oktober 2023</p>
+            <p className="text-xs opacity-50 mb-8">Zuletzt aktualisiert am 6. Juli 2026</p>
 
             <p className="mb-4">
                 Die Datenschutzerklärung beschreibt, wie und wozu wir Personendaten erheben, bearbeiten und verwenden. Der Schutz Ihrer persönlichen Daten ist uns ein grosses Anliegen. 
@@ -37,16 +37,21 @@ export default function PrivacyPage() {
             <p className="opacity-80 mb-2">Unsere Webseite verwendet Cookies. Bei Cookies handelt es sich um Datensätze, die mit Hilfe des Browsers auf dem Betriebssystem Ihres Gerätes abgelegt werden, wenn Sie unsere Webseite aufrufen. Cookies richten auf Ihrem Rechner keinen Schaden an und enthalten keine Viren.</p>
             <p className="opacity-80 mb-6">Die meisten der von uns verwendeten Cookies sind so genannte “Session-Cookies”. Sie werden nach Ende Ihres Besuchs automatisch gelöscht. Andere Cookies bleiben auf Ihrem Endgerät gespeichert bis Sie diese löschen. Diese Cookies ermöglichen es uns, Ihren Browser beim nächsten Besuch wiederzuerkennen. Dadurch können wir gewisse Einstellungen (wie z.B. Spracheinstellungen oder Ortsangaben) speichern, damit Sie diese bei erneutem Aufruf der Webseite nicht neu eingeben müssen.</p>
 
-            <h3 className="font-bold text-lg mb-2">6. Wix</h3>
-            <p className="opacity-80 mb-6">Wix ist ein Website-Baukasten, der es Menschen ermöglicht, professionelle Webseiten ohne Codierung oder Entwicklungskenntnisse zu erstellen. Der Wix-Editor bietet eine reiche Palette an Tools, mit denen Benutzer komplexe und kreative Webseiten erstellen können, einschließlich des Hinzufügens von Inhalten, Grafiken, Videos und mehr. Wix bietet auch eine Reihe von Apps, die es Benutzern ermöglichen, ihre Webseiten auf verschiedene Arten zu optimieren, einschließlich der Erstellung von Blogs, Online-Shops, E-Mail-Marketing-Kampagnen und mehr.</p>
+            <h3 className="font-bold text-lg mb-2">6. Hosting (Infomaniak)</h3>
+            <p className="opacity-80 mb-6">Unsere Applikation wird auf Servern von <strong>Infomaniak Network AG</strong> (Schweiz) gehostet. Dabei können technische Zugriffsdaten (z.B. IP-Adressen, Zeitstempel) in Server-Logs gespeichert werden. Infomaniak ist ein schweizer Unternehmen und unterliegt dem Schweizer Datenschutzgesetz (DSG) sowie der DSGVO.</p>
 
-            <h3 className="font-bold text-lg mb-2">7. Newsletter</h3>
-            <p className="opacity-80 mb-6">Wenn Sie den auf der Website angebotenen Newsletter beziehen möchten, benötigen wir von Ihnen Ihren Vornamen und eine E-Mail-Adresse. Diese Daten verwenden wir ausschliesslich für den Versand der angeforderten Informationen über die Firma Wix.</p>
+            <h3 className="font-bold text-lg mb-2">7. Datenbankdienstleister (Neon)</h3>
+            <p className="opacity-80 mb-4">Ihre Daten (wie Name, E-Mail-Adresse, Adresse und Spendeninformationen) werden in einer Datenbank gespeichert, die vom Anbieter <strong>Neon, Inc.</strong> bereitgestellt wird. Neon ist ein Cloud-Datenbankdienst (PostgreSQL) mit Sitz in den USA. Die Datenverarbeitung erfolgt gemäss den Datenschutzbestimmungen von Neon und ist durch entsprechende Vereinbarungen (Data Processing Agreement) geregelt.</p>
+            <p className="opacity-80 mb-6">Weitere Informationen finden Sie auf der DSGVO-Seite von Neon: <a href="https://trust.neon.com/" target="_blank" rel="noopener noreferrer" className="underline text-green-700">https://trust.neon.com/</a></p>
 
-            <h3 className="font-bold text-lg mb-2">8. Haftungsbeschränkung</h3>
+            <h3 className="font-bold text-lg mb-2">8. E-Mail-Versand (Resend)</h3>
+            <p className="opacity-80 mb-4">Für den Versand von transaktionalen E-Mails (z.B. Anmeldecodes, Spendenbestätigungen) nutzen wir den Dienst <strong>Resend</strong> (Resend Inc., USA). Resend verarbeitet dabei die E-Mail-Adresse und den Namen der Empfänger ausschliesslich zum Zweck des E-Mail-Versands. Es findet kein IP-Tracking, kein Open-Tracking und kein Click-Tracking statt.</p>
+            <p className="opacity-80 mb-6">Weitere Informationen finden Sie im Datenschutzvertrag (DPA) von Resend: <a href="https://resend.com/legal/dpa" target="_blank" rel="noopener noreferrer" className="underline text-green-700">https://resend.com/legal/dpa</a></p>
+
+            <h3 className="font-bold text-lg mb-2">9. Haftungsbeschränkung</h3>
             <p className="opacity-80 mb-6">Verantwortlich für diese Datenschutzerklärung ist « Wärme Schenken ». Die Informationen auf dieser Website wurden mit grosser Sorgfalt zusammengestellt. Für die Aktualität, Richtigkeit und Vollständigkeit kann gleichwohl keine Gewähr übernommen werden. Aus diesem Grund ist jegliche Haftung für eventuelle Schäden im Zusammenhang mit der Nutzung der Informationen in dieser Datenschutzerklärung ausgeschlossen. Durch die blosse Nutzung dieser Website kommt keinerlei Vertragsverhältnis mit « Wärme Schenken » zustande.</p>
 
-            <h3 className="font-bold text-lg mb-2">9. Aktualität und Änderung dieser Datenschutzerklärung</h3>
+            <h3 className="font-bold text-lg mb-2">10. Aktualität und Änderung dieser Datenschutzerklärung</h3>
             <p className="opacity-80 mb-6">Wir können diese Datenschutzerklärung jederzeit ändern. Die Änderungen werden auf www.waerme-schenken.ch veröffentlicht, Sie werden nicht gesondert informiert.</p>
         </article>
     );

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { deleteFile } from '@/lib/storage';
 import { sendDonationSentEmail, sendToyDeletedEmail, sendDonorDonationSentConfirmationEmail } from '@/lib/email';
+
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -75,7 +77,11 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const session = await getSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const donation = await db.donation.findUnique({ where: { id } });
+    const donation = await db.donation.findUnique({ 
+        where: { id },
+        include: { images: true, reimbursement: { include: { images: true } } }
+    });
+    
     if (!donation || donation.donorId !== session.userId) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
@@ -90,6 +96,18 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
         const family = await db.user.findUnique({ where: { id: donation.selectedByFamilyId } });
         if (family) {
             sendToyDeletedEmail(family.email, family.firstName, donation.toyName).catch(console.error);
+        }
+    }
+
+    // Delete donation images from disk
+    for (const img of donation.images) {
+        await deleteFile(img.imageUrl);
+    }
+    
+    // Delete reimbursement images from disk
+    if (donation.reimbursement) {
+        for (const img of donation.reimbursement.images) {
+            await deleteFile(img.imageUrl);
         }
     }
 

@@ -27,3 +27,21 @@ export function getPublicUrl(filename: string): string {
     }
     return `/uploads/donations/${filename}`;
 }
+
+/**
+ * Safely deletes a file from the public directory if it exists.
+ * Expects a relative public URL (e.g., /uploads/donations/123.jpg).
+ */
+export async function deleteFile(publicUrl: string | null | undefined) {
+    if (!publicUrl || !publicUrl.startsWith('/uploads/')) return;
+    
+    // Remove leading slash to make it relative to 'public'
+    const relativePath = publicUrl.substring(1);
+    const absolutePath = path.join(process.cwd(), 'public', relativePath);
+    
+    try {
+        await fs.promises.unlink(absolutePath);
+    } catch (e) {
+        // Ignore if file doesn't exist
+    }
+}

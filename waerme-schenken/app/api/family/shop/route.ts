@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
         OR: [
             { reservedUntil: null },
             { reservedUntil: { lt: new Date() } },
-            { reservedByFamilyId: user.id }
         ]
     };
     if (category) where.category = category;

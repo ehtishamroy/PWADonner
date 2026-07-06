@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useState, useRef } from 'react';
-import { ShoppingCart, Package } from 'lucide-react';
-import Image from 'next/image';
+import { Package, Minus, Plus } from 'lucide-react';
+
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { useFamilyCart } from '@/lib/familyCart';
@@ -82,7 +82,7 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                     className="relative rounded-[8px] overflow-hidden aspect-square bg-white shadow-md flex items-center justify-center touch-pan-y select-none"
                 >
                     <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[12px] font-medium z-10"
-                        style={{ backgroundColor: condColor, opacity: 0.75 }}>
+                        style={{ backgroundColor: condColor }}>
                         {condShort}
                     </div>
                     {current ? (
@@ -127,11 +127,22 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                         backgroundColor: BRAND.green,
                         fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '13px', letterSpacing: '0.15em',
                     }}>
-                    {added ? (
-                        <><Image src="/images/cart.png" alt="" width={20} height={20} className="brightness-0 invert" /> {de.family.shop.added.toUpperCase()}</>
-                    ) : (
-                        <><ShoppingCart size={18} fill="white" /> {de.family.shop.addToCart.toUpperCase()}</>
-                    )}
+                    <div className="relative w-[20px] h-[20px] flex items-center justify-center">
+                        <div style={{
+                            WebkitMaskImage: 'url(/images/cart.png)',
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            backgroundColor: '#fff',
+                            width: '100%', height: '100%'
+                        }} />
+                        <div className="absolute -top-0.5 -right-1.5 bg-white rounded-full w-3.5 h-3.5 flex items-center justify-center shadow-sm">
+                            {added
+                                ? <Minus size={10} color={BRAND.green} strokeWidth={4} />
+                                : <Plus  size={10} color={BRAND.green} strokeWidth={4} />}
+                        </div>
+                    </div>
+                    {added ? de.family.shop.added.toUpperCase() : de.family.shop.addToCart.toUpperCase()}
                 </button>
             </div>
 

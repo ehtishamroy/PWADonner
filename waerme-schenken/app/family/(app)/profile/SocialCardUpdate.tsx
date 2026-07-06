@@ -44,7 +44,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
             img.onload = () => {
                 URL.revokeObjectURL(url);
                 const canvas = document.createElement('canvas');
-                const MAX_DIM = 2048;
+                const MAX_DIM = 2500;
                 let { width, height } = img;
                 if (width > MAX_DIM || height > MAX_DIM) {
                     if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
@@ -52,11 +52,16 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                 }
                 canvas.width = width;
                 canvas.height = height;
-                canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+                
+                const ctx = canvas.getContext('2d')!;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, width, height);
+                
                 canvas.toBlob((blob) => {
                     if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
                     else resolve(file);
-                }, 'image/jpeg', 0.82);
+                }, 'image/jpeg', 0.95);
             };
             img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
             img.src = url;

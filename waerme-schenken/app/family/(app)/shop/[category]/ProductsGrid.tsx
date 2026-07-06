@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-    Search, ChevronDown, Package, ArrowUp, Minus
+    Search, ChevronDown, Package, ArrowUp, Minus, Plus
 } from 'lucide-react';
-import Image from 'next/image';
 import { BRAND, CONDITION_COLORS, AGE_RANGES } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { useFamilyCart, CART_MAX } from '@/lib/familyCart';
@@ -170,7 +169,7 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
                                 <Link href={`/family/shop/${encodeURIComponent(category)}/${p.id}`}
                                     className="relative w-full aspect-square rounded-[6px] overflow-hidden mb-2 bg-gray-100">
                                     <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-medium z-10"
-                                        style={{ backgroundColor: condColor, opacity: 0.75, color: '#000' }}>
+                                        style={{ backgroundColor: condColor, color: '#000' }}>
                                         {cond}
                                     </div>
                                     {thumb ? (
@@ -193,23 +192,21 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
                                 <button onClick={e => { e.stopPropagation(); added ? cart.remove(p.id) : handleAdd(p.id); }}
                                     className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/70"
                                     aria-label={added ? 'Entfernen' : 'Hinzufügen'}>
-                                    {added ? (
-                                        <div className="relative w-[18px] h-[18px] flex items-center justify-center">
-                                            <div style={{
-                                                WebkitMaskImage: 'url(/images/cart.png)',
-                                                WebkitMaskSize: 'contain',
-                                                WebkitMaskRepeat: 'no-repeat',
-                                                WebkitMaskPosition: 'center',
-                                                backgroundColor: BRAND.green,
-                                                width: '100%', height: '100%'
-                                            }} />
-                                            <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50 shadow-sm">
-                                                <Minus size={10} color={BRAND.green} strokeWidth={4} />
-                                            </div>
+                                    <div className="relative w-[18px] h-[18px] flex items-center justify-center">
+                                        <div style={{
+                                            WebkitMaskImage: 'url(/images/cart.png)',
+                                            WebkitMaskSize: 'contain',
+                                            WebkitMaskRepeat: 'no-repeat',
+                                            WebkitMaskPosition: 'center',
+                                            backgroundColor: BRAND.green,
+                                            width: '100%', height: '100%'
+                                        }} />
+                                        <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50 shadow-sm">
+                                            {added
+                                                ? <Minus size={10} color={BRAND.green} strokeWidth={4} />
+                                                : <Plus  size={10} color={BRAND.green} strokeWidth={4} />}
                                         </div>
-                                    ) : (
-                                        <Image src="/images/shopcart.png" alt="" width={20} height={20} />
-                                    )}
+                                    </div>
                                 </button>
                             </div>
                         );

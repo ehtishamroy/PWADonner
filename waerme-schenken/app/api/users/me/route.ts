@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { deleteFile } from '@/lib/storage';
+import { sendToyDeletedEmail } from '@/lib/email';
 
 export async function GET() {
     const session = await getSession();
@@ -47,6 +49,8 @@ export async function DELETE() {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     try {
+        const user = await db.user.findUnique({ where: { id: session.userId } });
+
         // If family: release any selected-but-not-yet-sent donations back to the shop.
         await db.donation.updateMany({
             where: {
@@ -60,16 +64,40 @@ export async function DELETE() {
             },
         });
 
-        // If donor: delete their donations + images.
+        // If donor: process their donations before deletion
         const donations = await db.donation.findMany({
             where:  { donorId: session.userId },
-            select: { id: true },
+            include: { images: true, reimbursement: { include: { images: true } } },
         });
+
         for (const d of donations) {
-            await db.donationImage.deleteMany({ where: { donationId: d.id } });
+            // Email #8: notify family if the selected toy is being removed
+            if (d.status === 'selected' && d.selectedByFamilyId) {
+                const family = await db.user.findUnique({ where: { id: d.selectedByFamilyId } });
+                if (family) {
+                    sendToyDeletedEmail(family.email, family.firstName, d.toyName).catch(console.error);
+                }
+            }
+            
+            // Delete donation images from disk
+            for (const img of d.images) {
+                await deleteFile(img.imageUrl);
+            }
+            
+            // Delete reimbursement images from disk
+            if (d.reimbursement) {
+                for (const img of d.reimbursement.images) {
+                    await deleteFile(img.imageUrl);
+                }
+            }
         }
-        await db.donation.deleteMany({ where: { donorId: session.userId } });
-        await db.session.deleteMany({ where: { userId: session.userId } });
+
+        // Delete social card from disk if exists
+        if (user?.socialCardUrl) {
+            await deleteFile(user.socialCardUrl);
+        }
+
+        // Delete user (Prisma cascade handles deleting donations, images, sessions, etc.)
         await db.user.delete({ where: { id: session.userId } });
         return NextResponse.json({ success: true });
     } catch {

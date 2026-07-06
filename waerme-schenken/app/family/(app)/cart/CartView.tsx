@@ -48,9 +48,9 @@ export function CartView({ family }: { family: FamilyInfo }) {
 
     useEffect(() => {
         if (!userId || items.length === 0) return;
-        const reservedItems = items.filter(i => 
-            i.reservedByFamilyId === userId && 
-            i.reservedUntil && 
+        const reservedItems = items.filter(i =>
+            i.reservedByFamilyId === userId &&
+            i.reservedUntil &&
             new Date(i.reservedUntil).getTime() > Date.now()
         );
         if (reservedItems.length === 0) {
@@ -60,13 +60,22 @@ export function CartView({ family }: { family: FamilyInfo }) {
         const minTime = Math.min(...reservedItems.map(i => new Date(i.reservedUntil!).getTime()));
         const update = () => {
             const left = minTime - Date.now();
-            if (left <= 0) setTimeLeft(null);
-            else setTimeLeft(left);
+            if (left <= 0) {
+                setTimeLeft(null);
+                // Auto-remove all expired items from the cart
+                for (const i of reservedItems) {
+                    if (new Date(i.reservedUntil!).getTime() <= Date.now()) {
+                        cart.remove(i.id);
+                    }
+                }
+            } else {
+                setTimeLeft(left);
+            }
         };
         update();
         const interval = setInterval(update, 1000);
         return () => clearInterval(interval);
-    }, [items, userId]);
+    }, [items, userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const formatTime = (ms: number) => {
         const totalSecs = Math.floor(ms / 1000);
@@ -255,7 +264,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
                                         </h3>
                                         <p className="text-[12px] opacity-60 mb-1">{p.ageRange}</p>
                                         <span className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium"
-                                            style={{ backgroundColor: condColor, opacity: 0.75 }}>
+                                            style={{ backgroundColor: condColor }}>
                                             {cond}
                                         </span>
                                         {stale && (

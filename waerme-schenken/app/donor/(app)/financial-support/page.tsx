@@ -188,7 +188,7 @@ export default function FinancialSupportPage() {
                 </h1>
 
                 {/* ── Twint / Phone Section ─────────────────────────────── */}
-                <div className="bg-white rounded-[8px] p-6 shadow-sm mb-6">
+                <div className="bg-white rounded-[8px] p-6 mb-6">
                     <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                             <Phone size={16} style={{ color: BRAND.green }} />
@@ -279,7 +279,7 @@ export default function FinancialSupportPage() {
                 {/* ── New Reimbursement Form (only when phone saved) ────── */}
                 {hasPhone && (
                     donations.length > 0 ? (
-                        <form onSubmit={handleSubmit} className="bg-white rounded-[8px] p-6 shadow-sm mb-6">
+                        <form onSubmit={handleSubmit} className="bg-white rounded-[8px] p-6 mb-6">
                             <h3 className="font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                 Neuer Antrag
                             </h3>
@@ -369,7 +369,7 @@ export default function FinancialSupportPage() {
                             </button>
                         </form>
                     ) : (
-                        <div className="bg-white rounded-[8px] p-6 text-center mb-6 shadow-sm">
+                        <div className="bg-white rounded-[8px] p-6 text-center mb-6">
                             <p className="opacity-50 text-sm">Keine ausstehenden Spenden für Erstattung.</p>
                             <p className="text-xs opacity-40 mt-2">Nur Spenden mit Status «Gesendet» können eingereicht werden.</p>
                         </div>
@@ -384,7 +384,7 @@ export default function FinancialSupportPage() {
                         </h3>
                         <div className="space-y-3">
                             {reimbursements.map(r => (
-                                <div key={r.id} className="bg-white rounded-[8px] p-4 shadow-sm">
+                                <div key={r.id} className="bg-white rounded-[8px] p-4">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
                                             <p className="font-bold">{r.donation?.toyName || 'Spende'}</p>

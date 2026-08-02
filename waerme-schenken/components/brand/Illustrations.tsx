@@ -48,7 +48,7 @@ export function Car({ width = 120, height = 80, className = '' }: IllProps) {
 
 export function ZebraCat({ width = 70, height = 70, className = '' }: IllProps) {
     return (
-        <div style={{ width, height, position: 'relative' }} className={`drop-shadow-sm ${className}`}>
+        <div style={{ width, height, position: 'relative' }} className={className}>
             <Image src="/api/img/ill-zebracat" alt="Zebra Cat Sticker" fill className="object-contain" unoptimized />
         </div>
     );

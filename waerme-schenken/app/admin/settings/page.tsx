@@ -55,6 +55,7 @@ export default async function AdminSettingsPage() {
                             { href: '/admin/categories',      label: 'Kategoriebilder' },
                             { href: '/admin/banner',          label: 'News Banner' },
                             { href: '/admin/shop-schedule',   label: 'Börse öffnen/schliessen' },
+                            { href: '/admin/donation-schedule', label: 'Spendenformular öffnen/schliessen' },
                         ].map(l => (
                             <Link key={l.href} href={l.href}
                                 className="block p-4 rounded-[8px] border border-gray-100 hover:bg-gray-50 font-bold text-sm"

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { deleteFile } from '@/lib/storage';
-import { sendToyDeletedEmail } from '@/lib/email';
+import { sendToyDeletedEmail, sendAccountDeletedEmail } from '@/lib/email';
 
 export async function GET() {
     const session = await getSession();
@@ -99,6 +99,12 @@ export async function DELETE() {
 
         // Delete user (Prisma cascade handles deleting donations, images, sessions, etc.)
         await db.user.delete({ where: { id: session.userId } });
+
+        // Send account deletion confirmation email
+        if (user) {
+            sendAccountDeletedEmail(user.email, user.firstName).catch(console.error);
+        }
+
         return NextResponse.json({ success: true });
     } catch {
         return NextResponse.json({ error: 'Database error' }, { status: 500 });

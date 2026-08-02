@@ -77,7 +77,7 @@ export function DonorSidebar() {
             {showLogout && (
                 <div className="fixed inset-0 bg-black/30 z-[60] flex items-center justify-center px-6"
                     onClick={() => setShowLogout(false)}>
-                    <div className="bg-white rounded-[16px] p-7 w-full max-w-xs shadow-xl"
+                    <div className="bg-white rounded-[16px] p-7 w-full max-w-xs"
                         onClick={e => e.stopPropagation()}>
                         <p className="text-[18px] font-bold mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Abmelden?</p>
                         <p className="text-[14px] opacity-60 mb-6" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Du bist dabei, dich abzumelden.</p>

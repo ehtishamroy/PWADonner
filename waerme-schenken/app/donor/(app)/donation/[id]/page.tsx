@@ -61,7 +61,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
             >
                 {/* Image carousel */}
                 {donation.images.length > 0 ? (
-                    <div className="relative rounded-[8px] overflow-hidden aspect-square max-h-[500px] mx-auto mb-4 shadow-md"
+                    <div className="relative rounded-[8px] overflow-hidden aspect-square max-h-[500px] mx-auto mb-4"
                         style={{ backgroundColor: 'white' }}>
                         <ConditionBadge condition={donation.condition} className="absolute top-4 left-4 z-30" />
                         <ImageCarousel images={donation.images} altBase={donation.toyName} />

@@ -227,7 +227,7 @@ export default function DonorRegisterPage() {
             </div>
 
             {/* Bottom Section — White */}
-            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
+            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] flex flex-col overflow-auto">
                 <div className="w-full mx-auto px-8 pt-8 pb-5 flex flex-col flex-grow">
 
                     <div className="flex-grow">
@@ -289,7 +289,7 @@ export default function DonorRegisterPage() {
                                         </div>
                                         {/* Dropdown */}
                                         {showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-56 overflow-y-auto">
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] border border-gray-100 z-50 max-h-56 overflow-y-auto">
                                                 {suggestions.map((s, i) => (
                                                     <button key={i} type="button"
                                                         onMouseDown={e => e.preventDefault()}
@@ -364,7 +364,7 @@ export default function DonorRegisterPage() {
                             <button
                                 onClick={handleNext}
                                 disabled={loading}
-                                className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
+                                className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
                                 style={{ backgroundColor: isStepComplete ? BRAND.green : 'rgba(155,155,155,0.25)', fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                             >
                                 {loading ? de.common.loading : de.auth.register.next.toUpperCase()}
@@ -401,7 +401,7 @@ function OtpStepContent({ email, onVerify, error }: { email: string; onVerify: (
     return (
         <>
             <p className="mb-8 opacity-70 text-[15px]">{de.auth.otp.body} <strong>{email}</strong></p>
-            <div className="bg-white rounded-[8px] p-8 shadow-sm">
+            <div className="bg-white rounded-[8px] p-8">
                 <label className="block mb-3"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>{de.auth.otp.label}</label>
                 <input
@@ -420,7 +420,7 @@ function OtpStepContent({ email, onVerify, error }: { email: string; onVerify: (
                 <button
                     onClick={() => onVerify(code)}
                     disabled={code.length !== 6}
-                    className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-40 flex items-center justify-center"
+                    className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 disabled:opacity-40 flex items-center justify-center"
                     style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                 >
                     {de.auth.otp.cta.toUpperCase()}

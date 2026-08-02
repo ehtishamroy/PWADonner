@@ -36,7 +36,7 @@ export function DonationSendCard({ donationId, family }: Props) {
 
     return (
         <div className="px-5 mb-4">
-            <div className="bg-white rounded-[24px] p-7 shadow-sm relative z-10 mb-[-40px]">
+            <div className="bg-white rounded-[24px] p-7 relative z-10 mb-[-40px]">
                 {/* Address */}
                 <p className="text-xs font-bold uppercase tracking-widest opacity-40 mb-2"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>

@@ -32,7 +32,7 @@ export function SuccessToast({ message }: { message: string }) {
 
     return (
         <div
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl"
             style={{ backgroundColor: BRAND.greenDark, color: '#fff', width: '90vw' }}
         >
             <CheckCircle2 size={18} className="shrink-0" />

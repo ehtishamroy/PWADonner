@@ -37,7 +37,7 @@ export default function DeleteProfilePage() {
     if (success) {
         return (
             <div className="min-h-screen flex items-center justify-center px-5" style={{ backgroundColor: BRAND.beige }}>
-                <div className="bg-white rounded-[28px] p-10 shadow-sm flex flex-col items-center text-center max-w-sm w-full">
+                <div className="bg-white rounded-[28px] p-10 flex flex-col items-center text-center max-w-sm w-full">
                     <CheckCircle2 size={48} className="mb-4" style={{ color: BRAND.green }} />
                     <h2 className="font-bold text-xl mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                         Profil gelöscht
@@ -65,7 +65,7 @@ export default function DeleteProfilePage() {
                     Profil löschen
                 </h1>
 
-                <div className="bg-white rounded-[28px] p-7 shadow-sm mb-6">
+                <div className="bg-white rounded-[28px] p-7 mb-6">
                     <div className="flex items-center justify-center w-14 h-14 rounded-full mb-5 mx-auto" style={{ backgroundColor: `${BRAND.error}15` }}>
                         <Trash2 size={24} style={{ color: BRAND.error }} />
                     </div>

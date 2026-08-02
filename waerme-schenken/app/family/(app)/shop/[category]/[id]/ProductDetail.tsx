@@ -79,7 +79,7 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                 <div
                     onTouchStart={onTouchStart}
                     onTouchEnd={onTouchEnd}
-                    className="relative rounded-[8px] overflow-hidden aspect-square bg-white shadow-md flex items-center justify-center touch-pan-y select-none"
+                    className="relative rounded-[8px] overflow-hidden aspect-square bg-white flex items-center justify-center touch-pan-y select-none"
                 >
                     <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[12px] font-medium z-10"
                         style={{ backgroundColor: condColor }}>
@@ -122,7 +122,7 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
             {/* CTA */}
             <div className="px-5">
                 <button onClick={toggle}
-                    className="w-full h-12 rounded-full text-white flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
+                    className="w-full h-12 rounded-full text-white flex items-center justify-center gap-3 active:scale-95 transition-all"
                     style={{
                         backgroundColor: BRAND.green,
                         fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '13px', letterSpacing: '0.15em',
@@ -136,7 +136,7 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
                             backgroundColor: '#fff',
                             width: '100%', height: '100%'
                         }} />
-                        <div className="absolute -top-0.5 -right-1.5 bg-white rounded-full w-3.5 h-3.5 flex items-center justify-center shadow-sm">
+                        <div className="absolute -top-0.5 -right-1.5 bg-white rounded-full w-3.5 h-3.5 flex items-center justify-center">
                             {added
                                 ? <Minus size={10} color={BRAND.green} strokeWidth={4} />
                                 : <Plus  size={10} color={BRAND.green} strokeWidth={4} />}
@@ -147,7 +147,7 @@ export function ProductDetail({ id, category, toyName, ageRange, condition, desc
             </div>
 
             {limitToast && (
-                <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 bg-black/90 text-white px-5 py-3 rounded-full text-sm z-50 shadow-lg">
+                <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 bg-black/90 text-white px-5 py-3 rounded-full text-sm z-50">
                     {de.family.shop.limitReached}
                 </div>
             )}

@@ -302,3 +302,25 @@ export async function sendOtpEmail(to: string, code: string) {
         `,
     });
 }
+
+// ── #11: Account Deleted Confirmation ─────────────────────────────────────
+export async function sendAccountDeletedEmail(
+    to: string,
+    userName: string,
+) {
+    return resend.emails.send({
+        from:    FROM,
+        to,
+        subject: 'Dein Konto wurde gelöscht',
+        html: `
+          <span style="display:none;max-height:0;overflow:hidden;">Dein Konto bei Wärme Schenken wurde erfolgreich gelöscht.</span>
+          <h2>Dein Konto wurde gelöscht</h2>
+          <p>Liebe*r ${userName}</p>
+          <p>Dein Konto bei <strong>Wärme Schenken</strong> wurde auf deinen Wunsch hin erfolgreich gelöscht. Alle deine persönlichen Daten wurden entfernt.</p>
+          <p>Solltest du dein Konto nicht selbst gelöscht haben oder Fragen dazu haben, kontaktiere uns bitte umgehend unter <a href="mailto:hallo@waerme-schenken.ch">hallo@waerme-schenken.ch</a>.</p>
+          <p>Wir danken dir für dein Engagement und wünschen dir alles Gute.</p>
+          ${SIGNATURE}
+        `,
+    });
+}
+

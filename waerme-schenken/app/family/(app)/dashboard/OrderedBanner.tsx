@@ -26,7 +26,7 @@ export function OrderedBanner() {
     return (
         <div
             onClick={() => { setVisible(false); router.replace('/family/dashboard'); }}
-            className="flex items-center gap-3 rounded-[8px] px-5 py-4 mb-6 shadow-sm cursor-pointer active:scale-[0.99] transition-transform"
+            className="flex items-center gap-3 rounded-[8px] px-5 py-4 mb-6 cursor-pointer active:scale-[0.99] transition-transform"
             style={{ backgroundColor: BRAND.green }}>
             <CheckCircle2 size={22} className="shrink-0 text-white" />
             <p className="text-white font-bold text-[14px] leading-snug"

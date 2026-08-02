@@ -112,11 +112,13 @@ model NewsBanner {
 }
 
 model ShopConfig {
-    id        String   @id @default(uuid())
-    openDate  DateTime?
-    closeDate DateTime?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id              String   @id @default(uuid())
+    openDate        DateTime?
+    closeDate       DateTime?
+    donationOpenDate  DateTime?
+    donationCloseDate DateTime?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 }
 
 model CategoryImage {

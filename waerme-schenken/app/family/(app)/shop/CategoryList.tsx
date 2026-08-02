@@ -91,7 +91,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
         <>
             {/* Search + Age filter */}
             <div className="flex gap-3 mb-8">
-                <div className="bg-white rounded-full flex-1 h-11 px-5 flex items-center gap-3 shadow-sm border border-black/5">
+                <div className="bg-white rounded-full flex-1 h-11 px-5 flex items-center gap-3 border border-black/5">
                     <input value={search} onChange={e => setSearch(e.target.value)}
                         placeholder={de.family.shop.searchPlaceholder}
                         className="bg-transparent w-full text-[15px] outline-none font-medium" />
@@ -102,7 +102,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                 {!isSearching && (
                     <div className="relative shrink-0">
                         <button onClick={() => setAgeOpen(o => !o)}
-                            className="bg-white rounded-full h-11 px-5 shadow-sm border border-black/5 flex items-center gap-2">
+                            className="bg-white rounded-full h-11 px-5 border border-black/5 flex items-center gap-2">
                             <span className="text-[15px] font-medium" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", color: BRAND.green }}>
                                 {ageFilter || de.family.shop.ageFilter}
                             </span>
@@ -110,7 +110,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                                 className={`transition-transform ${ageOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {ageOpen && (
-                            <div className="absolute top-full right-0 mt-2 bg-white rounded-[12px] shadow-xl overflow-hidden z-50 min-w-[180px]">
+                            <div className="absolute top-full right-0 mt-2 bg-white rounded-[12px] overflow-hidden z-50 min-w-[180px]">
                                 <button onClick={() => { setAgeFilter(''); setAgeOpen(false); }}
                                     className="w-full text-left px-5 py-3 text-sm hover:bg-gray-50 border-b border-gray-50"
                                     style={{
@@ -154,7 +154,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                             const condColor = CONDITION_COLORS[p.condition] || BRAND.lila;
                             const thumb = p.images[0]?.imageUrl;
                             return (
-                                <div key={p.id} className="bg-white rounded-[8px] p-2 pb-3 shadow-sm relative flex flex-col">
+                                <div key={p.id} className="bg-white rounded-[8px] p-2 pb-3 relative flex flex-col">
                                     <Link href={`/family/shop/${encodeURIComponent(p.category)}/${p.id}`}
                                         className="relative w-full aspect-square rounded-[6px] overflow-hidden mb-2 bg-gray-100 block">
                                         <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-medium z-10"
@@ -180,7 +180,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                                     </Link>
                                     <button
                                         onClick={() => added ? cart.remove(p.id) : handleAdd(p.id)}
-                                        className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors bg-white/70"
+                                        className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-colors bg-white/70"
                                         aria-label={added ? 'Entfernen' : 'In Warenkorb'}>
                                         {added ? (
                                             <div className="relative w-[18px] h-[18px] flex items-center justify-center">
@@ -192,7 +192,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                                                     backgroundColor: BRAND.green,
                                                     width: '100%', height: '100%'
                                                 }} />
-                                                <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50 shadow-sm">
+                                                <div className="absolute -top-0.5 -right-1 bg-white rounded-full w-3 h-3 flex items-center justify-center border border-gray-50">
                                                     <Minus size={10} color={BRAND.green} strokeWidth={4} />
                                                 </div>
                                             </div>
@@ -225,7 +225,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                                 : `/family/shop/${encodeURIComponent(cat.id)}`;
                             return (
                                 <Link key={cat.id} href={href}
-                                    className="bg-white rounded-[8px] h-20 flex items-center overflow-hidden hover:scale-[1.01] transition-transform shadow-sm">
+                                    className="bg-white rounded-[8px] h-20 flex items-center overflow-hidden hover:scale-[1.01] transition-transform">
                                     <div className="w-20 h-20 shrink-0 flex items-center justify-center overflow-hidden"
                                         style={{ backgroundColor: cat.bg }}>
                                         {cat.imageUrl ? (
@@ -258,7 +258,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-6"
                     style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
                     onClick={() => setLimitModal(false)}>
-                    <div className="bg-white rounded-[16px] p-8 max-w-sm w-full shadow-2xl text-center"
+                    <div className="bg-white rounded-[16px] p-8 max-w-sm w-full text-center"
                         onClick={e => e.stopPropagation()}>
                         <p className="text-[20px] font-bold mb-3"
                             style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>

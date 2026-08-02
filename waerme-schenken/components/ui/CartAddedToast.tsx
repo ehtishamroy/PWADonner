@@ -33,7 +33,7 @@ export function CartAddedToast() {
         <div
             role="status"
             aria-live="polite"
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-5 py-3.5 rounded-2xl"
             style={{ backgroundColor: BRAND.greenDark, color: '#fff', width: '90vw', fontFamily: "'Bricolage Grotesque',sans-serif" }}
         >
             <ShoppingCart size={18} className="shrink-0" />

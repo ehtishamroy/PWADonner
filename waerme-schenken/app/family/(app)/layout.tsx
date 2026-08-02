@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { FamilySidebar } from '@/components/ui/FamilySidebar';
 import { FamilyBottomNav } from '@/components/ui/FamilyBottomNav';
 import { CartAddedToast } from '@/components/ui/CartAddedToast';
+import { CartSync } from '@/components/ui/CartSync';
 
 /**
  * Shared layout for authenticated Family pages.
@@ -23,6 +24,11 @@ export default async function FamilyLayout({ children }: { children: React.React
     const isSpecial = (user as { familySpecial?: boolean }).familySpecial === true;
     if (requireApproval && !user.familyApproved && !isSpecial) redirect('/family/pending');
 
+    // Count how many toys this family has actually selected (server-side truth)
+    const serverSelectedCount = await db.donation.count({
+        where: { selectedByFamilyId: session.userId, status: { in: ['selected', 'sent'] } },
+    });
+
     return (
         <div className="min-h-screen flex bg-[#F5F0EA]">
             <FamilySidebar />
@@ -31,6 +37,8 @@ export default async function FamilyLayout({ children }: { children: React.React
             </main>
             <FamilyBottomNav />
             <CartAddedToast />
+            <CartSync serverSelectedCount={serverSelectedCount} />
         </div>
     );
 }
+

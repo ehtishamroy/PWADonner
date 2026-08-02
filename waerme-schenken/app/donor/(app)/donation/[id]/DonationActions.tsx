@@ -25,7 +25,7 @@ export function DonationActions({ donationId, status, trackingNumber: initialTra
     if (status === 'sent') {
         return (
             <div className="px-5 mt-6">
-                <div className="bg-white rounded-[20px] p-5 shadow-sm">
+                <div className="bg-white rounded-[20px] p-5">
                     <p className="text-xs font-bold uppercase tracking-widest opacity-40 mb-2"
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                         {de.donationDetail.trackingNumber}
@@ -45,7 +45,7 @@ export function DonationActions({ donationId, status, trackingNumber: initialTra
         return (
             <div className="px-5 mt-6 text-center">
                 {confirm ? (
-                    <div className="bg-white rounded-[20px] p-6 shadow-sm text-center">
+                    <div className="bg-white rounded-[20px] p-6 text-center">
                         <p className="text-[15px] mb-5 opacity-80">{de.donationDetail.deleteConfirm}</p>
                         <div className="flex gap-3 justify-center">
                             <button onClick={() => setConfirm(false)}
@@ -78,7 +78,7 @@ export function DonationActions({ donationId, status, trackingNumber: initialTra
     return (
         <div className="px-5 mt-6">
             {confirm ? (
-                <div className="bg-white rounded-[20px] p-6 shadow-sm text-center">
+                <div className="bg-white rounded-[20px] p-6 text-center">
                     <p className="text-[15px] mb-5 opacity-80">{de.donationDetail.deleteConfirm}</p>
                     <div className="flex gap-3 justify-center">
                         <button onClick={() => setConfirm(false)}

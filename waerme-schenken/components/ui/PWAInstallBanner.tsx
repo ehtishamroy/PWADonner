@@ -70,7 +70,7 @@ export function PWAInstallBanner() {
 
     return (
         <div
-            className="fixed bottom-24 left-4 right-4 z-50 rounded-[20px] shadow-2xl p-4 flex gap-3 items-start"
+            className="fixed bottom-24 left-4 right-4 z-50 rounded-[20px] p-4 flex gap-3 items-start"
             style={{ backgroundColor: BRAND.greenDark, color: '#fff', maxWidth: '420px', margin: '0 auto' }}
         >
             {/* Icon */}

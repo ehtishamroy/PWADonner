@@ -38,7 +38,7 @@ export default async function DonorProfilePage() {
                 </h1>
 
                 {/* Details card */}
-                <div className="bg-white rounded-[7px] p-7 shadow-sm mb-4 relative overflow-hidden">
+                <div className="bg-white rounded-[7px] p-7 mb-4 relative overflow-hidden">
                     <h3 className="mb-4"
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.details}</h3>
                     <p className="font-bold text-[18px] mb-1">{user.firstName} {user.lastName}</p>
@@ -50,7 +50,7 @@ export default async function DonorProfilePage() {
                 </div>
 
                 {/* Address card */}
-                <div className="bg-white rounded-[7px] p-7 shadow-sm mb-6 relative">
+                <div className="bg-white rounded-[7px] p-7 mb-6 relative">
                     <h3 className="mb-4"
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000', opacity: 1 }}>{de.profile.address}</h3>
                     {user.zipCode ? (
@@ -67,7 +67,7 @@ export default async function DonorProfilePage() {
                 </div>
 
                 {/* Accordion */}
-                <div className="bg-white rounded-[7px] shadow-sm overflow-hidden divide-y divide-gray-200">
+                <div className="bg-white rounded-[7px] overflow-hidden divide-y divide-gray-200">
                     {accordionItems.map(({ label, href, danger }) => (
                         <Link key={label} href={href}
                             className="flex justify-between items-center px-7 py-5 hover:bg-gray-50 transition-colors group">

@@ -25,7 +25,7 @@ export default function ContentLayout({ children }: { children: ReactNode }) {
                         Zurück
                     </span>
                 </button>
-                <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm leading-relaxed whitespace-pre-line text-[15px]">
+                <div className="bg-white rounded-[28px] p-7 md:p-10 leading-relaxed whitespace-pre-line text-[15px]">
                     {children}
                 </div>
             </div>

@@ -34,7 +34,7 @@ export default async function MailingsPage() {
                 </Link>
 
                 {/* Newsletter section */}
-                <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm mb-6">
+                <div className="bg-white rounded-[28px] p-7 md:p-10 mb-6">
                     <h1 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         Infomailing
                     </h1>
@@ -47,7 +47,7 @@ export default async function MailingsPage() {
                 </div>
 
                 {/* Email share consent section */}
-                <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm mb-6">
+                <div className="bg-white rounded-[28px] p-7 md:p-10 mb-6">
                     <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         E-Mail-Weitergabe
                     </h2>

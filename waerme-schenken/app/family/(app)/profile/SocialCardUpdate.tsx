@@ -126,7 +126,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
     if (isApproved && phase !== 'done') return null;
 
     return (
-        <div className="bg-white rounded-[8px] p-7 shadow-sm mb-4">
+        <div className="bg-white rounded-[8px] p-7 mb-4">
             {/* Header row */}
             <div className="flex items-start justify-between mb-4">
                 <div>
@@ -213,7 +213,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                         <button
                             type="button"
                             onClick={() => setOrgOpen(o => !o)}
-                            className="w-full h-11 px-5 rounded-full flex justify-between items-center text-white shadow-md transition-opacity hover:opacity-95"
+                            className="w-full h-11 px-5 rounded-full flex justify-between items-center text-white transition-opacity hover:opacity-95"
                             style={{
                                 backgroundColor: BRAND.green,
                                 fontFamily: "'Bricolage Grotesque',sans-serif",
@@ -225,7 +225,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                             <ChevronDown size={18} className={`transition-transform ${orgOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {orgOpen && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[12px] shadow-xl overflow-hidden z-50 border border-gray-100">
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[12px] overflow-hidden z-50 border border-gray-100">
                                 {orgs.map((o, i) => (
                                     <button key={o} type="button"
                                         onClick={() => { setSelectedOrg(o); setOrgOpen(false); }}

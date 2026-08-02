@@ -131,7 +131,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
                         {de.family.cart.heading}
                     </h1>
                 </div>
-                <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
+                <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] flex flex-col">
                     <div className="px-8 pt-8 pb-28 md:pb-8 flex flex-col flex-grow items-center justify-center gap-5 text-center">
                         <ShoppingCart size={48} className="opacity-20" />
                         <p className="opacity-60">{de.family.cart.empty}</p>
@@ -159,7 +159,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
                 </div>
 
                 {/* White card fills rest of screen */}
-                <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
+                <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] flex flex-col">
                     <div className="px-8 pt-8 pb-28 md:pb-8 flex flex-col flex-grow">
                         <div className="flex-grow">
                             <p className="opacity-70 text-[14px] mb-6 leading-relaxed">
@@ -195,7 +195,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
                         {/* Pinned bottom buttons */}
                         <div className="mt-auto pt-6 flex flex-col items-center gap-4">
                             <button onClick={confirmOrder} disabled={confirming || !addressComplete}
-                                className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
+                                className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
                                 style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                                 {confirming ? de.common.loading : de.family.cart.confirmOrder.toUpperCase()}
                             </button>
@@ -228,7 +228,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
             </div>
 
             {/* White card fills rest of screen */}
-            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col">
+            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] flex flex-col">
                 <div className="px-8 pt-8 pb-28 md:pb-8 flex flex-col flex-grow">
                     <div className="flex-grow space-y-3">
                         {timeLeft !== null && (
@@ -285,7 +285,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
                     {/* Pinned bottom buttons */}
                     <div className="mt-auto pt-6 flex flex-col items-center gap-4">
                         <button onClick={() => setStep(2)}
-                            className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 flex items-center justify-center"
+                            className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 flex items-center justify-center"
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                             {de.family.cart.checkout.toUpperCase()} ({items.length})
                         </button>

@@ -24,14 +24,14 @@ export function ImageCarousel({ images, altBase }: { images: { imageUrl: string 
                     <button
                         onClick={(e) => { e.preventDefault(); setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev)); }}
                         disabled={currentIndex === 0}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-black/70 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-opacity z-20"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-black/70 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity z-20"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
                     <button
                         onClick={(e) => { e.preventDefault(); setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : prev)); }}
                         disabled={currentIndex === images.length - 1}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-black/70 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-opacity z-20"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-black/70 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity z-20"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </button>

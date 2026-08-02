@@ -34,7 +34,8 @@ export default async function FamilyDashboardPage() {
     const isOpen = shop?.openDate && shop?.closeDate
         ? now >= shop.openDate && now <= shop.closeDate
         : true;
-    const atLimit = selections.length >= MAX_TOYS;
+    const isSpecial = user.familySpecial === true;
+    const atLimit = !isSpecial && selections.length >= MAX_TOYS;
     const sentCount = selections.filter(s => s.status === 'sent').length;
 
     return (
@@ -52,23 +53,25 @@ export default async function FamilyDashboardPage() {
                         style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                         {de.dashboard.news}
                     </h3>
-                    <div style={{ position: 'relative', top: 43, left: -2 }}>
-                        <ZebraCat width={60} height={60} />
-                    </div>
                 </div>
 
-                <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
-                    <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
-                        {banner?.title || 'Wärme Schenken'}
-                    </h1>
-                    <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
-                        {banner?.body || 'Herzlich willkommen!'}
-                    </p>
+                <div className="bg-white rounded-[8px] p-7 mb-10 relative overflow-hidden">
+                    <div style={{ maxWidth: '80%' }}>
+                        <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
+                            {banner?.title || 'Wärme Schenken'}
+                        </h1>
+                        <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
+                            {banner?.body || 'Herzlich willkommen!'}
+                        </p>
+                    </div>
+                    <div className="absolute top-2 right-2">
+                        <ZebraCat width={90} height={90} />
+                    </div>
                 </div>
 
                 {/* Shop state */}
                 {!isOpen && shop?.openDate && (
-                    <div className="bg-white rounded-[8px] p-6 shadow-sm mb-8 text-center">
+                    <div className="bg-white rounded-[8px] p-6 mb-8 text-center">
                         <p className="opacity-80">
                             {de.family.shop.shopOpensOn}{' '}
                             <strong>{shop.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
@@ -77,15 +80,15 @@ export default async function FamilyDashboardPage() {
                 )}
 
                 {isOpen && atLimit && (
-                    <div className="bg-white rounded-[8px] p-6 shadow-sm mb-8 text-center">
+                    <div className="bg-white rounded-[8px] p-6 mb-8 text-center">
                         <p className="font-bold text-[16px]">{de.family.dashboard.presentsOnWay}</p>
                     </div>
                 )}
 
                 {isOpen && !atLimit && (
-                    <div className="mb-8">
+                    <div className="mb-8 flex justify-center">
                         <Link href="/family/shop"
-                            className="inline-flex h-10 px-6 rounded-full text-white shadow-lg"
+                            className="inline-flex h-10 px-6 rounded-full text-white"
                             style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '13px', letterSpacing: '0.15em' }}>
                             <span className="flex items-center">ZUR SPIELZEUGBÖRSE</span>
                         </Link>
@@ -95,7 +98,7 @@ export default async function FamilyDashboardPage() {
                 {/* Stats */}
                 {selections.length > 0 && (
                     <div className="flex gap-3 mb-6">
-                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center shadow-sm"
+                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center"
                             style={{ backgroundColor: BRAND.lila }}>
                             <span className="text-[32px] font-bold leading-none mb-1"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
@@ -106,7 +109,7 @@ export default async function FamilyDashboardPage() {
                                 {de.family.dashboard.statsSelected}
                             </span>
                         </div>
-                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center shadow-sm"
+                        <div className="flex-1 rounded-[8px] p-4 flex flex-col items-center justify-center"
                             style={{ backgroundColor: BRAND.greenBright }}>
                             <span className="text-[32px] font-bold leading-none mb-1"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
@@ -127,7 +130,7 @@ export default async function FamilyDashboardPage() {
                 </h3>
 
                 {selections.length === 0 ? (
-                    <div className="bg-white rounded-[8px] p-6 shadow-sm text-center opacity-60">
+                    <div className="bg-white rounded-[8px] p-6 text-center opacity-60">
                         Noch keine Spielzeuge ausgewählt.
                     </div>
                 ) : (
@@ -137,7 +140,7 @@ export default async function FamilyDashboardPage() {
                             const thumb = d.images[0]?.imageUrl;
                             return (
                                 <Link key={d.id} href={`/family/selections/${d.id}`}
-                                    className="rounded-[8px] p-4 flex gap-4 shadow-sm active:scale-[0.98] transition-transform block relative"
+                                    className="rounded-[8px] p-4 flex gap-4 active:scale-[0.98] transition-transform block relative"
                                     style={{ backgroundColor: bg }}>
                                     <div className="w-20 h-20 bg-white rounded-[8px] overflow-hidden shrink-0">
                                         {thumb

@@ -61,14 +61,14 @@ export default function FamilyIntroPage() {
             {/* Floating illustrations + CTA — always pinned to bottom */}
             <div className="w-full max-w-sm mx-auto relative mt-auto pt-2 md:max-w-none">
                 {/* Floating icons */}
-                <div className="absolute top-0 left-[-30px] md:left-20 drop-shadow-md rotate-[-5deg] z-0">
+                <div className="absolute top-0 left-[-30px] md:left-20 rotate-[-5deg] z-0">
                     <Car width={137} height={90} />
                 </div>
-                <div className="absolute top-[-30px] right-[-20px] md:right-20 drop-shadow-md rotate-[12deg] z-0">
+                <div className="absolute top-[-30px] right-[-20px] md:right-20 rotate-[12deg] z-0">
                     <Gift width={115} height={82} />
                 </div>
                 {/* Duck only visible on mobile */}
-                <div className="absolute bottom-[-10px] right-[-30px] drop-shadow-md md:hidden z-0">
+                <div className="absolute bottom-[-10px] right-[-30px] md:hidden z-0">
                     <Duck width={100} height={71} />
                 </div>
 
@@ -76,7 +76,7 @@ export default function FamilyIntroPage() {
                 <div className="flex flex-col items-center gap-3 relative z-20 pt-16 pb-2">
                     <button
                         onClick={() => router.push('/family/register')}
-                        className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-lg active:scale-95 transition-transform flex items-center justify-center"
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white active:scale-95 transition-transform flex items-center justify-center"
                         style={{
                             backgroundColor: BRAND.green,
                             fontFamily: "'Bricolage Grotesque', sans-serif",

@@ -231,7 +231,7 @@ export default function FamilyRegisterPage() {
                 </h1>
             </div>
 
-            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] shadow-sm flex flex-col overflow-auto">
+            <div className="bg-white max-w-md w-[calc(100%-40px)] mx-auto flex-grow rounded-t-[8px] flex flex-col overflow-auto">
                 <div className="w-full mx-auto px-8 pt-8 pb-5 flex flex-col flex-grow">
                     <div className="flex-grow">
                         {step === 1 && (
@@ -306,7 +306,7 @@ export default function FamilyRegisterPage() {
                     {step < 5 && (
                         <div className="mt-auto pt-6 flex flex-col items-center gap-3">
                             <button onClick={handleNext} disabled={loading}
-                                className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
+                                className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 disabled:opacity-60 flex items-center justify-center"
                                 style={{ backgroundColor: isStepComplete ? BRAND.green : 'rgba(155,155,155,0.25)', fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                                 {loading ? de.common.loading : 'WEITER'}
                             </button>
@@ -407,7 +407,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
                 </div>
                 {errors.street && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors.street}</p>}
                 {showStreetSugg && streetSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] border border-gray-100 z-50 max-h-64 overflow-y-auto">
                         {streetSuggestions.map((s, i) => (
                             <button key={i} type="button"
                                 onMouseDown={e => e.preventDefault()}
@@ -442,7 +442,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
                 {errors.zipCode && <p className="text-[12px] font-medium" style={{ color: BRAND.error }}>{errors.zipCode}</p>}
 
                 {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] border border-gray-100 z-50 max-h-64 overflow-y-auto">
                         {suggestions.map((s, i) => (
                             <button key={i} type="button"
                                 onMouseDown={e => e.preventDefault()}
@@ -556,13 +556,13 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
             {/* Org dropdown (green pill) */}
             <div className="relative mb-5">
                 <button type="button" onClick={() => setOrgOpen(o => !o)}
-                    className="w-full h-11 px-6 rounded-full flex justify-between items-center text-white shadow-md transition-opacity hover:opacity-95"
+                    className="w-full h-11 px-6 rounded-full flex justify-between items-center text-white transition-opacity hover:opacity-95"
                     style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px' }}>
                     <span>{form.socialCardOrg || de.family.register.chooseOrg}</span>
                     <ChevronDown size={18} className={`transition-transform ${orgOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {orgOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[12px] shadow-xl overflow-hidden z-50">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[12px] overflow-hidden z-50">
                         {orgs.map((o, i) => (
                             <button key={o} type="button"
                                 onClick={() => { setForm(f => ({ ...f, socialCardOrg: o })); setOrgOpen(false); }}
@@ -613,7 +613,7 @@ function OtpStep({ email, onVerify, error, loading }: { email: string; onVerify:
     return (
         <>
             <p className="mb-8 opacity-70 text-[15px]">{de.auth.otp.body} <strong>{email}</strong></p>
-            <div className="bg-white rounded-[8px] p-8 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-[8px] p-8 border border-gray-100">
                 <label className="block mb-3" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{de.auth.otp.label}</label>
                 <input type="text" inputMode="numeric" maxLength={6} value={code}
                     onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
@@ -624,7 +624,7 @@ function OtpStep({ email, onVerify, error, loading }: { email: string; onVerify:
             </div>
             <div className="mt-14 flex flex-col items-center gap-4">
                 <button onClick={() => onVerify(code)} disabled={code.length !== 6 || loading}
-                    className="h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl transition-transform active:scale-95 disabled:opacity-40 flex items-center justify-center"
+                    className="h-10 min-w-[143px] px-6 rounded-full text-white transition-transform active:scale-95 disabled:opacity-40 flex items-center justify-center"
                     style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                     {loading ? de.common.loading : de.auth.otp.cta.toUpperCase()}
                 </button>

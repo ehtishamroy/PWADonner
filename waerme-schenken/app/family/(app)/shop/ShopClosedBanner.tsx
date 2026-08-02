@@ -9,7 +9,7 @@ export function ShopClosedBanner({ openDate }: { openDate: string | null; closeD
 
     return (
         <div className="min-h-screen px-6 pt-20 pb-24" style={{ backgroundColor: BRAND.beige }}>
-            <div className="max-w-md mx-auto bg-white rounded-[8px] p-10 text-center shadow-sm">
+            <div className="max-w-md mx-auto bg-white rounded-[8px] p-10 text-center">
                 <h1 className="mb-4" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '24px' }}>
                     {de.family.shop.shopClosed}
                 </h1>

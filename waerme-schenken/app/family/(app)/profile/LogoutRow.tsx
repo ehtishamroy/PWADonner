@@ -25,7 +25,7 @@ export function LogoutRow() {
             {showModal && (
                 <div className="fixed inset-0 bg-black/30 z-[60] flex items-center justify-center px-6"
                     onClick={() => setShowModal(false)}>
-                    <div className="bg-white rounded-[16px] p-7 w-full max-w-xs shadow-xl"
+                    <div className="bg-white rounded-[16px] p-7 w-full max-w-xs"
                         onClick={e => e.stopPropagation()}>
                         <p className="text-[18px] font-bold mb-2"
                             style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>Abmelden?</p>

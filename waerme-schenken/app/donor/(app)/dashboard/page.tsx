@@ -59,7 +59,7 @@ export default async function DonorDashboardPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-[8px] p-7 shadow-sm mb-10">
+            <div className="bg-white rounded-[8px] p-7 mb-10">
                 <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
                     {banner?.title || 'Wärme Schenken'}
                 </h1>
@@ -77,7 +77,7 @@ export default async function DonorDashboardPage() {
                         { label: 'Ausgewählt',     count: selectedCount, color: STATUS_COLORS.selected },
                         { label: 'Verschickt',     count: sentCount,     color: STATUS_COLORS.sent     },
                     ].map(s => (
-                        <div key={s.label} className="rounded-[8px] p-3 flex flex-col items-center justify-center text-center shadow-sm"
+                        <div key={s.label} className="rounded-[8px] p-3 flex flex-col items-center justify-center text-center"
                             style={{ backgroundColor: s.color }}>
                             <p className="text-[24px] font-bold leading-none"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>{s.count}</p>
@@ -98,7 +98,7 @@ export default async function DonorDashboardPage() {
                 <div className="text-center py-12">
                     <p className="opacity-60" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px' }}>{de.dashboard.empty}</p>
                     <Link href="/donor/donate"
-                        className="h-10 min-w-[143px] px-6 rounded-full text-white text-[13px] font-bold flex items-center justify-center mx-auto mt-4 transition-transform active:scale-95 shadow-sm"
+                        className="h-10 min-w-[143px] px-6 rounded-full text-white text-[13px] font-bold flex items-center justify-center mx-auto mt-4 transition-transform active:scale-95"
                         style={{ backgroundColor: BRAND.lila, fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                         {de.dashboard.addFirst}
                     </Link>
@@ -110,7 +110,7 @@ export default async function DonorDashboardPage() {
                         const imgUrl  = d.images[0]?.imageUrl;
                         return (
                             <Link key={d.id} href={`/donor/donation/${d.id}`} className="block">
-                                <div className="rounded-[8px] p-3 flex gap-3 min-h-[130px] relative hover:scale-[1.01] transition-transform shadow-sm"
+                                <div className="rounded-[8px] p-3 flex gap-3 min-h-[130px] relative hover:scale-[1.01] transition-transform"
                                     style={{ backgroundColor: bg }}>
                                     {/* Thumbnail — framed design with inner shadow */}
                                     <div className="w-[110px] h-[110px] shrink-0 overflow-hidden">
@@ -182,7 +182,7 @@ export default async function DonorDashboardPage() {
             {/* Floating + button */}
             <Link href="/donor/donate"
                 aria-label="Neue Spende hinzufügen"
-                className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
+                className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 rounded-full flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform z-40"
                 style={{ backgroundColor: BRAND.lila }}>
                 <Plus size={28} strokeWidth={2.5} />
             </Link>

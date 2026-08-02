@@ -35,7 +35,7 @@ export default async function FamilyPendingPage() {
                     {de.family.register.pendingBody}
                 </p>
                 <Link href="/family/logout"
-                    className="inline-flex h-10 min-w-[143px] px-6 rounded-full text-white shadow-xl active:scale-95 transition-transform items-center justify-center"
+                    className="inline-flex h-10 min-w-[143px] px-6 rounded-full text-white active:scale-95 transition-transform items-center justify-center"
                     style={{ backgroundColor: BRAND.green, fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}>
                     ABMELDEN
                 </Link>

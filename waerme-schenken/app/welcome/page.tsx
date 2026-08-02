@@ -66,7 +66,7 @@ export default function WelcomePage() {
                 {/* Photo + Buttons — pinned to bottom as a group */}
                 <div className="mt-auto pt-14">
                 <div className="relative w-full overflow-visible mb-8" style={{ height: '48vh', minHeight: '320px' }}>
-                    <div className="w-full h-full overflow-hidden shadow-lg relative bg-gray-100">
+                    <div className="w-full h-full overflow-hidden relative bg-gray-100">
                         <Image
                             src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
                             alt="Kind mit Spielzeug"
@@ -78,12 +78,12 @@ export default function WelcomePage() {
                     </div>
 
                     {/* Floating Helicopter — top left */}
-                    <div className="absolute drop-shadow-lg z-10" style={{ top: -42, left: 14, transform: 'rotate(0deg)' }}>
+                    <div className="absolute z-10" style={{ top: -42, left: 14, transform: 'rotate(0deg)' }}>
                         <Helicopter width={119} height={90} />
                     </div>
 
                     {/* Floating Teddy — bottom right */}
-                    <div className="absolute drop-shadow-lg z-10" style={{ bottom: -20, right: 10, transform: 'rotate(17.96deg)' }}>
+                    <div className="absolute z-10" style={{ bottom: -20, right: 10, transform: 'rotate(17.96deg)' }}>
                         <Teddy width={106} height={134} />
                     </div>
                 </div>
@@ -189,7 +189,7 @@ export default function WelcomePage() {
 
                     {/* Right column — Photo */}
                     <div className="relative w-full aspect-[4/5] overflow-visible">
-                        <div className="w-full h-full overflow-hidden shadow-lg flex items-center justify-center relative bg-gray-100">
+                        <div className="w-full h-full overflow-hidden flex items-center justify-center relative bg-gray-100">
                             <Image
                                 src={`/images/split-photo.jpg${timestamp ? `?v=${timestamp}` : ''}`}
                                 alt="Kind mit Spielzeug"
@@ -199,10 +199,10 @@ export default function WelcomePage() {
                                 unoptimized
                             />
                         </div>
-                        <div className="absolute top-[-28px] left-[-30px] drop-shadow-lg z-10">
+                        <div className="absolute top-[-28px] left-[-30px] z-10">
                             <Helicopter width={105} height={84} />
                         </div>
-                        <div className="absolute bottom-[-18px] right-[-18px] drop-shadow-lg z-10">
+                        <div className="absolute bottom-[-18px] right-[-18px] z-10">
                             <Teddy width={95} height={95} />
                         </div>
                     </div>

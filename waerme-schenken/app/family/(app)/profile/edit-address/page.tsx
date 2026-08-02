@@ -116,14 +116,14 @@ export default function FamilyEditAddressPage() {
                 </h1>
 
                 {success ? (
-                    <div className="bg-white rounded-[8px] p-8 shadow-sm flex flex-col items-center text-center">
+                    <div className="bg-white rounded-[8px] p-8 flex flex-col items-center text-center">
                         <CheckCircle2 size={48} className="mb-4" style={{ color: BRAND.green }} />
                         <h3 className="font-bold text-lg mb-2" style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                             Erfolgreich gespeichert!
                         </h3>
                     </div>
                 ) : (
-                    <form onSubmit={save} className="bg-white rounded-[8px] p-7 shadow-sm space-y-6">
+                    <form onSubmit={save} className="bg-white rounded-[8px] p-7 space-y-6">
                         <div className="relative">
                             <label className="text-[11px] font-bold uppercase tracking-widest opacity-40 block mb-2"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>Strasse und Nr.</label>
@@ -134,7 +134,7 @@ export default function FamilyEditAddressPage() {
                                 placeholder="z.B. Musterstrasse 12"
                                 className="w-full font-bold text-[17px] bg-transparent outline-none border-b-2 border-gray-100 focus:border-gray-300 pb-2 placeholder:opacity-20" />
                             {showStreetSugg && streetSuggestions.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] border border-gray-100 z-50 max-h-64 overflow-y-auto">
                                     {streetSuggestions.map((s, i) => (
                                         <button key={i} type="button"
                                             onMouseDown={e => e.preventDefault()}
@@ -166,7 +166,7 @@ export default function FamilyEditAddressPage() {
                                 placeholder="8000"
                                 className="w-full font-bold text-[17px] bg-transparent outline-none border-b-2 border-gray-100 focus:border-gray-300 pb-2 placeholder:opacity-20" />
                             {showSugg && suggestions.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] shadow-xl border border-gray-100 z-50 max-h-64 overflow-y-auto">
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-[8px] border border-gray-100 z-50 max-h-64 overflow-y-auto">
                                     {suggestions.map((s, i) => (
                                         <button key={i} type="button"
                                             onMouseDown={e => e.preventDefault()}

@@ -50,7 +50,7 @@ export default async function SelectionDetailPage({ params }: { params: Promise<
 
                 {/* Image */}
                 <div className="px-5 mb-6">
-                    <div className="relative rounded-[8px] overflow-hidden aspect-square bg-white shadow-md flex items-center justify-center">
+                    <div className="relative rounded-[8px] overflow-hidden aspect-square bg-white flex items-center justify-center">
                         <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[12px] font-medium z-10"
                             style={{ backgroundColor: condColor, opacity: 0.85 }}>
                             {condLabel}
@@ -67,7 +67,7 @@ export default async function SelectionDetailPage({ params }: { params: Promise<
                     {donation.images.length > 1 && (
                         <div className="flex gap-2 mt-3 overflow-x-auto">
                             {donation.images.map((img, i) => (
-                                <div key={i} className="w-16 h-16 rounded-[8px] overflow-hidden shrink-0 bg-white shadow-sm">
+                                <div key={i} className="w-16 h-16 rounded-[8px] overflow-hidden shrink-0 bg-white">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
                                 </div>
@@ -113,7 +113,7 @@ export default async function SelectionDetailPage({ params }: { params: Promise<
 
                     {/* Tracking number */}
                     {donation.trackingNumber && (
-                        <div className="flex items-center gap-3 rounded-[8px] p-4 shadow-sm"
+                        <div className="flex items-center gap-3 rounded-[8px] p-4"
                             style={{ backgroundColor: BRAND.greenBright }}>
                             <Truck size={18} className="shrink-0" />
                             <div>

@@ -31,7 +31,7 @@ export default async function FamilyMailingsPage() {
                     </span>
                 </Link>
 
-                <div className="bg-white rounded-[28px] p-7 md:p-10 shadow-sm mb-6">
+                <div className="bg-white rounded-[28px] p-7 md:p-10 mb-6">
                     <h1 className="text-2xl font-bold mb-4"
                         style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         Anmeldung zum Infomailing

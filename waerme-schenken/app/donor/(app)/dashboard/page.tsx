@@ -54,18 +54,20 @@ export default async function DonorDashboardPage() {
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '20px' }}>
                     {de.dashboard.news}
                 </h3>
-                <div style={{ position: 'relative', top: 43, left: -2 }}>
-                    <ZebraCat width={60} height={60} />
-                </div>
             </div>
 
-            <div className="bg-white rounded-[8px] p-7 mb-10">
-                <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
-                    {banner?.title || 'Wärme Schenken'}
-                </h1>
-                <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
-                    {banner?.body || 'Herzlich willkommen!'}
-                </p>
+            <div className="bg-white rounded-[8px] p-7 mb-10 relative">
+                <div style={{ maxWidth: '80%' }}>
+                    <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
+                        {banner?.title || 'Wärme Schenken'}
+                    </h1>
+                    <p className="mt-2 opacity-75" style={{ fontFamily: "'Inter',sans-serif", fontSize: '15px', lineHeight: '20px' }}>
+                        {banner?.body || 'Herzlich willkommen!'}
+                    </p>
+                </div>
+                <div className="absolute -top-7 right-1 z-10 drop-shadow-md">
+                    <ZebraCat width={90} height={90} />
+                </div>
             </div>
 
             {/* PERSONAL STATUS SUMMARY */}

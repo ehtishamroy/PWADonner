@@ -25,7 +25,7 @@ export default async function DonorDonatePage() {
                     {config?.donationOpenDate && now < config.donationOpenDate && (
                         <p className="opacity-80 font-bold text-sm">
                             Das Formular öffnet am: <br/>
-                            {config.donationOpenDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })} Uhr
+                            {config.donationOpenDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Zurich' })} Uhr
                         </p>
                     )}
                 </div>

@@ -55,7 +55,7 @@ export default async function FamilyDashboardPage() {
                     </h3>
                 </div>
 
-                <div className="bg-white rounded-[8px] p-7 mb-10 relative overflow-hidden">
+                <div className="bg-white rounded-[8px] p-7 mb-10 relative">
                     <div style={{ maxWidth: '80%' }}>
                         <h1 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 700, fontSize: '27px', lineHeight: '30px' }}>
                             {banner?.title || 'Wärme Schenken'}
@@ -64,7 +64,7 @@ export default async function FamilyDashboardPage() {
                             {banner?.body || 'Herzlich willkommen!'}
                         </p>
                     </div>
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute -top-7 right-1 z-10 drop-shadow-md">
                         <ZebraCat width={90} height={90} />
                     </div>
                 </div>

@@ -6,8 +6,10 @@ export const dynamic = 'force-dynamic';
 
 function toLocalInput(d: Date | null | undefined): string {
     if (!d) return '';
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    // Use Europe/Zurich to ensure correct local time formatting regardless of server timezone
+    const str = d.toLocaleString('sv-SE', { timeZone: 'Europe/Zurich' });
+    // sv-SE produces "YYYY-MM-DD HH:mm:ss", so we replace space with T and slice to HH:mm
+    return str.replace(' ', 'T').slice(0, 16);
 }
 
 export default async function AdminDonationSchedulePage() {

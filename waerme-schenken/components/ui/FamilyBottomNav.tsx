@@ -2,26 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, User } from 'lucide-react';
 import { de } from '@/lib/i18n/de';
-
-function CartIcon({ size = 24, active = false }: { size?: number; active?: boolean }) {
-    return (
-        <div style={{
-            WebkitMaskImage: 'url(/images/cart.png)',
-            WebkitMaskSize: 'contain',
-            WebkitMaskRepeat: 'no-repeat',
-            WebkitMaskPosition: 'center',
-            maskImage: 'url(/images/cart.png)',
-            maskSize: 'contain',
-            maskRepeat: 'no-repeat',
-            maskPosition: 'center',
-            backgroundColor: active ? '#000000' : '#777',
-            width: size,
-            height: size,
-        }} />
-    );
-}
+import { MenuHome, MenuToy, MenuCart, MenuProfile } from './MenuIcons';
 
 const navItems = [
     { href: '/family/dashboard', label: de.family.nav.home,    icon: 'home'   },
@@ -38,20 +20,21 @@ export function FamilyBottomNav() {
             <div className="flex justify-around items-center py-3 px-2 max-w-md mx-auto">
                 {navItems.map(({ href, label, icon }) => {
                     const active = pathname.startsWith(href);
+                    const color = active ? '#537D61' : '#000000';
                     return (
                         <Link key={href} href={href}
                             className="flex flex-col items-center gap-1 min-w-[60px] group">
-                            <div className={`p-1.5 rounded-xl transition-colors ${active ? 'bg-brand-green/10' : ''}`}>
+                            <div className="p-1.5 rounded-xl transition-colors">
                                 {icon === 'cart'
-                                    ? <CartIcon size={24} active={active} />
+                                    ? <MenuCart size={24} color={color} />
                                     : icon === 'home'
-                                        ? <Home size={24} strokeWidth={active ? 2.5 : 1.5} color={active ? '#000000' : '#777'} />
+                                        ? <MenuHome size={24} color={color} />
                                         : icon === 'shop'
-                                            ? <ShoppingBag size={24} strokeWidth={active ? 2.5 : 1.5} color={active ? '#000000' : '#777'} />
-                                            : <User size={24} strokeWidth={active ? 2.5 : 1.5} color={active ? '#000000' : '#777'} />}
+                                            ? <MenuToy size={24} color={color} />
+                                            : <MenuProfile size={24} color={color} />}
                             </div>
                             <span className="text-[11px] font-medium transition-colors"
-                                style={{ color: active ? '#000000' : '#777', fontFamily: "'Inter', sans-serif" }}>
+                                style={{ color, fontFamily: "'Inter', sans-serif" }}>
                                 {label}
                             </span>
                         </Link>

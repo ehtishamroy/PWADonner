@@ -2,28 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, User } from 'lucide-react';
 import { Logo } from '@/components/brand/Logo';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
-
-function CartIcon({ size = 22, color = BRAND.green }: { size?: number; color?: string }) {
-    return (
-        <div style={{
-            WebkitMaskImage: 'url(/images/cart.png)',
-            WebkitMaskSize: 'contain',
-            WebkitMaskRepeat: 'no-repeat',
-            WebkitMaskPosition: 'center',
-            maskImage: 'url(/images/cart.png)',
-            maskSize: 'contain',
-            maskRepeat: 'no-repeat',
-            maskPosition: 'center',
-            backgroundColor: color,
-            width: size,
-            height: size,
-        }} />
-    );
-}
+import { MenuHome, MenuToy, MenuCart, MenuProfile } from './MenuIcons';
 
 const navItems = [
     { href: '/family/dashboard', label: de.family.nav.home,    icon: 'home'   },
@@ -50,12 +32,12 @@ export function FamilySidebar() {
                                 className="flex items-center gap-4 group rounded-2xl px-3 py-2 transition-all hover:bg-gray-50">
                                 <div className={`p-2 rounded-xl transition-all ${active ? 'bg-[#537D611A]' : 'group-hover:bg-[#537D610D]'}`}>
                                     {icon === 'cart'
-                                        ? <CartIcon size={22} color={BRAND.green} />
+                                        ? <MenuCart size={22} color={BRAND.green} />
                                         : icon === 'home'
-                                            ? <Home size={22} strokeWidth={active ? 2.5 : 1.5} color={BRAND.green} />
+                                            ? <MenuHome size={22} color={BRAND.green} />
                                             : icon === 'shop'
-                                                ? <ShoppingBag size={22} strokeWidth={active ? 2.5 : 1.5} color={BRAND.green} />
-                                                : <User size={22} strokeWidth={active ? 2.5 : 1.5} color={BRAND.green} />}
+                                                ? <MenuToy size={22} color={BRAND.green} />
+                                                : <MenuProfile size={22} color={BRAND.green} />}
                                 </div>
                                 <span className={`font-bold uppercase tracking-widest text-sm transition-all ${active ? 'opacity-100' : 'opacity-40 group-hover:opacity-80'}`}
                                     style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>

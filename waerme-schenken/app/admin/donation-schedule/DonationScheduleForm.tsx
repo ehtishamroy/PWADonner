@@ -4,11 +4,22 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BRAND } from '@/lib/constants';
 
+// Format a UTC ISO string as a Zurich-local datetime-local input value
 function toLocalInput(iso: string): string {
     if (!iso) return '';
     const d = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const str = d.toLocaleString('sv-SE', { timeZone: 'Europe/Zurich' });
+    return str.replace(' ', 'T').slice(0, 16);
+}
+
+// Convert a datetime-local string (entered as Zurich local time) to a UTC ISO string
+function localZurichInputToISO(localStr: string): string {
+    // Parse the input as UTC temporarily to find the Zurich offset at that moment
+    const tempUtc = new Date(localStr + 'Z');
+    const zurichStr = tempUtc.toLocaleString('sv-SE', { timeZone: 'Europe/Zurich' });
+    const offsetMs = tempUtc.getTime() - new Date(zurichStr.replace(' ', 'T') + 'Z').getTime();
+    // Re-parse the local string as UTC, then shift by the offset to get the true UTC time
+    return new Date(new Date(localStr + 'Z').getTime() + offsetMs).toISOString();
 }
 
 export function DonationScheduleForm({ openDate: initOpen, closeDate: initClose, isOpen: initIsOpen }: { openDate: string; closeDate: string; isOpen: boolean }) {
@@ -36,8 +47,8 @@ export function DonationScheduleForm({ openDate: initOpen, closeDate: initClose,
 
     async function save() {
         await patch({
-            donationOpenDate:  open  ? new Date(open).toISOString()  : null,
-            donationCloseDate: close ? new Date(close).toISOString() : null,
+            donationOpenDate:  open  ? localZurichInputToISO(open)  : null,
+            donationCloseDate: close ? localZurichInputToISO(close) : null,
         });
     }
 

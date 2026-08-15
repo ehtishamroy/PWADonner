@@ -4,7 +4,7 @@ import { de } from '@/lib/i18n/de';
 export function ShopClosedBanner({ openDate }: { openDate: string | null; closeDate: string | null }) {
     const opens = openDate ? new Date(openDate) : null;
     const formatted = opens
-        ? opens.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric' })
+        ? opens.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Zurich' })
         : null;
 
     return (

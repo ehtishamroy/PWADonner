@@ -1,11 +1,12 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { db } from './db';
-import { OTP_EXPIRY_MINUTES, SESSION_DURATION_DAYS } from './constants';
+import { OTP_EXPIRY_MINUTES, SESSION_DURATION_DAYS, ADMIN_SESSION_DAYS } from './constants';
 
-const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || 'dev-secret-change-in-production-32chars!!'
-);
+if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 // ── OTP ────────────────────────────────────────────────────────────────────
 
@@ -118,6 +119,73 @@ export function setSessionCookie(token: string) {
 export function clearSessionCookie() {
     return {
         name:    'ws_session',
+        value:   '',
+        maxAge:  0,
+        path:    '/',
+    };
+}
+
+// ── Admin Session JWT ──────────────────────────────────────────────────────
+
+export async function createAdminSession(userId: string): Promise<string> {
+    const expiresAt = new Date(Date.now() + ADMIN_SESSION_DAYS * 24 * 60 * 60 * 1000);
+
+    const token = await new SignJWT({ userId, role: 'admin' })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime(`${ADMIN_SESSION_DAYS}d`)
+        .setIssuedAt()
+        .sign(JWT_SECRET);
+
+    await db.session.create({
+        data: { userId, token, expiresAt },
+    });
+
+    return token;
+}
+
+export async function getAdminSession(): Promise<{ userId: string } | null> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('ws_admin_session')?.value;
+    if (!token) return null;
+
+    try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        if (payload.role !== 'admin') return null;
+
+        const session = await db.session.findFirst({
+            where: { token, expiresAt: { gt: new Date() } },
+        });
+        if (!session) return null;
+
+        return { userId: payload.userId as string };
+    } catch {
+        return null;
+    }
+}
+
+export async function deleteAdminSession(): Promise<void> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('ws_admin_session')?.value;
+    if (token) {
+        await db.session.deleteMany({ where: { token } }).catch(() => {});
+    }
+}
+
+export function setAdminSessionCookie(token: string) {
+    return {
+        name:     'ws_admin_session',
+        value:    token,
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === 'production',
+        sameSite: 'strict' as const,
+        path:     '/',
+        maxAge:   ADMIN_SESSION_DAYS * 24 * 60 * 60,
+    };
+}
+
+export function clearAdminSessionCookie() {
+    return {
+        name:    'ws_admin_session',
         value:   '',
         maxAge:  0,
         path:    '/',

@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET() {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const categories = await db.toyCategory.findMany({
         orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
@@ -18,9 +12,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const { name } = await req.json();
     if (!name || typeof name !== 'string' || !name.trim()) {
         return NextResponse.json({ error: 'Name erforderlich.' }, { status: 400 });
@@ -37,7 +30,8 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: NextRequest) {
-    if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const { order } = await req.json();
     if (!Array.isArray(order)) return NextResponse.json({ error: 'order array required' }, { status: 400 });
     await Promise.all(order.map((name: string, i: number) =>
@@ -47,9 +41,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: Request) {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const url = new URL(req.url);
     const name = url.searchParams.get('name');
     if (!name) return NextResponse.json({ error: 'name missing' }, { status: 400 });

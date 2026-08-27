@@ -7,11 +7,10 @@ export async function POST(req: NextRequest) {
 
     const user = await db.user.findUnique({
         where:  { email: email.toLowerCase().trim() },
-        select: { id: true, role: true },
+        select: { id: true },
     });
 
     if (!user) return NextResponse.json({ exists: false });
 
-    const loginUrl = user.role === 'family' ? '/family/login' : '/donor/login';
-    return NextResponse.json({ exists: true, loginUrl }, { status: 409 });
+    return NextResponse.json({ exists: true }, { status: 409 });
 }

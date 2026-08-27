@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || 'dev-secret-change-in-production-32chars!!'
+    process.env.JWT_SECRET || ''
 );
 
 async function getRoleFromToken(request: NextRequest): Promise<string | null> {
@@ -17,9 +17,19 @@ async function getRoleFromToken(request: NextRequest): Promise<string | null> {
     }
 }
 
+async function isAdminTokenValid(request: NextRequest): Promise<boolean> {
+    const token = request.cookies.get('ws_admin_session')?.value;
+    if (!token) return false;
+    try {
+        const { payload } = await jwtVerify(token, JWT_SECRET);
+        return payload.role === 'admin';
+    } catch {
+        return false;
+    }
+}
+
 export async function middleware(request: NextRequest) {
     const hasToken = request.cookies.has('ws_session');
-    const hasAdminToken = request.cookies.has('ws_admin_session');
     const path = request.nextUrl.pathname;
 
     // ── Shared Auth Paths (donor OR family will be redirected from here) ──
@@ -46,13 +56,17 @@ export async function middleware(request: NextRequest) {
 
     // ── Admin Protection ──
     if (path.startsWith('/admin') && path !== '/admin/login') {
-        if (!hasAdminToken) {
+        const validAdmin = await isAdminTokenValid(request);
+        if (!validAdmin) {
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
     }
 
-    if (path === '/admin/login' && hasAdminToken) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    if (path === '/admin/login') {
+        const validAdmin = await isAdminTokenValid(request);
+        if (validAdmin) {
+            return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        }
     }
 
     return NextResponse.next();

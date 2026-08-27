@@ -69,6 +69,10 @@ export async function POST(req: NextRequest) {
         if (!donationId || isNaN(amount) || amount <= 0) {
             return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
         }
+        if (amount > 500) {
+            return NextResponse.json({ error: 'Betrag zu hoch (max. CHF 500).' }, { status: 400 });
+        }
+        const roundedAmount = Math.round(amount * 100) / 100;
         if (images.length === 0) {
             return NextResponse.json({ error: 'At least 1 receipt image required' }, { status: 400 });
         }
@@ -120,7 +124,7 @@ export async function POST(req: NextRequest) {
             data: {
                 donorId: session.userId,
                 donationId,
-                amount,
+                amount: roundedAmount,
                 status: 'pending',
                 images: {
                     create: imageUrls.map((url, i) => ({

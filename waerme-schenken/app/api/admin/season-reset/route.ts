@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/admin-auth';
 import path from 'path';
 import fs from 'fs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
 
 /**
  * Safely deletes a file from disk.
@@ -53,9 +48,8 @@ function filenameFromUrl(url: string): string {
  * Never throws on individual file-deletion failures — they are logged and counted.
  */
 export async function POST() {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     try {
         // ── 1. Load settings & check lock ────────────────────────────────────
@@ -92,8 +86,7 @@ export async function POST() {
         ]);
 
         const donationDir      = path.join(process.cwd(), 'public', 'uploads', 'donations');
-        // Reimbursement receipts use the same donations folder (per upload route)
-        const reimbursementDir = path.join(process.cwd(), 'public', 'uploads', 'donations');
+        const reimbursementDir = path.join(process.cwd(), 'public', 'uploads', 'reimbursements');
 
         // ── 4. Delete social-card image files from disk ───────────────────────
         let socialFilesDeleted = 0;

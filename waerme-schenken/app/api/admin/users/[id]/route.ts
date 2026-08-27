@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { deleteFile } from '@/lib/storage';
 import { sendToyDeletedEmail } from '@/lib/email';
-
-function requireAdmin(cookieStore: Awaited<ReturnType<typeof cookies>>) {
-    if (!cookieStore.has('ws_admin_session')) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    return null;
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const cookieStore = await cookies();
-    const authError = requireAdmin(cookieStore);
+    const authError = await requireAdmin();
     if (authError) return authError;
 
     const { id } = await params;

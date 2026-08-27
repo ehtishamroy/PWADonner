@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function PATCH(req: NextRequest) {
-    if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { openDate, closeDate } = await req.json();
     const open  = openDate  ? new Date(openDate)  : null;

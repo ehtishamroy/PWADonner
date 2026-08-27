@@ -68,5 +68,6 @@ export const STATUS_LABELS: Record<string, string> = {
 
 // ── Session config ──
 export const SESSION_DURATION_DAYS = 30;
+export const ADMIN_SESSION_DAYS    = 7;
 export const OTP_EXPIRY_MINUTES    = 10;
 export const OTP_RATE_LIMIT        = 3; // max OTP requests per hour

@@ -33,6 +33,10 @@ export async function PATCH(req: NextRequest) {
         );
     }
 
+    if (socialCardUrl.includes('..') || !/^\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
+        return NextResponse.json({ error: 'Ungültige Sozialausweis-URL.' }, { status: 400 });
+    }
+
     // Save new social card + reset approval so admin re-verifies
     const updated = await db.user.update({
         where: { id: session.userId },

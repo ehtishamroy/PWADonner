@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { sendFamilyRegistrationApprovedEmail } from '@/lib/email';
-
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const { id } = await params;
 
     let approveFlag: boolean | undefined;
@@ -38,7 +32,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await db.user.update({ where: { id }, data });
 
-    // Email #6 on approval transition false → true (either via approve or special)
     const nowApproved = data.familyApproved ?? user.familyApproved;
     const becomesSpecial = data.familySpecial === true && !user.familySpecial;
     if ((nowApproved && !wasApproved) || becomesSpecial) {

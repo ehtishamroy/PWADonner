@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/admin-auth';
 import fs from 'fs/promises';
 import path from 'path';
 import { ASSET_BASE_PATHS, RESOLVE_ORDER } from '@/lib/assetPaths';
 
 export async function POST(request: Request) {
-    // 1. Validate Admin Session
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('ws_admin_session')?.value;
-    if (sessionCookie !== 'true') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     try {
         // 2. Parse FormData
@@ -36,9 +32,20 @@ export async function POST(request: Request) {
             try { await fs.unlink(basePath + e); } catch { /* file may not exist */ }
         }
 
-        // 5. Write new file
+        // 5. Write new file (sanitize SVG)
         const bytes  = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        let buffer = Buffer.from(bytes);
+
+        if (ext === '.svg') {
+            let svg = buffer.toString('utf-8');
+            svg = svg.replace(/<script[\s\S]*?<\/script>/gi, '');
+            svg = svg.replace(/\bon\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+            svg = svg.replace(/javascript\s*:/gi, 'blocked:');
+            svg = svg.replace(/href\s*=\s*"data:[^"]*"/gi, 'href=""');
+            svg = svg.replace(/href\s*=\s*'data:[^']*'/gi, "href=''");
+            buffer = Buffer.from(svg, 'utf-8');
+        }
+
         await fs.writeFile(basePath + ext, buffer);
 
         return NextResponse.json({ success: true, message: 'Asset replaced' });

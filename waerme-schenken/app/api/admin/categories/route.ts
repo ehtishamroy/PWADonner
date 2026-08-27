@@ -1,29 +1,22 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/admin-auth';
 import { ensureUploadDir, getPublicUrl, UPLOAD_DIR } from '@/lib/storage';
 import path from 'path';
 import fs from 'fs';
 
 export const runtime = 'nodejs';
 
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
-
 export async function GET() {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const items = await db.categoryImage.findMany();
     return NextResponse.json({ items });
 }
 
 export async function POST(req: Request) {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     try {
         ensureUploadDir();
@@ -68,9 +61,8 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const url = new URL(req.url);
     const category = url.searchParams.get('category');
     if (!category) return NextResponse.json({ error: 'category missing' }, { status: 400 });

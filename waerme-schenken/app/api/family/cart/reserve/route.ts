@@ -11,6 +11,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    const settings = await db.appSettings.findUnique({ where: { id: 'singleton' } }).catch(() => null);
+    const requireApproval = settings?.familyApprovalRequired ?? true;
+    const isSpecial = (user as { familySpecial?: boolean }).familySpecial === true;
+    if (requireApproval && !user.familyApproved && !isSpecial) {
+        return NextResponse.json({ error: 'Dein Konto wurde noch nicht freigeschaltet.' }, { status: 403 });
+    }
+
     const { id } = await req.json();
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 

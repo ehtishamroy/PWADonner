@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const c = await cookies();
-    if (c.get('ws_admin_session')?.value !== 'true') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { id } = await params;
 

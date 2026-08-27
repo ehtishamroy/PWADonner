@@ -1,22 +1,12 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
-async function requireAdmin() {
-    const c = await cookies();
-    return c.get('ws_admin_session')?.value === 'true';
-}
-
-/**
- * GET /api/admin/season-reset/preview
- * Returns live counts of what will be deleted — used to populate the confirmation dialog.
- */
 export async function GET() {
-    if (!(await requireAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     try {
         const settings = await db.appSettings.upsert({

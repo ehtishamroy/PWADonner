@@ -16,14 +16,15 @@ export async function POST(req: NextRequest) {
             street, city, socialCardUrl, socialCardOrg,
         } = body;
 
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        const normalizedEmail = email?.toLowerCase().trim();
+        if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
             return NextResponse.json({ error: 'Ungültige E-Mail-Adresse.' }, { status: 400 });
         }
 
         // Rate limiting: max OTP_RATE_LIMIT per hour
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
         const recentOtps = await db.otpCode.count({
-            where: { email, createdAt: { gte: oneHourAgo } },
+            where: { email: normalizedEmail, createdAt: { gte: oneHourAgo } },
         });
         if (recentOtps >= OTP_RATE_LIMIT) {
             return NextResponse.json({ error: 'Zu viele Versuche. Bitte warte kurz.' }, { status: 429 });
@@ -34,16 +35,20 @@ export async function POST(req: NextRequest) {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
             }
-            const existing = await db.user.findUnique({ where: { email } });
+            const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
             if (existing) {
-                return NextResponse.json(
-                    { error: 'Du hast bereits ein Konto. Bitte logge dich ein.', loginUrl: '/donor/login' },
-                    { status: 409 },
-                );
+                const hasSessions = await db.session.count({ where: { userId: existing.id } });
+                if (hasSessions > 0) {
+                    return NextResponse.json(
+                        { error: 'Du hast bereits ein Konto. Bitte logge dich ein.' },
+                        { status: 409 },
+                    );
+                }
+                await db.user.delete({ where: { id: existing.id } });
             }
             await db.user.create({
                 data: {
-                    email,
+                    email: normalizedEmail,
                     firstName:          firstName || '',
                     lastName:           lastName  || '',
                     role:               'donor',
@@ -63,16 +68,23 @@ export async function POST(req: NextRequest) {
             if (!socialCardUrl || !socialCardOrg) {
                 return NextResponse.json({ error: 'Sozialausweis und Organisation erforderlich.' }, { status: 400 });
             }
-            const existing = await db.user.findUnique({ where: { email } });
+            if (socialCardUrl.includes('..') || !/^\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
+                return NextResponse.json({ error: 'Ungültige Sozialausweis-URL.' }, { status: 400 });
+            }
+            const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
             if (existing) {
-                return NextResponse.json(
-                    { error: 'Du hast bereits ein Konto. Bitte logge dich ein.', loginUrl: '/family/login' },
-                    { status: 409 },
-                );
+                const hasSessions = await db.session.count({ where: { userId: existing.id } });
+                if (hasSessions > 0) {
+                    return NextResponse.json(
+                        { error: 'Du hast bereits ein Konto. Bitte logge dich ein.' },
+                        { status: 409 },
+                    );
+                }
+                await db.user.delete({ where: { id: existing.id } });
             }
             await db.user.create({
                 data: {
-                    email,
+                    email: normalizedEmail,
                     firstName:          firstName || '',
                     lastName:           lastName  || '',
                     role:               'family',
@@ -87,14 +99,14 @@ export async function POST(req: NextRequest) {
             });
         } else {
             // Login — user must exist
-            const exists = await db.user.findUnique({ where: { email } });
+            const exists = await db.user.findUnique({ where: { email: normalizedEmail } });
             if (!exists) {
                 return NextResponse.json({ userNotFound: true }, { status: 404 });
             }
         }
 
-        const code = await createOtp(email);
-        await sendOtpEmail(email, code);
+        const code = await createOtp(normalizedEmail);
+        await sendOtpEmail(normalizedEmail, code);
 
         return NextResponse.json({ ok: true });
     } catch (err) {

@@ -34,9 +34,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json();
     const updateData: Record<string, unknown> = {};
 
-    if (body.status)         updateData.status         = body.status;
+    if (body.status) {
+        if (body.status !== 'sent' || donation.status !== 'selected') {
+            return NextResponse.json({ error: 'Ungültiger Status.' }, { status: 400 });
+        }
+        updateData.status = body.status;
+        updateData.sentAt = new Date();
+    }
     if (body.trackingNumber) updateData.trackingNumber = body.trackingNumber;
-    if (body.status === 'sent') updateData.sentAt      = new Date();
 
     const updated = await db.donation.update({
         where: { id },

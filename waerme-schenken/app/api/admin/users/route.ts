@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/admin-auth';
 
-function requireAdmin(cookieStore: Awaited<ReturnType<typeof cookies>>) {
-    if (!cookieStore.has('ws_admin_session')) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    return null;
-}
-
-/** GET /api/admin/users
- *  Query params:
- *    filter = 'all' | 'newsletter'   (default: 'all')
- *    format = 'json' | 'csv'         (default: 'json')
- */
 export async function GET(req: NextRequest) {
-    const cookieStore = await cookies();
-    const authError = requireAdmin(cookieStore);
+    const authError = await requireAdmin();
     if (authError) return authError;
 
     const { searchParams } = new URL(req.url);
@@ -38,13 +25,18 @@ export async function GET(req: NextRequest) {
     });
 
     if (format === 'csv') {
+        const sanitize = (val: string) => {
+            let s = val.replace(/"/g, '""');
+            if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+            return `"${s}"`;
+        };
         const header = 'Vorname,Nachname,E-Mail,PLZ/Ort,Newsletter,Registriert am';
         const rows = users.map((u: any) =>
             [
-                `"${u.firstName}"`,
-                `"${u.lastName}"`,
-                `"${u.email}"`,
-                `"${u.zipCode || ''}"`,
+                sanitize(u.firstName),
+                sanitize(u.lastName),
+                sanitize(u.email),
+                sanitize(u.zipCode || ''),
                 u.newsletterConsent ? 'Ja' : 'Nein',
                 new Date(u.createdAt).toLocaleDateString('de-CH'),
             ].join(',')

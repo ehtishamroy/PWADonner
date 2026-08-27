@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
-
-async function isAdmin() {
-    const jar = await cookies();
-    return !!jar.get('ws_admin_session')?.value;
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET() {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const orgs = await (db as any).socialCardOrg.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] });
     return NextResponse.json({ orgs });
 }
 
 export async function POST(req: NextRequest) {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const { name } = await req.json();
     if (!name?.trim()) return NextResponse.json({ error: 'Name erforderlich.' }, { status: 400 });
     const count = await (db as any).socialCardOrg.count();
@@ -23,16 +20,15 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const body = await req.json();
-    // Reorder: { order: string[] }
     if (Array.isArray(body.order)) {
         await Promise.all(body.order.map((id: string, i: number) =>
             (db as any).socialCardOrg.update({ where: { id }, data: { sortOrder: i } })
         ));
         return NextResponse.json({ ok: true });
     }
-    // Rename: { id, name }
     const { id, name } = body;
     if (!id || !name?.trim()) return NextResponse.json({ error: 'ID und Name erforderlich.' }, { status: 400 });
     const org = await (db as any).socialCardOrg.update({ where: { id }, data: { name: name.trim() } });
@@ -40,7 +36,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID erforderlich.' }, { status: 400 });

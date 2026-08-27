@@ -8,6 +8,11 @@ export async function POST(req: NextRequest) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const user = await db.user.findUnique({ where: { id: session.userId }, select: { role: true } });
+    if (!user || user.role !== 'family') {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { ids } = await req.json();
     if (!Array.isArray(ids) || ids.length === 0) {
         return NextResponse.json({ items: [] });

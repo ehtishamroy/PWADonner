@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { escapeHtml } from './html';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
 const FROM = 'Wärme Schenken <hallo@waerme-schenken.ch>';
@@ -11,6 +12,9 @@ export async function sendDonationReceivedEmail(
     toyName: string,
     openingDate = 'dem Beginn der Spielzeugbörse'
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
+    const d = escapeHtml(openingDate);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -18,9 +22,9 @@ export async function sendDonationReceivedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Deine Spielzeugspende wird gerade noch überprüft</span>
           <h2>Herzlichen Dank für deine Spielzeugspende!</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Wir haben deine Spielzeugspende <strong>${toyName}</strong> erhalten und werden sie schnellstmöglich prüfen. Sobald deine Spende für die Spielzeugbörse freigegeben ist, siehst du sie auch in deinem persönlichen Spendenportal.</p>
-          <p>Weihnachten ist noch etwas hin. Bitte halte die gespendeten Spielsachen ab <strong>${openingDate}</strong> griffbereit, da wir die Börse dann für die Familien öffnen. Sobald dein Spielzeug ausgewählt wurde, erhältst du eine E-Mail mit den entsprechenden Versanddetails.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Wir haben deine Spielzeugspende <strong>${t}</strong> erhalten und werden sie schnellstmöglich prüfen. Sobald deine Spende für die Spielzeugbörse freigegeben ist, siehst du sie auch in deinem persönlichen Spendenportal.</p>
+          <p>Weihnachten ist noch etwas hin. Bitte halte die gespendeten Spielsachen ab <strong>${d}</strong> griffbereit, da wir die Börse dann für die Familien öffnen. Sobald dein Spielzeug ausgewählt wurde, erhältst du eine E-Mail mit den entsprechenden Versanddetails.</p>
           <p>Schön, dass du Teil unseres Projekts bist.</p>
           ${SIGNATURE}
         `,
@@ -33,6 +37,8 @@ export async function sendDonationApprovedEmail(
     userName: string,
     toyName: string
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -40,8 +46,8 @@ export async function sendDonationApprovedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Deine Spielzeugspende macht unsere Börse bunter.</span>
           <h2>Glückwunsch!</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Wir haben deine Spende <strong>${toyName}</strong> mit Freude für die Spielzeugbörse freigeschaltet. Sie hat unsere interne Qualitätsprüfung überstanden und wartet nun darauf, von einem Kind ausgesucht zu werden.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Wir haben deine Spende <strong>${t}</strong> mit Freude für die Spielzeugbörse freigeschaltet. Sie hat unsere interne Qualitätsprüfung überstanden und wartet nun darauf, von einem Kind ausgesucht zu werden.</p>
           <p>Ab sofort siehst du deine Spende in deinem persönlichen Spendenportal, wenn du dich in unserer App anmeldest. Da kannst du sie auch bearbeiten oder schlimmstenfalls auch löschen.</p>
           ${SIGNATURE}
         `,
@@ -54,13 +60,15 @@ export async function sendDonationRejectedEmail(
     userName: string,
     toyName: string
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
     return resend.emails.send({
         from:    FROM,
         to,
         subject: `Deine Spende ${toyName} wurde leider nicht freigeschalten`,
         html: `
-          <p>Liebe*r ${userName}</p>
-          <p>Leider können wir deine Spielzeugspende <strong>${toyName}</strong> diesmal nicht für unsere Spielzeugbörse freischalten.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Leider können wir deine Spielzeugspende <strong>${t}</strong> diesmal nicht für unsere Spielzeugbörse freischalten.</p>
           <p>Falls du Fragen dazu hast, kannst du uns jederzeit unter <a href="mailto:hallo@waerme-schenken.ch">hallo@waerme-schenken.ch</a> kontaktieren.</p>
           <p>Herzlichen Dank für dein Engagement – wir schätzen deine Bereitschaft zu helfen sehr!</p>
           ${SIGNATURE}
@@ -77,12 +85,16 @@ export async function sendDonationSelectedEmail(
     recipientAddress: string,
     toyImageUrl?: string | null
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
+    const rn = escapeHtml(recipientName);
+    const ra = escapeHtml(recipientAddress);
     const appBase = (process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://app.waerme-schenken.ch').replace(/\/$/, '');
     const absoluteImageUrl = toyImageUrl
-        ? (toyImageUrl.startsWith('http') ? toyImageUrl : `${appBase}${toyImageUrl}`)
+        ? (toyImageUrl.startsWith('http') || toyImageUrl.startsWith('/uploads/') ? (toyImageUrl.startsWith('http') ? toyImageUrl : `${appBase}${toyImageUrl}`) : null)
         : null;
     const imageBlock = absoluteImageUrl
-        ? `<p><img src="${absoluteImageUrl}" alt="${toyName}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
+        ? `<p><img src="${escapeHtml(absoluteImageUrl)}" alt="${t}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -91,12 +103,12 @@ export async function sendDonationSelectedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Vergiss nicht, den Status der Spende im Portal anzupassen.</span>
           <h2>Dein Spielzeug wurde ausgesucht!</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Es ist so weit! Dein Spielzeug <strong>"${toyName}"</strong> wurde von ${recipientName} ausgesucht. Also ab in eine Kartonbox und zur Post damit!</p>
+          <p>Liebe*r ${n}</p>
+          <p>Es ist so weit! Dein Spielzeug <strong>"${t}"</strong> wurde von ${rn} ausgesucht. Also ab in eine Kartonbox und zur Post damit!</p>
           <p><strong>Hier ist die Versandadresse:</strong></p>
-          <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${recipientName}<br/>${recipientAddress}</p>
+          <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${rn}<br/>${ra}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });
@@ -111,8 +123,14 @@ export async function sendDonationReminderEmail(
     recipientAddress: string,
     toyImageUrl?: string | null
 ) {
-    const imageBlock = toyImageUrl
-        ? `<p><img src="${toyImageUrl}" alt="${toyName}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
+    const rn = escapeHtml(recipientName);
+    const ra = escapeHtml(recipientAddress);
+    const safeImageUrl = toyImageUrl && (toyImageUrl.startsWith('http') || toyImageUrl.startsWith('/uploads/'))
+        ? escapeHtml(toyImageUrl) : null;
+    const imageBlock = safeImageUrl
+        ? `<p><img src="${safeImageUrl}" alt="${t}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -121,12 +139,12 @@ export async function sendDonationReminderEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Vergiss nicht, den Status der Spende im Portal anzupassen.</span>
           <h2>Dein Spielzeug wurde ausgesucht!</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Dein Spielzeug <strong>"${toyName}"</strong> wurde vor einigen Tagen von ${recipientName} ausgesucht. Also ab in eine Kartonbox und zur Post damit!</p>
+          <p>Liebe*r ${n}</p>
+          <p>Dein Spielzeug <strong>"${t}"</strong> wurde vor einigen Tagen von ${rn} ausgesucht. Also ab in eine Kartonbox und zur Post damit!</p>
           <p><strong>Hier ist die Versandadresse:</strong></p>
-          <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${recipientName}<br/>${recipientAddress}</p>
+          <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${rn}<br/>${ra}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${recipientName} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });
@@ -138,6 +156,8 @@ export async function sendFamilyRegistrationReceivedEmail(
     userName: string,
     openingDate = 'demnächst',
 ) {
+    const n = escapeHtml(userName);
+    const d = escapeHtml(openingDate);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -145,10 +165,10 @@ export async function sendFamilyRegistrationReceivedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Wir prüfen gerade deine Registrierung.</span>
           <h2>Deine Registrierung wird geprüft</h2>
-          <p>Liebe*r ${userName}</p>
+          <p>Liebe*r ${n}</p>
           <p>Vielen Dank für deine Registrierung. Schön, bist du bei unserem Projekt dabei.</p>
           <p>Dein Zugang wird innert 48 Stunden geprüft und freigeschaltet. Sollte es ein Problem geben, werden wir uns mit dir in Verbindung setzen.</p>
-          <p><strong>Achtung:</strong> Die Spielzeugbörse öffnet am ${openingDate}.</p>
+          <p><strong>Achtung:</strong> Die Spielzeugbörse öffnet am ${d}.</p>
           <p>Catharina, Gaby &amp; Vanessa</p>
         `,
     });
@@ -161,6 +181,8 @@ export async function sendFamilyRegistrationApprovedEmail(
     loginUrl = 'https://app.waerme-schenken.ch/family/login',
     openingDate = 'demnächst',
 ) {
+    const n = escapeHtml(userName);
+    const d = escapeHtml(openingDate);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -168,12 +190,12 @@ export async function sendFamilyRegistrationApprovedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Wir haben deinen Zugang freigeschaltet.</span>
           <h2>Du hast nun Zugang zur Spielzeugbörse</h2>
-          <p>Liebe*r ${userName}</p>
+          <p>Liebe*r ${n}</p>
           <p>Nach erfolgreicher Prüfung deiner Registrierung, haben wir dir deinen Zugang nun freigeschaltet.</p>
           <p>Melde dich hier an und gelange zu deinem Portal:</p>
-          <p><a href="${loginUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zur Spielzeugbörse</a></p>
+          <p><a href="${escapeHtml(loginUrl)}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zur Spielzeugbörse</a></p>
           <p>Dort siehst du, wie viele und welche Spielsachen du ausgewählt hast. Du kannst auch den Status deiner Spielsachen verfolgen: Spender*innen können angeben, ob sie das Spielzeug verpackt haben, das Päckli bereits zur Post gebracht haben und sie können die Sendungsnummer hinterlegen. So bleibst du stets auf dem Laufenden.</p>
-          <p><strong>Achtung:</strong> Die Spielzeugbörse öffnet am ${openingDate}.</p>
+          <p><strong>Achtung:</strong> Die Spielzeugbörse öffnet am ${d}.</p>
           <p>Falls du deinen Wohnsitz wechseln solltest, kannst du die Adresse ganz einfach in deinem Profil aktualisieren. Damit die Pakete bei dir ankommen, ist es wichtig, dass die Adresse stimmt.</p>
           <p>Wir wünschen dir viel Spass und schön, bist du mit dabei!</p>
           <p>Alles Liebe<br/>Catharina, Gaby &amp; Vanessa</p>
@@ -188,7 +210,8 @@ export async function sendFamilyOrderReceivedEmail(
     toys: { toyName: string }[],
     portalUrl = 'https://app.waerme-schenken.ch/family/dashboard',
 ) {
-    const toyNames = toys.map(t => t.toyName).join(', ');
+    const n = escapeHtml(userName);
+    const toyNames = escapeHtml(toys.map(t => t.toyName).join(', '));
     return resend.emails.send({
         from:    FROM,
         to,
@@ -196,9 +219,9 @@ export async function sendFamilyOrderReceivedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Der/Die Spender*in ist informiert.</span>
           <h2>Schön, bist du in der Börse fündig geworden</h2>
-          <p>Liebe*r ${userName}</p>
+          <p>Liebe*r ${n}</p>
           <p>Schön bist du in unserer Spielzeugbörse fündig geworden! Die Spender*innen der Spielsachen <strong>${toyNames}</strong> sind informiert und bringen die Pakete so rasch als möglich zur Post.</p>
-          <p><a href="${portalUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zum Familienportal</a></p>
+          <p><a href="${escapeHtml(portalUrl)}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zum Familienportal</a></p>
           <p>Im Portal kannst du den Status deiner Geschenke verfolgen. Du wirst informiert, sobald der/die Spender*in das Paket zur Post gebracht hat.</p>
           <p>Wir wünschen deinen Kindern viel Spass mit den neuen Spielsachen und deiner Familie frohe Festtage!</p>
           <p>Catharina, Gaby, Vanessa</p>
@@ -212,6 +235,8 @@ export async function sendToyDeletedEmail(
     userName: string,
     toyName: string,
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -219,8 +244,8 @@ export async function sendToyDeletedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Der/Die Spender*in hat das Spielzeug leider gelöscht.</span>
           <h2>Dein ausgewähltes Spielzeug ist leider nicht mehr verfügbar</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Es tut uns leid, aber der/die Spender*in hat das Spielzeug <strong>&ldquo;${toyName}&rdquo;</strong> leider gelöscht. Es kann sein, dass das Spielzeug nicht mehr auffindbar ist, oder anderweitig verschenkt wurde. Den genauen Grund kennen wir leider nicht.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Es tut uns leid, aber der/die Spender*in hat das Spielzeug <strong>&ldquo;${t}&rdquo;</strong> leider gelöscht. Es kann sein, dass das Spielzeug nicht mehr auffindbar ist, oder anderweitig verschenkt wurde. Den genauen Grund kennen wir leider nicht.</p>
           <p>Such dir bitte ein neues Geschenk aus der Börse aus. Wir hoffen, dein Kind hat an dem neuen Spielzeug genau so viel Freude!</p>
           <p>Wir wünschen dir und deinen Lieben eine schöne Adventszeit und frohe Festtage.</p>
           <p>Liebe Grüsse<br/>Catharina, Gaby, Vanessa</p>
@@ -236,8 +261,10 @@ export async function sendDonationSentEmail(
     trackingNumber?: string | null,
     portalUrl = 'https://app.waerme-schenken.ch/family/dashboard',
 ) {
+    const n = escapeHtml(userName);
+    const t = escapeHtml(toyName);
     const trackingBlock = trackingNumber
-        ? `<p><strong>Sendungsnummer:</strong> ${trackingNumber}</p>`
+        ? `<p><strong>Sendungsnummer:</strong> ${escapeHtml(trackingNumber)}</p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -246,10 +273,10 @@ export async function sendDonationSentEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Das Paket wurde von dem/der Spender*in verschickt.</span>
           <h2>Dein Geschenk ist auf dem Weg zu dir!</h2>
-          <p>Liebe*r ${userName}</p>
-          <p>Die/Der Spender*in von deinem Geschenk <strong>&ldquo;${toyName}&rdquo;</strong> hat das Paket soeben zur Post gebracht. Bald sollte es bei dir eintreffen. Du kannst den Status und die Sendungsnummer deines Pakets im Portal verfolgen.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Die/Der Spender*in von deinem Geschenk <strong>&ldquo;${t}&rdquo;</strong> hat das Paket soeben zur Post gebracht. Bald sollte es bei dir eintreffen. Du kannst den Status und die Sendungsnummer deines Pakets im Portal verfolgen.</p>
           ${trackingBlock}
-          <p><a href="${portalUrl}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zum Familienportal</a></p>
+          <p><a href="${escapeHtml(portalUrl)}" style="background:#537D61;color:#fff;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:700;">Zum Familienportal</a></p>
           <p>Solltest du in deinem Päckli eine Karte mit den Kontaktangaben des Spender-Kindes finden, würde sich dieses Kind über ein kleines "Danke" in Form von ein paar Worten oder vielleicht einer Zeichnung freuen.</p>
           <p>Du kannst dem/der Spender*in auch über die App Danke sagen. Einfach anmelden und beim Spielzeug anklicken, dass du das Paket erhalten hast und eine Dankesnachricht verfassen.</p>
           <p>Machen wir uns gegenseitig zu Weihnachten eine Freude!</p>
@@ -266,8 +293,10 @@ export async function sendDonorDonationSentConfirmationEmail(
     toyName: string,
     trackingNumber?: string | null,
 ) {
+    const n = escapeHtml(donorName);
+    const t = escapeHtml(toyName);
     const trackingBlock = trackingNumber
-        ? `<p><strong>Deine Sendungsnummer:</strong> <span style="font-family:monospace;">${trackingNumber}</span></p>`
+        ? `<p><strong>Deine Sendungsnummer:</strong> <span style="font-family:monospace;">${escapeHtml(trackingNumber)}</span></p>`
         : '';
     return resend.emails.send({
         from:    FROM,
@@ -276,8 +305,8 @@ export async function sendDonorDonationSentConfirmationEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Dein Paket wurde erfolgreich als verschickt markiert.</span>
           <h2>Vielen Dank, dass du dein Paket verschickt hast!</h2>
-          <p>Liebe*r ${donorName}</p>
-          <p>Du hast dein Geschenk <strong>&ldquo;${toyName}&rdquo;</strong> soeben als verschickt markiert. Die Familie wurde bereits benachrichtigt und freut sich sicher sehr darauf.</p>
+          <p>Liebe*r ${n}</p>
+          <p>Du hast dein Geschenk <strong>&ldquo;${t}&rdquo;</strong> soeben als verschickt markiert. Die Familie wurde bereits benachrichtigt und freut sich sicher sehr darauf.</p>
           ${trackingBlock}
           <p>Du hast damit einer Familie eine grosse Freude bereitet. Vielen herzlichen Dank für dein Engagement!</p>
           <p>Wir wünschen dir eine wunderbare Weihnachtszeit.</p>
@@ -288,6 +317,7 @@ export async function sendDonorDonationSentConfirmationEmail(
 
 // ── OTP email ──────────────────────────────────────────────────────────────
 export async function sendOtpEmail(to: string, code: string) {
+    const c = escapeHtml(code);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -295,7 +325,7 @@ export async function sendOtpEmail(to: string, code: string) {
         html: `
           <p>Hallo,</p>
           <p>Dein Anmeldecode lautet:</p>
-          <h1 style="font-size:36px;letter-spacing:8px;font-family:monospace;">${code}</h1>
+          <h1 style="font-size:36px;letter-spacing:8px;font-family:monospace;">${c}</h1>
           <p>Er ist 10 Minuten gültig.</p>
           <p>Falls du keine Anmeldung angefordert hast, ignoriere diese E-Mail.</p>
           ${SIGNATURE}
@@ -308,6 +338,7 @@ export async function sendAccountDeletedEmail(
     to: string,
     userName: string,
 ) {
+    const n = escapeHtml(userName);
     return resend.emails.send({
         from:    FROM,
         to,
@@ -315,7 +346,7 @@ export async function sendAccountDeletedEmail(
         html: `
           <span style="display:none;max-height:0;overflow:hidden;">Dein Konto bei Wärme Schenken wurde erfolgreich gelöscht.</span>
           <h2>Dein Konto wurde gelöscht</h2>
-          <p>Liebe*r ${userName}</p>
+          <p>Liebe*r ${n}</p>
           <p>Dein Konto bei <strong>Wärme Schenken</strong> wurde auf deinen Wunsch hin erfolgreich gelöscht. Alle deine persönlichen Daten wurden entfernt.</p>
           <p>Solltest du dein Konto nicht selbst gelöscht haben oder Fragen dazu haben, kontaktiere uns bitte umgehend unter <a href="mailto:hallo@waerme-schenken.ch">hallo@waerme-schenken.ch</a>.</p>
           <p>Wir danken dir für dein Engagement und wünschen dir alles Gute.</p>

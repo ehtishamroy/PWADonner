@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BRAND } from '@/lib/constants';
+import { formatZurichDate, toZurichDateInputValue } from '@/lib/date';
 import {
     AlertTriangle, RefreshCw, Lock, Calendar, CheckCircle2,
     Loader2, XCircle, Info, ChevronRight, Trash2,
@@ -39,7 +40,7 @@ type Phase =
 
 function formatDate(iso: string | null): string {
     if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('de-CH', {
+    return formatZurichDate(iso, {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit',
     });
@@ -47,7 +48,7 @@ function formatDate(iso: string | null): string {
 
 function formatDateOnly(iso: string | null): string {
     if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('de-CH', {
+    return formatZurichDate(iso, {
         day: '2-digit', month: '2-digit', year: 'numeric',
     });
 }
@@ -68,7 +69,7 @@ export function SeasonResetPanel({
     // Next-season date picker state
     const [nextSeasonInput, setNextSeasonInput] = useState<string>(
         initialNextSeasonFrom
-            ? new Date(initialNextSeasonFrom).toISOString().split('T')[0]
+            ? toZurichDateInputValue(initialNextSeasonFrom)
             : '',
     );
     const [savingDate, setSavingDate]     = useState(false);

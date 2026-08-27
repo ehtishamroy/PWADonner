@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
+import { formatZurichDate } from '@/lib/date';
 import { UploadCloud, X, Loader2, CheckCircle2, Phone, AlertTriangle, Edit2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -388,7 +389,7 @@ export default function FinancialSupportPage() {
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
                                             <p className="font-bold">{r.donation?.toyName || 'Spende'}</p>
-                                            <p className="text-sm opacity-50">{new Date(r.createdAt).toLocaleDateString('de-CH')}</p>
+                                            <p className="text-sm opacity-50">{formatZurichDate(r.createdAt)}</p>
                                         </div>
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                                             r.status === 'paid'     ? 'bg-green-100 text-green-700'   :

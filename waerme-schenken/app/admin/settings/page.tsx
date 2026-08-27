@@ -56,6 +56,7 @@ export default async function AdminSettingsPage() {
                             { href: '/admin/banner',          label: 'News Banner' },
                             { href: '/admin/shop-schedule',   label: 'Börse öffnen/schliessen' },
                             { href: '/admin/donation-schedule', label: 'Spendenformular öffnen/schliessen' },
+                            { href: '/admin/settings/password', label: 'Passwort ändern' },
                         ].map(l => (
                             <Link key={l.href} href={l.href}
                                 className="block p-4 rounded-[8px] border border-gray-100 hover:bg-gray-50 font-bold text-sm"

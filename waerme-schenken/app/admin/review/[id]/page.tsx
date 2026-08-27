@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import { AdminHeader } from '../../components/AdminHeader';
 import { BRAND, CONDITION_LABELS } from '@/lib/constants';
+import { formatZurichDate } from '@/lib/date';
 import Link from 'next/link';
 import ReviewActions from './ReviewActions';
 import { DonationImage } from '@prisma/client';
@@ -73,7 +74,7 @@ export default async function AdminReviewDetailPage({ params }: { params: Promis
                                 {donation.toyName}
                             </h1>
                             <p className="text-sm font-medium opacity-60 mb-8">
-                                Eingereicht am {new Date(donation.createdAt).toLocaleDateString('de-CH')}
+                                Eingereicht am {formatZurichDate(donation.createdAt)}
                             </p>
 
                             <div className="space-y-6">

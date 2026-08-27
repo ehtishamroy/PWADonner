@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import { createAdminSession, setAdminSessionCookie } from '@/lib/auth';
+import { verifyPassword } from '@/lib/password';
 
 const MAX_ATTEMPTS = 5;
 const LOCK_MINUTES = 30;
@@ -52,20 +53,27 @@ export async function POST(request: Request) {
             );
         }
 
-        if (email === validEmail && password === validPassword) {
-            loginAttempts.delete(attemptKey);
+        if (email === validEmail) {
+            const existingUser = await db.user.findUnique({ where: { email: validEmail } });
+            const passwordOk = existingUser?.passwordHash
+                ? await verifyPassword(password, existingUser.passwordHash)
+                : password === validPassword;
 
-            const adminUser = await db.user.upsert({
-                where: { email: validEmail },
-                create: { email: validEmail, firstName: 'Admin', lastName: '', role: 'admin' },
-                update: { role: 'admin' },
-            });
+            if (passwordOk) {
+                loginAttempts.delete(attemptKey);
 
-            const token = await createAdminSession(adminUser.id);
-            const cookieStore = await cookies();
-            cookieStore.set(setAdminSessionCookie(token));
+                const adminUser = await db.user.upsert({
+                    where: { email: validEmail },
+                    create: { email: validEmail, firstName: 'Admin', lastName: '', role: 'admin' },
+                    update: { role: 'admin' },
+                });
 
-            return NextResponse.json({ success: true });
+                const token = await createAdminSession(adminUser.id);
+                const cookieStore = await cookies();
+                cookieStore.set(setAdminSessionCookie(token));
+
+                return NextResponse.json({ success: true });
+            }
         }
 
         recordFailedAttempt(attemptKey);

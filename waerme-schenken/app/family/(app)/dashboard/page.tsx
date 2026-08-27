@@ -74,7 +74,7 @@ export default async function FamilyDashboardPage() {
                     <div className="bg-white rounded-[8px] p-6 mb-8 text-center">
                         <p className="opacity-80">
                             {de.family.shop.shopOpensOn}{' '}
-                            <strong>{shop.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
+                            <strong>{shop.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Zurich' })}</strong>
                         </p>
                     </div>
                 )}

@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
             if (sessionCount === 1) {
                 const shopConfig = await db.shopConfig.findFirst();
                 const openingDate = shopConfig?.openDate
-                    ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                    ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/Zurich' })
                     : 'demnächst';
                 sendFamilyRegistrationReceivedEmail(user.email, user.firstName, openingDate).catch(console.error);
             }

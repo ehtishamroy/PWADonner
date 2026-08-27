@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BRAND } from '@/lib/constants';
+import { formatZurichDate } from '@/lib/date';
 import { Download, Mail, Trash2, Users } from 'lucide-react';
 
 type User = {
@@ -193,7 +194,7 @@ export function UsersClientPage({ users, filter, page, totalAll, totalNewsletter
                                             )}
                                         </td>
                                         <td className="px-6 py-3.5 text-right text-xs opacity-50 hidden md:table-cell">
-                                            {new Date(user.createdAt).toLocaleDateString('de-CH')}
+                                            {formatZurichDate(user.createdAt)}
                                         </td>
                                         <td className="px-6 py-3.5 text-right">
                                             {user.role === 'admin' ? (

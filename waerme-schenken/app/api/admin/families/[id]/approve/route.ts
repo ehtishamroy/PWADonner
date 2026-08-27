@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if ((nowApproved && !wasApproved) || becomesSpecial) {
         const shopConfig = await db.shopConfig.findFirst();
         const openingDate = shopConfig?.openDate
-            ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })
+            ? shopConfig.openDate.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/Zurich' })
             : 'demnächst';
         sendFamilyRegistrationApprovedEmail(
             user.email,

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AdminHeader } from '../components/AdminHeader';
 import { BRAND } from '@/lib/constants';
+import { formatZurichDate } from '@/lib/date';
 import { CheckCircle2, Clock, Ban, Loader2, Trash2 } from 'lucide-react';
 
 type ReimbursementItem = {
@@ -95,7 +96,7 @@ function ReimbursementCard({ r, onUpdate }: { r: ReimbursementItem; onUpdate: ()
             )}
 
             <div className="flex items-center justify-between mt-4 pt-3 border-t">
-                <p className="text-xs opacity-50">Antrag vom {new Date(r.createdAt).toLocaleDateString('de-CH')}</p>
+                <p className="text-xs opacity-50">Antrag vom {formatZurichDate(r.createdAt)}</p>
                 <button
                     onClick={async () => {
                         if (!confirm('Diesen Erstattungsantrag wirklich vollständig löschen?')) return;

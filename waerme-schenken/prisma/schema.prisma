@@ -12,6 +12,7 @@ model User {
     id                String    @id @default(uuid())
     email             String    @unique
     role              String    @default("donor") // donor | family | admin
+    passwordHash      String?   // scrypt hash, admin-only; unset = fall back to ADMIN_PASSWORD env var
     firstName         String
     lastName          String
     zipCode           String?

@@ -77,7 +77,8 @@ export async function POST() {
             select: { id: true, socialCardUrl: true },
         });
 
-        const socialCardDir = path.join(process.cwd(), 'public', 'uploads', 'social-cards');
+        // Social cards & reimbursement receipts are stored privately (outside public/).
+        const socialCardDir = path.join(process.cwd(), 'private-uploads', 'social-cards');
 
         // ── 3. Collect donation + reimbursement image paths before deletion ───
         const [donationImages, reimbursementImages] = await Promise.all([
@@ -86,7 +87,7 @@ export async function POST() {
         ]);
 
         const donationDir      = path.join(process.cwd(), 'public', 'uploads', 'donations');
-        const reimbursementDir = path.join(process.cwd(), 'public', 'uploads', 'reimbursements');
+        const reimbursementDir = path.join(process.cwd(), 'private-uploads', 'reimbursements');
 
         // ── 4. Delete social-card image files from disk ───────────────────────
         let socialFilesDeleted = 0;

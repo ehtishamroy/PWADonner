@@ -2,24 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs   from 'fs';
 import crypto from 'crypto';
+import { getSession } from '@/lib/auth';
+import { verifyUploadTicket } from '@/lib/upload-ticket';
+import { ensurePrivateDir, privateUploadUrl } from '@/lib/storage';
 
 export const runtime = 'nodejs';
-
-const DIR = path.join(process.cwd(), 'public', 'uploads', 'social-cards');
-
-function ensureDir() {
-    if (!fs.existsSync(DIR)) fs.mkdirSync(DIR, { recursive: true });
-}
 
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 const uploadAttempts = new Map<string, { count: number; resetAt: number }>();
 
-function isRateLimited(ip: string): boolean {
+function isRateLimited(key: string): boolean {
     const now = Date.now();
-    const entry = uploadAttempts.get(ip);
+    const entry = uploadAttempts.get(key);
     if (!entry || now > entry.resetAt) {
-        uploadAttempts.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+        uploadAttempts.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
         return false;
     }
     entry.count++;
@@ -42,12 +39,28 @@ function isValidImage(buffer: Buffer): boolean {
 
 export async function POST(req: NextRequest) {
     try {
+        // ── Authorisation ── an authenticated family (profile update) OR a
+        // valid short-lived upload ticket (registration, no session yet).
+        const session = await getSession();
+        let authKey: string | null = session ? `user:${session.userId}` : null;
+        if (!session) {
+            const ticket = req.headers.get('x-upload-ticket');
+            if (await verifyUploadTicket(ticket)) {
+                authKey = 'ticket';
+            }
+        }
+        if (!authKey) {
+            return NextResponse.json({ error: 'Nicht autorisiert.' }, { status: 401 });
+        }
+
+        // Secondary anti-abuse guard (per-session, or per-IP for ticket uploads).
         const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-        if (isRateLimited(ip)) {
+        const rlKey = authKey === 'ticket' ? `ip:${ip}` : authKey;
+        if (isRateLimited(rlKey)) {
             return NextResponse.json({ error: 'Zu viele Uploads. Bitte später erneut versuchen.' }, { status: 429 });
         }
 
-        ensureDir();
+        const dir = ensurePrivateDir('social-cards');
 
         const formData = await req.formData();
         const file     = formData.get('file') as Blob | null;
@@ -77,12 +90,10 @@ export async function POST(req: NextRequest) {
 
         const randomId = crypto.randomBytes(16).toString('hex');
         const filename = `${randomId}.${ext}`;
-        const filepath = path.join(DIR, filename);
-
-        fs.writeFileSync(filepath, buffer);
+        fs.writeFileSync(path.join(dir, filename), buffer);
 
         return NextResponse.json(
-            { url: `/uploads/social-cards/${filename}` },
+            { url: privateUploadUrl('social-cards', filename) },
             { status: 201 },
         );
     } catch (err) {

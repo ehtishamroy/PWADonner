@@ -44,20 +44,25 @@ export async function POST(req: NextRequest) {
                         { status: 409 },
                     );
                 }
-                await db.user.delete({ where: { id: existing.id } });
+                // Unverified account (registered but never logged in): do NOT
+                // delete or overwrite it here — this endpoint is unauthenticated,
+                // so mutating an existing row would let anyone who knows the email
+                // destroy or tamper a pending registration. Just re-send an OTP
+                // against the existing row and let verification complete sign-up.
+            } else {
+                await db.user.create({
+                    data: {
+                        email: normalizedEmail,
+                        firstName:          firstName || '',
+                        lastName:           lastName  || '',
+                        role:               'donor',
+                        newsletterConsent:  !!newsletter,
+                        emailShareConsent:  !!emailShare,
+                        zipCode:            zipCode || null,
+                        city:               city    || null,
+                    },
+                });
             }
-            await db.user.create({
-                data: {
-                    email: normalizedEmail,
-                    firstName:          firstName || '',
-                    lastName:           lastName  || '',
-                    role:               'donor',
-                    newsletterConsent:  !!newsletter,
-                    emailShareConsent:  !!emailShare,
-                    zipCode:            zipCode || null,
-                    city:               city    || null,
-                },
-            });
         } else if (action === 'register-family') {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
@@ -68,7 +73,7 @@ export async function POST(req: NextRequest) {
             if (!socialCardUrl || !socialCardOrg) {
                 return NextResponse.json({ error: 'Sozialausweis und Organisation erforderlich.' }, { status: 400 });
             }
-            if (socialCardUrl.includes('..') || !/^\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
+            if (socialCardUrl.includes('..') || !/^\/api\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
                 return NextResponse.json({ error: 'Ungültige Sozialausweis-URL.' }, { status: 400 });
             }
             const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
@@ -80,23 +85,25 @@ export async function POST(req: NextRequest) {
                         { status: 409 },
                     );
                 }
-                await db.user.delete({ where: { id: existing.id } });
+                // Unverified account: do NOT delete or overwrite here (see donor
+                // branch above) — just re-send an OTP against the existing row.
+            } else {
+                await db.user.create({
+                    data: {
+                        email: normalizedEmail,
+                        firstName:          firstName || '',
+                        lastName:           lastName  || '',
+                        role:               'family',
+                        familyApproved:     false,
+                        newsletterConsent:  !!newsletter,
+                        zipCode,
+                        street,
+                        city,
+                        socialCardUrl,
+                        socialCardOrg,
+                    },
+                });
             }
-            await db.user.create({
-                data: {
-                    email: normalizedEmail,
-                    firstName:          firstName || '',
-                    lastName:           lastName  || '',
-                    role:               'family',
-                    familyApproved:     false,
-                    newsletterConsent:  !!newsletter,
-                    zipCode,
-                    street,
-                    city,
-                    socialCardUrl,
-                    socialCardOrg,
-                },
-            });
         } else {
             // Login — user must exist
             const exists = await db.user.findUnique({ where: { email: normalizedEmail } });

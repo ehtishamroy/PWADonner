@@ -526,7 +526,15 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
             const processed = await compressIfNeeded(file);
             const fd = new FormData();
             fd.append('file', processed);
-            const res = await fetch('/api/upload/social-card', { method: 'POST', body: fd });
+            // Registration has no session yet — obtain a short-lived signed
+            // upload ticket so the upload endpoint isn't open to the world.
+            const ticketRes = await fetch('/api/upload/ticket');
+            const { ticket } = await ticketRes.json();
+            const res = await fetch('/api/upload/social-card', {
+                method: 'POST',
+                headers: { 'x-upload-ticket': ticket },
+                body: fd,
+            });
             if (res.ok) {
                 const { url } = await res.json();
                 setForm(f => ({ ...f, socialCardUrl: url }));

@@ -69,7 +69,11 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    return NextResponse.next();
+    // Expose the pathname to server components (admin layout uses it to
+    // apply a defence-in-depth session check without looping on /admin/login).
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-pathname', path);
+    return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest) {
         );
     }
 
-    if (socialCardUrl.includes('..') || !/^\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
+    if (socialCardUrl.includes('..') || !/^\/api\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
         return NextResponse.json({ error: 'Ungültige Sozialausweis-URL.' }, { status: 400 });
     }
 

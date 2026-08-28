@@ -35,6 +35,7 @@ yarn-error.log*
 
 # uploaded user files (sensitive — never commit)
 public/uploads/
+private-uploads/
 
 # vercel
 .vercel

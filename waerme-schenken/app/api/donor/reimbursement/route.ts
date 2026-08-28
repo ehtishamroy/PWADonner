@@ -3,21 +3,20 @@ import { db } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
+import { ensurePrivateDir, privateUploadUrl } from '@/lib/storage';
 
 const MAX_IMAGES = 5;
 const MAX_SIZE_MB = 5;
 
-// Reimbursement upload directory
-const REIMBURSEMENT_DIR = path.join(process.cwd(), 'public', 'uploads', 'reimbursements');
-
-function ensureReimbursementDir() {
-    if (!fs.existsSync(REIMBURSEMENT_DIR)) {
-        fs.mkdirSync(REIMBURSEMENT_DIR, { recursive: true });
-    }
+// Reimbursement receipts are sensitive (financial docs) → private storage,
+// served only via the authenticated /api/uploads route.
+function ensureReimbursementDir(): string {
+    return ensurePrivateDir('reimbursements');
 }
 
 function getReimbursementUrl(filename: string): string {
-    return `/uploads/reimbursements/${filename}`;
+    return privateUploadUrl('reimbursements', filename);
 }
 
 // GET - List donor's reimbursements
@@ -94,7 +93,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Upload images
-        ensureReimbursementDir();
+        const reimbursementDir = ensureReimbursementDir();
         const imageUrls: string[] = [];
         for (let i = 0; i < images.length; i++) {
             const img = images[i];
@@ -111,8 +110,9 @@ export async function POST(req: NextRequest) {
             const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
             const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic']);
             const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
-            const filename = `${session.userId}-${Date.now()}-${i}.${ext}`;
-            const filepath = path.join(REIMBURSEMENT_DIR, filename);
+            // Random filename — never leak userId/timestamp in the URL.
+            const filename = `${crypto.randomBytes(16).toString('hex')}.${ext}`;
+            const filepath = path.join(reimbursementDir, filename);
 
             const buffer = Buffer.from(await img.arrayBuffer());
             fs.writeFileSync(filepath, buffer);

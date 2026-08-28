@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { randomInt } from 'crypto';
 import { db } from './db';
 import { OTP_EXPIRY_MINUTES, SESSION_DURATION_DAYS, ADMIN_SESSION_DAYS } from './constants';
 
@@ -11,7 +12,8 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 // ── OTP ────────────────────────────────────────────────────────────────────
 
 export function generateOtp(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    // Cryptographically secure 6-digit code (OTP is the sole login factor)
+    return randomInt(100000, 1000000).toString();
 }
 
 export async function createOtp(email: string): Promise<string> {

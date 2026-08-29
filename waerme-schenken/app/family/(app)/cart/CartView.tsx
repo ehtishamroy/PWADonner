@@ -12,8 +12,9 @@ type FamilyInfo = { firstName: string; lastName: string; street: string; zipCode
 
 type CartDonation = {
     id: string; toyName: string; category: string; condition: string; ageRange: string; status: string;
-    reservedUntil?: string | null;
-    reservedByFamilyId?: string | null;
+    reservedUntil?: string | null;   // only present for the family's own reservation
+    reservedByMe?: boolean;
+    reservedByOther?: boolean;
     images: { imageUrl: string }[];
 };
 
@@ -43,13 +44,12 @@ export function CartView({ family }: { family: FamilyInfo }) {
     const [step, setStep]           = useState<1 | 2>(1);
     const [confirming, setConfirming] = useState(false);
     const [error, setError]         = useState('');
-    const [userId, setUserId]       = useState<string | null>(null);
     const [timeLeft, setTimeLeft]   = useState<number | null>(null);
 
     useEffect(() => {
-        if (!userId || items.length === 0) return;
+        if (items.length === 0) return;
         const reservedItems = items.filter(i =>
-            i.reservedByFamilyId === userId &&
+            i.reservedByMe &&
             i.reservedUntil &&
             new Date(i.reservedUntil).getTime() > Date.now()
         );
@@ -75,7 +75,7 @@ export function CartView({ family }: { family: FamilyInfo }) {
         update();
         const interval = setInterval(update, 1000);
         return () => clearInterval(interval);
-    }, [items, userId]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const formatTime = (ms: number) => {
         const totalSecs = Math.floor(ms / 1000);
@@ -95,7 +95,6 @@ export function CartView({ family }: { family: FamilyInfo }) {
             body: JSON.stringify({ ids: cart.ids }),
         }).then(r => r.ok ? r.json() : { items: [] }).then(data => {
             setItems(data.items || []);
-            setUserId(data.userId || null);
         }).finally(() => setLoading(false));
     }, [cart.ids.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -245,9 +244,8 @@ export function CartView({ family }: { family: FamilyInfo }) {
                             const condColor = CONDITION_COLORS[p.condition] || BRAND.lila;
                             const thumb = p.images[0]?.imageUrl;
                             
-                            // It's stale if not approved, OR if it's reserved by someone else and not expired
-                            const isReservedByOther = p.reservedByFamilyId && p.reservedByFamilyId !== userId && p.reservedUntil && new Date(p.reservedUntil).getTime() > Date.now();
-                            const stale = p.status !== 'approved' || isReservedByOther;
+                            // It's stale if not approved, OR if it's reserved by someone else (computed server-side)
+                            const stale = p.status !== 'approved' || !!p.reservedByOther;
 
                             return (
                                 <div key={p.id} className="bg-gray-50 rounded-[8px] flex items-center overflow-hidden"

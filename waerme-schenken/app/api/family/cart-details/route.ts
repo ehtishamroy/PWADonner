@@ -3,7 +3,10 @@ import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 // POST /api/family/cart-details { ids: string[] }
-// Returns donation details + current status so the cart can detect stale items.
+// Returns just enough per-item detail for the cart to render and detect stale
+// items. It deliberately does NOT expose which family reserved or selected an
+// item — only booleans computed server-side — so a family cannot learn who
+// reserved/selected which toy by posting arbitrary IDs.
 export async function POST(req: NextRequest) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,10 +21,35 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ items: [] });
     }
 
-    const items = await db.donation.findMany({
-        where:   { id: { in: ids } },
-        include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } },
+    const rows = await db.donation.findMany({
+        where: { id: { in: ids } },
+        select: {
+            id: true, toyName: true, category: true, condition: true,
+            ageRange: true, status: true, reservedUntil: true,
+            reservedByFamilyId: true,
+            images: { orderBy: { sortOrder: 'asc' }, take: 1, select: { imageUrl: true } },
+        },
     });
 
-    return NextResponse.json({ items, userId: session.userId });
+    const now = Date.now();
+    const items = rows.map(r => {
+        const active = !!r.reservedUntil && new Date(r.reservedUntil).getTime() > now;
+        const reservedByMe = active && r.reservedByFamilyId === session.userId;
+        const reservedByOther = active && r.reservedByFamilyId !== session.userId;
+        return {
+            id: r.id,
+            toyName: r.toyName,
+            category: r.category,
+            condition: r.condition,
+            ageRange: r.ageRange,
+            status: r.status,
+            images: r.images,
+            reservedByMe,
+            reservedByOther,
+            // Only expose the countdown for the family's own reservation.
+            reservedUntil: reservedByMe ? r.reservedUntil : null,
+        };
+    });
+
+    return NextResponse.json({ items });
 }

@@ -21,7 +21,35 @@ export async function POST(req: NextRequest) {
     const { id } = await req.json();
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
+    const MAX_ACTIVE = 5; // matches the per-family checkout limit
+
     try {
+        // Cap how many items one family can hold at once, so a single account
+        // cannot lock the whole shop by reserving/renewing unlimited items.
+        // Special families are exempt (same rule as the toy-selection limit).
+        if (!isSpecial) {
+            const alreadyMine = await db.donation.findFirst({
+                where: { id, reservedByFamilyId: user.id, reservedUntil: { gt: new Date() } },
+                select: { id: true },
+            });
+            if (!alreadyMine) {
+                const activeCount = await db.donation.count({
+                    where: {
+                        OR: [
+                            { reservedByFamilyId: user.id, reservedUntil: { gt: new Date() } },
+                            { selectedByFamilyId: user.id, status: { in: ['selected', 'sent'] } },
+                        ],
+                    },
+                });
+                if (activeCount >= MAX_ACTIVE) {
+                    return NextResponse.json(
+                        { error: `Maximal ${MAX_ACTIVE} Spielzeuge gleichzeitig.` },
+                        { status: 409 },
+                    );
+                }
+            }
+        }
+
         const reservedUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
         
         const result = await db.donation.updateMany({

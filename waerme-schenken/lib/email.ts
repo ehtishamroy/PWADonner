@@ -1,7 +1,11 @@
 import { Resend } from 'resend';
 import { escapeHtml } from './html';
 
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+const resendClient: { instance: Resend | null } = { instance: null };
+function getResend(): Resend {
+    if (!resendClient.instance) resendClient.instance = new Resend(process.env.RESEND_API_KEY || '');
+    return resendClient.instance;
+}
 const FROM = 'Wärme Schenken <hallo@waerme-schenken.ch>';
 const SIGNATURE = '<p>Liebe Grüsse<br/>Catharina, Gaby &amp; Vanessa</p>';
 
@@ -15,7 +19,7 @@ export async function sendDonationReceivedEmail(
     const n = escapeHtml(userName);
     const t = escapeHtml(toyName);
     const d = escapeHtml(openingDate);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Vielen Dank für deine Spielzeugspende ${userName}`,
@@ -39,7 +43,7 @@ export async function sendDonationApprovedEmail(
 ) {
     const n = escapeHtml(userName);
     const t = escapeHtml(toyName);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Deine Spielzeugspende ${toyName} ist nun freigeschaltet`,
@@ -62,7 +66,7 @@ export async function sendDonationRejectedEmail(
 ) {
     const n = escapeHtml(userName);
     const t = escapeHtml(toyName);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Deine Spende ${toyName} wurde leider nicht freigeschalten`,
@@ -96,7 +100,7 @@ export async function sendDonationSelectedEmail(
     const imageBlock = absoluteImageUrl
         ? `<p><img src="${escapeHtml(absoluteImageUrl)}" alt="${t}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
         : '';
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Yay, dein Spielzeug ${toyName} wurde ausgesucht`,
@@ -132,7 +136,7 @@ export async function sendDonationReminderEmail(
     const imageBlock = safeImageUrl
         ? `<p><img src="${safeImageUrl}" alt="${t}" style="max-width:300px;border-radius:8px;display:block;margin:12px 0;" /></p>`
         : '';
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Reminder: Dein Spielzeug ${toyName} wurde ausgesucht`,
@@ -158,7 +162,7 @@ export async function sendFamilyRegistrationReceivedEmail(
 ) {
     const n = escapeHtml(userName);
     const d = escapeHtml(openingDate);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Vielen Dank für deine Registrierung, ${userName}`,
@@ -183,7 +187,7 @@ export async function sendFamilyRegistrationApprovedEmail(
 ) {
     const n = escapeHtml(userName);
     const d = escapeHtml(openingDate);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: `Deine Registrierung war erfolgreich, ${userName}`,
@@ -212,7 +216,7 @@ export async function sendFamilyOrderReceivedEmail(
 ) {
     const n = escapeHtml(userName);
     const toyNames = escapeHtml(toys.map(t => t.toyName).join(', '));
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Schön, bist du in unserer Börse fündig geworden.',
@@ -237,7 +241,7 @@ export async function sendToyDeletedEmail(
 ) {
     const n = escapeHtml(userName);
     const t = escapeHtml(toyName);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Spielzeug leider nicht mehr verfügbar',
@@ -266,7 +270,7 @@ export async function sendDonationSentEmail(
     const trackingBlock = trackingNumber
         ? `<p><strong>Sendungsnummer:</strong> ${escapeHtml(trackingNumber)}</p>`
         : '';
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Dein Geschenk ist auf dem Weg zu dir!',
@@ -298,7 +302,7 @@ export async function sendDonorDonationSentConfirmationEmail(
     const trackingBlock = trackingNumber
         ? `<p><strong>Deine Sendungsnummer:</strong> <span style="font-family:monospace;">${escapeHtml(trackingNumber)}</span></p>`
         : '';
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Vielen Dank — dein Paket ist auf dem Weg!',
@@ -318,7 +322,7 @@ export async function sendDonorDonationSentConfirmationEmail(
 // ── OTP email ──────────────────────────────────────────────────────────────
 export async function sendOtpEmail(to: string, code: string) {
     const c = escapeHtml(code);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Dein einmaliger Code für die Anmeldung',
@@ -339,7 +343,7 @@ export async function sendAccountDeletedEmail(
     userName: string,
 ) {
     const n = escapeHtml(userName);
-    return resend.emails.send({
+    return getResend().emails.send({
         from:    FROM,
         to,
         subject: 'Dein Konto wurde gelöscht',

@@ -22,6 +22,7 @@ model User {
     socialCardOrg     String?
     familyApproved    Boolean   @default(false)
     familySpecial     Boolean   @default(false)
+    contactedAt       DateTime? // admin marked "already contacted" (family approval workflow)
     newsletterConsent Boolean   @default(false)
     emailShareConsent Boolean   @default(false)
     phoneNumber       String?

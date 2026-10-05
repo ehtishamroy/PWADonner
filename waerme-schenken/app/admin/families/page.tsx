@@ -76,6 +76,7 @@ export default async function AdminFamiliesPage({ searchParams }: { searchParams
                                 socialCardOrg: f.socialCardOrg,
                                 familyApproved: f.familyApproved,
                                 familySpecial:  (f as { familySpecial?: boolean }).familySpecial ?? false,
+                                contactedAt: (f as { contactedAt?: Date | null }).contactedAt?.toISOString() ?? null,
                                 createdAt: f.createdAt.toISOString(),
                             }} />
                         ))}

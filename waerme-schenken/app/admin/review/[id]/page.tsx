@@ -5,6 +5,7 @@ import { BRAND, CONDITION_LABELS } from '@/lib/constants';
 import { formatZurichDate } from '@/lib/date';
 import Link from 'next/link';
 import ReviewActions from './ReviewActions';
+import EditDonationButton from './EditDonationButton';
 import { DonationImage } from '@prisma/client';
 
 export default async function AdminReviewDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -70,9 +71,12 @@ export default async function AdminReviewDetailPage({ params }: { params: Promis
                     {/* Right Column: Details & Actions */}
                     <div>
                         <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 mb-8">
-                            <h1 className="text-3xl font-bold leading-tight mb-2" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                                {donation.toyName}
-                            </h1>
+                            <div className="flex justify-between items-start mb-2 gap-4">
+                                <h1 className="text-3xl font-bold leading-tight" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                    {donation.toyName}
+                                </h1>
+                                <EditDonationButton donation={donation} />
+                            </div>
                             <p className="text-sm font-medium opacity-60 mb-8">
                                 Eingereicht am {formatZurichDate(donation.createdAt)}
                             </p>

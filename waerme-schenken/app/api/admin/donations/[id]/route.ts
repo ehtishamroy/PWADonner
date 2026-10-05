@@ -13,15 +13,24 @@ export async function PATCH(
         const { id } = await params;
 
         const body = await request.json();
-        const { status } = body;
+        const { status, category, ageRange, condition, toyName, description } = body;
 
-        if (status !== 'approved' && status !== 'rejected' && status !== 'waiting') {
+        // If status is provided, validate it
+        if (status && status !== 'approved' && status !== 'rejected' && status !== 'waiting') {
             return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
         }
 
+        const updateData: any = {};
+        if (status) updateData.status = status;
+        if (category) updateData.category = category;
+        if (ageRange) updateData.ageRange = ageRange;
+        if (condition) updateData.condition = condition;
+        if (toyName) updateData.toyName = toyName;
+        if (description !== undefined) updateData.description = description;
+
         const donation = await db.donation.update({
             where: { id },
-            data: { status },
+            data: updateData,
             include: { donor: true },
         });
 

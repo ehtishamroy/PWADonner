@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { getShopStatus, SHOP_CLOSED_MESSAGE } from '@/lib/shop-status';
 import {
     sendDonationSelectedEmail,
     sendFamilyOrderReceivedEmail,
@@ -19,6 +20,11 @@ export async function POST(req: NextRequest) {
     const family = await db.user.findUnique({ where: { id: session.userId } });
     if (!family || family.role !== 'family') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Nobody can check out while the shop is closed (special families included).
+    if (!(await getShopStatus()).isOpen) {
+        return NextResponse.json({ error: SHOP_CLOSED_MESSAGE, code: 'SHOP_CLOSED' }, { status: 403 });
     }
     const isSpecial = (family as { familySpecial?: boolean }).familySpecial === true;
     if (!family.familyApproved && !isSpecial) {

@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { createSession, setSessionCookie } from '@/lib/auth';
 import { sendFamilyRegistrationReceivedEmail } from '@/lib/email';
+import { normalizeEmail, normalizeOtpCode, findUserByEmail } from '@/lib/email-utils';
 
 const MAX_ATTEMPTS = 5;
 const LOCK_MINUTES = 30;
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, code } = await req.json();
+        const body = await req.json();
+        // send-otp stores the code under the normalised (trimmed, lower-case)
+        // address, so verification MUST look it up the same way — otherwise an
+        // email typed/auto-filled with a capital letter can never be verified.
+        const email = normalizeEmail(body?.email);
+        const code  = normalizeOtpCode(body?.code);
 
         if (!email || !code) {
             return NextResponse.json({ error: 'E-Mail und Code erforderlich.' }, { status: 400 });
@@ -32,8 +38,24 @@ export async function POST(req: NextRequest) {
         });
 
         if (!otp) {
-            return NextResponse.json({ error: 'Der Code ist ungültig oder abgelaufen.' }, { status: 401 });
+            // Tell the user WHY, so they know what to do next (and so support can
+            // tell "expired" apart from "replaced by a newer code").
+            const latest = await db.otpCode.findFirst({
+                where:   { email },
+                orderBy: { createdAt: 'desc' },
+            });
+            let error = 'Der Code ist ungültig. Bitte fordere einen neuen Code an.';
+            if (latest) {
+                error = latest.expiresAt.getTime() <= Date.now()
+                    ? 'Der Code ist abgelaufen. Bitte fordere einen neuen Code an.'
+                    : 'Dieser Code ist nicht mehr gültig, weil bereits ein neuerer Code gesendet wurde. Bitte verwende den zuletzt erhaltenen Code oder fordere einen neuen an.';
+            }
+            console.warn('[verify-otp] no active code', {
+                reason: !latest ? 'none' : latest.expiresAt.getTime() <= Date.now() ? 'expired' : 'used_or_replaced',
+            });
+            return NextResponse.json({ error }, { status: 401 });
         }
+
 
         if (otp.code !== code) {
             const newAttempts = otp.attempts + 1;
@@ -64,7 +86,7 @@ export async function POST(req: NextRequest) {
             data:  { used: true },
         });
 
-        const user = await db.user.findUnique({ where: { email } });
+        const user = await findUserByEmail(email);
         if (!user) {
             return NextResponse.json({ error: 'Benutzer nicht gefunden.' }, { status: 404 });
         }

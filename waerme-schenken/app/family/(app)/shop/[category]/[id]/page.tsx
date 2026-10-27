@@ -1,11 +1,21 @@
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import { BRAND, CONDITION_COLORS } from '@/lib/constants';
+import { getShopStatus } from '@/lib/shop-status';
+import { ShopClosedBanner } from '../../ShopClosedBanner';
 import { ProductDetail } from './ProductDetail';
 
 export default async function FamilyProductDetailPage({ params }: { params: Promise<{ category: string; id: string }> }) {
     const { category, id } = await params;
     const decodedCategory = decodeURIComponent(category);
+
+    // Closed for everyone outside the opening window (also via direct link).
+    const { isOpen, opensAt } = await getShopStatus();
+    if (!isOpen) {
+        return (
+            <ShopClosedBanner opensAt={opensAt?.toISOString() ?? null} />
+        );
+    }
 
     const donation = await db.donation.findUnique({
         where:   { id },

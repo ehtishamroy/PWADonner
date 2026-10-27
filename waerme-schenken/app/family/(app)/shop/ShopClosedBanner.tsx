@@ -1,8 +1,10 @@
 import { BRAND } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 
-export function ShopClosedBanner({ openDate }: { openDate: string | null; closeDate: string | null }) {
-    const opens = openDate ? new Date(openDate) : null;
+// `opensAt` is only passed while the opening date is still in the future (see
+// getShopStatus) — after the shop has closed again, "opens on <past date>" would be wrong.
+export function ShopClosedBanner({ opensAt }: { opensAt: string | null }) {
+    const opens = opensAt ? new Date(opensAt) : null;
     const formatted = opens
         ? opens.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Zurich' })
         : null;

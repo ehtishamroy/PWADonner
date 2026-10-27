@@ -404,12 +404,12 @@ function OtpStepContent({ email, onVerify, error }: { email: string; onVerify: (
             <div className="bg-white rounded-[8px] p-8">
                 <label className="block mb-3"
                     style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px', fontWeight: 400, color: '#000000' }}>{de.auth.otp.label}</label>
-                <input
+                <input autoComplete="one-time-code"
                     type="text"
                     inputMode="numeric"
-                    maxLength={6}
+                   
                     value={code}
-                    onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+                    onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     className="w-full font-bold bg-transparent outline-none text-[32px] tracking-[0.3em] border-b-2 pb-2"
                     style={{ borderColor: error ? BRAND.error : '#E5E7EB', fontFamily: 'monospace' }}
                     placeholder="000000"

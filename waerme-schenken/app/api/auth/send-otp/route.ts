@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { createOtp } from '@/lib/auth';
 import { sendOtpEmail } from '@/lib/email';
 import { OTP_RATE_LIMIT } from '@/lib/constants';
+import { normalizeEmail, findUserByEmail } from '@/lib/email-utils';
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
             street, city, socialCardUrl, socialCardOrg,
         } = body;
 
-        const normalizedEmail = email?.toLowerCase().trim();
+        const normalizedEmail = normalizeEmail(email);
         if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
             return NextResponse.json({ error: 'Ungültige E-Mail-Adresse.' }, { status: 400 });
         }
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
             }
-            const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
+            const existing = await findUserByEmail(normalizedEmail);
             if (existing) {
                 const hasSessions = await db.session.count({ where: { userId: existing.id } });
                 if (hasSessions > 0) {
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
             if (socialCardUrl.includes('..') || !/^\/api\/uploads\/social-cards\/[a-f0-9]+\.\w+$/.test(socialCardUrl)) {
                 return NextResponse.json({ error: 'Ungültige Sozialausweis-URL.' }, { status: 400 });
             }
-            const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
+            const existing = await findUserByEmail(normalizedEmail);
             if (existing) {
                 const hasSessions = await db.session.count({ where: { userId: existing.id } });
                 if (hasSessions > 0) {
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
             }
         } else {
             // Login — user must exist
-            const exists = await db.user.findUnique({ where: { email: normalizedEmail } });
+            const exists = await findUserByEmail(normalizedEmail);
             if (!exists) {
                 return NextResponse.json({ userNotFound: true }, { status: 404 });
             }

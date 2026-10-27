@@ -9,6 +9,7 @@ import { de } from '@/lib/i18n/de';
 import { Package, Truck } from 'lucide-react';
 import { ZebraCat } from '@/components/brand/Illustrations';
 import { OrderedBanner } from './OrderedBanner';
+import { isShopOpenAt } from '@/lib/shop-status';
 
 const MAX_TOYS = 5;
 
@@ -31,9 +32,10 @@ export default async function FamilyDashboardPage() {
     if (!user) redirect('/family/login');
 
     const now = new Date();
-    const isOpen = shop?.openDate && shop?.closeDate
-        ? now >= shop.openDate && now <= shop.closeDate
-        : true;
+    // Same rule as the shop itself (lib/shop-status): closed before the opening
+    // date and after the closing date, for every family.
+    const isOpen = isShopOpenAt(shop, now);
+    const opensInFuture = !!shop?.openDate && shop.openDate > now;
     const isSpecial = user.familySpecial === true;
     const atLimit = !isSpecial && selections.length >= MAX_TOYS;
     const sentCount = selections.filter(s => s.status === 'sent').length;
@@ -69,8 +71,8 @@ export default async function FamilyDashboardPage() {
                     </div>
                 </div>
 
-                {/* Shop state */}
-                {!isOpen && shop?.openDate && (
+                {/* Shop state — only announce an opening date that is still ahead of us */}
+                {!isOpen && opensInFuture && shop?.openDate && (
                     <div className="bg-white rounded-[8px] p-6 mb-8 text-center">
                         <p className="opacity-80">
                             {de.family.shop.shopOpensOn}{' '}

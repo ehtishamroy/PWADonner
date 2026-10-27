@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { getShopStatus, SHOP_CLOSED_MESSAGE } from '@/lib/shop-status';
 
 export async function POST(req: NextRequest) {
     const session = await getSession();
@@ -9,6 +10,12 @@ export async function POST(req: NextRequest) {
     const user = await db.user.findUnique({ where: { id: session.userId } });
     if (!user || user.role !== 'family') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Toys can only be reserved while the shop is open — for every family,
+    // special families included.
+    if (!(await getShopStatus()).isOpen) {
+        return NextResponse.json({ error: SHOP_CLOSED_MESSAGE, code: 'SHOP_CLOSED' }, { status: 403 });
     }
 
     const settings = await db.appSettings.findUnique({ where: { id: 'singleton' } }).catch(() => null);

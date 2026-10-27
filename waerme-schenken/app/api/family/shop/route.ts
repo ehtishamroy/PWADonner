@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { getShopStatus, SHOP_CLOSED_MESSAGE } from '@/lib/shop-status';
 
 // GET /api/family/shop?category=X&ageRange=Y&limit=&skip=
 // Returns approved donations for browsing family shop.
@@ -11,6 +12,11 @@ export async function GET(req: NextRequest) {
     const user = await db.user.findUnique({ where: { id: session.userId } });
     if (!user || user.role !== 'family') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // The catalogue is closed for every family (incl. special) outside the window.
+    if (!(await getShopStatus()).isOpen) {
+        return NextResponse.json({ error: SHOP_CLOSED_MESSAGE, code: 'SHOP_CLOSED' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { BRAND } from '@/lib/constants';
 import { de } from '@/lib/i18n/de';
 import { getSession } from '@/lib/auth';
+import { getShopStatus } from '@/lib/shop-status';
 import { ShopClosedBanner } from './ShopClosedBanner';
 import { CategoryList } from './CategoryList';
 
@@ -20,15 +21,18 @@ const CATEGORY_BG: Record<string, string> = {
 export default async function FamilyShopCategoriesPage() {
     const session = await getSession();
     const me = session ? await db.user.findUnique({ where: { id: session.userId } }) : null;
+    // "Special" families keep their cart-limit exemption, but they are NOT
+    // exempt from the opening window — the shop is closed for everyone until it opens.
     const isSpecial = (me as { familySpecial?: boolean } | null)?.familySpecial === true;
 
-    const shop = await db.shopConfig.findFirst();
-    const now = new Date();
-    const withinWindow = shop?.openDate && shop?.closeDate
-        ? now >= shop.openDate && now <= shop.closeDate
-        : true;
-    // Special families can shop anytime (see spec 6.4 “Special Family”)
-    const isOpen = withinWindow || isSpecial;
+    const { isOpen, opensAt } = await getShopStatus();
+
+    // Closed → show the notice and don't even load the catalogue.
+    if (!isOpen) {
+        return (
+            <ShopClosedBanner opensAt={opensAt?.toISOString() ?? null} />
+        );
+    }
 
     // Count approved donations per category so we can show/hide empty categories
     const [counts, catImages, toyCategories] = await Promise.all([
@@ -50,15 +54,6 @@ export default async function FamilyShopCategoriesPage() {
         count:    countMap[name] || 0,
         imageUrl: imageMap[name] || null,
     }));
-
-    if (!isOpen) {
-        return (
-            <ShopClosedBanner
-                openDate={shop?.openDate?.toISOString() ?? null}
-                closeDate={shop?.closeDate?.toISOString() ?? null}
-            />
-        );
-    }
 
     return (
         <div className="min-h-screen pt-12 px-6 pb-24 md:pl-8 md:pr-12 md:pt-12" style={{ backgroundColor: BRAND.beige }}>

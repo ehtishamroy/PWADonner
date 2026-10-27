@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { randomInt } from 'crypto';
 import { db } from './db';
+import { normalizeEmail } from './email-utils';
 import { OTP_EXPIRY_MINUTES, SESSION_DURATION_DAYS, ADMIN_SESSION_DAYS } from './constants';
 
 if (!process.env.JWT_SECRET) {
@@ -16,7 +17,9 @@ export function generateOtp(): string {
     return randomInt(100000, 1000000).toString();
 }
 
-export async function createOtp(email: string): Promise<string> {
+export async function createOtp(rawEmail: string): Promise<string> {
+    // Always store under the canonical address so verification can find it.
+    const email = normalizeEmail(rawEmail);
     const code = generateOtp();
     const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 

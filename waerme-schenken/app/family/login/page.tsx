@@ -89,8 +89,8 @@ export default function FamilyLoginPage() {
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
                                 {de.auth.otp.label}
                             </label>
-                            <input type="text" inputMode="numeric" maxLength={6} value={code}
-                                onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
+                            <input autoComplete="one-time-code" type="text" inputMode="numeric" value={code}
+                                onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                                 className="w-full font-bold bg-transparent outline-none text-[32px] tracking-[0.3em] border-b-2 pb-2"
                                 style={{ borderColor: error ? BRAND.error : '#E5E7EB', fontFamily: 'monospace' }}
                                 placeholder="000000" autoFocus />

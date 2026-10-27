@@ -30,6 +30,14 @@ export async function POST(req: NextRequest) {
         const user = await db.user.findUnique({ where: { id: session.userId } });
         if (!user) return NextResponse.json({ error: 'Benutzer nicht gefunden.' }, { status: 404 });
 
+        // Validate image URLs — only accept paths our own upload route produces.
+        const urls: string[] = Array.isArray(imageUrls) ? imageUrls : [];
+        const validUrl = (u: unknown): u is string =>
+            typeof u === 'string' && /^\/uploads\/donations\/[A-Za-z0-9._-]+$/.test(u) && !u.includes('..');
+        if (!urls.every(validUrl)) {
+            return NextResponse.json({ error: 'Ungültige Bild-URL.' }, { status: 400 });
+        }
+
         const donation = await db.donation.create({
             data: {
                 donorId:     session.userId,
@@ -40,7 +48,7 @@ export async function POST(req: NextRequest) {
                 description,
                 status: 'waiting',
                 images: {
-                    create: (imageUrls || []).map((url: string, i: number) => ({
+                    create: urls.map((url: string, i: number) => ({
                         imageUrl:  url,
                         sortOrder: i,
                     })),

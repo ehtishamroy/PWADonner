@@ -14,12 +14,26 @@ const nextConfig: NextConfig = {
     },
     serverExternalPackages: ['fs', 'path'],
 
+    // Uploaded photos/receipts are user data read from disk at runtime. Without
+    // this, routes that build paths with process.cwd() make the build trace
+    // every uploaded file, which gets slower as uploads grow.
+    outputFileTracingExcludes: {
+        '*': ['public/uploads/**', 'private-uploads/**'],
+    },
+
+    // Keep `next build` within the small VPS's memory (2 GB). See
+    // node_modules/next/dist/docs/01-app/02-guides/memory-usage.md
+    enablePrerenderSourceMaps: false,
+
     // Raise the body-size limit for all API routes to 10 MB so that
     // mobile photo uploads (HEIC, large JPEG etc.) are accepted.
     experimental: {
         serverActions: {
             bodySizeLimit: '10mb',
         },
+        webpackMemoryOptimizations: true,
+        serverSourceMaps: false,
+        cpus: 1,
     },
 
     // Prevent browsers / CDNs from caching HTML responses.

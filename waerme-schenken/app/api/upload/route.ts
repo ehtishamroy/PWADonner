@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { ensureUploadDir, getPublicUrl, UPLOAD_DIR } from '@/lib/storage';
+import { toWebImage, ImageProcessingError, IMAGE_ERROR_MESSAGE } from '@/lib/image-processing';
 import path from 'path';
 import fs   from 'fs';
 
@@ -38,15 +39,22 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Datei zu gross (max. 10 MB).' }, { status: 400 });
         }
 
-        // Sanitize extension: only allow jpg/png/webp/gif/heic/heif
-        const rawExt = (fileType ? fileType.split('/')[1]?.split('+')[0]?.toLowerCase() : null) || fileExt || 'jpg';
-        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif']);
-        const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
-        const filename = `${session.userId}-${Date.now()}.${ext}`;
+        // Convert to a web-safe JPEG (HEIC from iPhones included). The stored
+        // extension comes from the converted content, never from the client.
+        let image;
+        try {
+            image = await toWebImage(Buffer.from(await file.arrayBuffer()));
+        } catch (err) {
+            if (err instanceof ImageProcessingError) {
+                console.warn('[upload] rejected image:', err.message);
+                return NextResponse.json({ error: IMAGE_ERROR_MESSAGE }, { status: 400 });
+            }
+            throw err;
+        }
+        const filename = `${session.userId}-${Date.now()}.${image.ext}`;
         const filepath = path.join(UPLOAD_DIR, filename);
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        fs.writeFileSync(filepath, buffer);
+        fs.writeFileSync(filepath, image.buffer);
 
         return NextResponse.json({ url: getPublicUrl(filename) }, { status: 201 });
     } catch (err) {

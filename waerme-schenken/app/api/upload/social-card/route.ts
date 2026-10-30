@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { getSession } from '@/lib/auth';
 import { verifyUploadTicket } from '@/lib/upload-ticket';
 import { ensurePrivateDir, privateUploadUrl } from '@/lib/storage';
+import { toWebImage, ImageProcessingError, IMAGE_ERROR_MESSAGE } from '@/lib/image-processing';
 
 export const runtime = 'nodejs';
 
@@ -21,20 +22,6 @@ function isRateLimited(key: string): boolean {
     }
     entry.count++;
     return entry.count > RATE_LIMIT_MAX;
-}
-
-const MAGIC_BYTES: Record<string, number[]> = {
-    jpeg: [0xFF, 0xD8, 0xFF],
-    png:  [0x89, 0x50, 0x4E, 0x47],
-    webp: [0x52, 0x49, 0x46, 0x46],
-    gif:  [0x47, 0x49, 0x46],
-};
-
-function isValidImage(buffer: Buffer): boolean {
-    if (buffer.length < 4) return false;
-    return Object.values(MAGIC_BYTES).some(magic =>
-        magic.every((byte, i) => buffer[i] === byte)
-    );
 }
 
 export async function POST(req: NextRequest) {
@@ -69,28 +56,26 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Keine Datei gefunden.' }, { status: 400 });
         }
 
-        const fileType = (file as File).type;
-        if (!fileType.startsWith('image/')) {
-            return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
+        if (file.size > 10 * 1024 * 1024) {
+            return NextResponse.json({ error: 'Datei zu gross (max. 10 MB).' }, { status: 400 });
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'Datei zu gross (max. 5 MB).' }, { status: 400 });
+        // The content is checked by decoding it (no reliance on the MIME type,
+        // which is often empty for HEIC) and converted to a web-safe JPEG.
+        let image;
+        try {
+            image = await toWebImage(Buffer.from(await file.arrayBuffer()));
+        } catch (err) {
+            if (err instanceof ImageProcessingError) {
+                console.warn('[social-card] rejected image:', err.message);
+                return NextResponse.json({ error: IMAGE_ERROR_MESSAGE }, { status: 400 });
+            }
+            throw err;
         }
-
-        const buffer = Buffer.from(await file.arrayBuffer());
-
-        if (!isValidImage(buffer)) {
-            return NextResponse.json({ error: 'Ungültiges Bildformat.' }, { status: 400 });
-        }
-
-        const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
-        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic']);
-        const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
 
         const randomId = crypto.randomBytes(16).toString('hex');
-        const filename = `${randomId}.${ext}`;
-        fs.writeFileSync(path.join(dir, filename), buffer);
+        const filename = `${randomId}.${image.ext}`;
+        fs.writeFileSync(path.join(dir, filename), image.buffer);
 
         return NextResponse.json(
             { url: privateUploadUrl('social-cards', filename) },

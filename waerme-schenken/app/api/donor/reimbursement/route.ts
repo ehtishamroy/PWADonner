@@ -5,9 +5,10 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { ensurePrivateDir, privateUploadUrl } from '@/lib/storage';
+import { toWebImage, ImageProcessingError, IMAGE_ERROR_MESSAGE } from '@/lib/image-processing';
 
 const MAX_IMAGES = 5;
-const MAX_SIZE_MB = 5;
+const MAX_SIZE_MB = 10; // converted + downsized on the server
 
 // Reimbursement receipts are sensitive (financial docs) → private storage,
 // served only via the authenticated /api/uploads route.
@@ -92,30 +93,32 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Reimbursement already requested for this donation' }, { status: 409 });
         }
 
-        // Upload images
-        const reimbursementDir = ensureReimbursementDir();
-        const imageUrls: string[] = [];
-        for (let i = 0; i < images.length; i++) {
-            const img = images[i];
+        // Convert every receipt first (HEIC included), so a bad file is
+        // rejected before anything is written to disk.
+        const converted = [];
+        for (const img of images) {
             if (img.size > MAX_SIZE_MB * 1024 * 1024) {
                 return NextResponse.json({ error: `Image too large (max ${MAX_SIZE_MB}MB)` }, { status: 400 });
             }
-
-            // Validate type
-            const fileType = img.type;
-            if (!fileType.startsWith('image/')) {
-                return NextResponse.json({ error: 'Only images allowed' }, { status: 400 });
+            try {
+                converted.push(await toWebImage(Buffer.from(await img.arrayBuffer())));
+            } catch (err) {
+                if (err instanceof ImageProcessingError) {
+                    console.warn('[reimbursement] rejected image:', err.message);
+                    return NextResponse.json({ error: IMAGE_ERROR_MESSAGE }, { status: 400 });
+                }
+                throw err;
             }
+        }
 
-            const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
-            const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic']);
-            const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
+        // Upload images
+        const reimbursementDir = ensureReimbursementDir();
+        const imageUrls: string[] = [];
+        for (const image of converted) {
             // Random filename — never leak userId/timestamp in the URL.
-            const filename = `${crypto.randomBytes(16).toString('hex')}.${ext}`;
+            const filename = `${crypto.randomBytes(16).toString('hex')}.${image.ext}`;
             const filepath = path.join(reimbursementDir, filename);
-
-            const buffer = Buffer.from(await img.arrayBuffer());
-            fs.writeFileSync(filepath, buffer);
+            fs.writeFileSync(filepath, image.buffer);
             imageUrls.push(getReimbursementUrl(filename));
         }
 

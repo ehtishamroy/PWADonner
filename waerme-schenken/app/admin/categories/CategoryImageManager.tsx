@@ -80,7 +80,7 @@ function Row({ item, busy, onUpload, onRemove }: {
                     {item.imageUrl ? 'Bild hochgeladen' : 'Kein Bild'}
                 </p>
                 <div className="flex gap-2 mt-3">
-                    <input ref={inputRef} type="file" accept="image/*" hidden
+                    <input ref={inputRef} type="file" accept="image/*,.heic,.heif" hidden
                         onChange={e => {
                             const f = e.target.files?.[0];
                             if (f) onUpload(f);

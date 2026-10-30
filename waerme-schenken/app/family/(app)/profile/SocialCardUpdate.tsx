@@ -280,7 +280,7 @@ export function SocialCardUpdate({ currentUrl, currentOrg, isApproved }: Props) 
                     <input
                         ref={fileRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,.heic,.heif"
                         hidden
                         onChange={e => handleFile(e.target.files?.[0])}
                     />

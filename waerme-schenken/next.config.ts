@@ -12,7 +12,9 @@ const nextConfig: NextConfig = {
         deviceSizes: [640, 750, 828, 1080, 1200],
         imageSizes: [64, 128, 256, 384],
     },
-    serverExternalPackages: ['fs', 'path'],
+    // heic-decode loads libheif (WASM) at runtime; load it from node_modules
+    // instead of bundling it.
+    serverExternalPackages: ['fs', 'path', 'sharp', 'heic-decode', 'libheif-js'],
 
     // Uploaded photos/receipts are user data read from disk at runtime. Without
     // this, routes that build paths with process.cwd() make the build trace

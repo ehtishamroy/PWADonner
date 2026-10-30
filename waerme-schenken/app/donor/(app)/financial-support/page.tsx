@@ -6,9 +6,10 @@ import { BRAND } from '@/lib/constants';
 import { formatZurichDate } from '@/lib/date';
 import { UploadCloud, X, Loader2, CheckCircle2, Phone, AlertTriangle, Edit2 } from 'lucide-react';
 import Link from 'next/link';
+import { LocalImagePreview } from '@/components/ui/LocalImagePreview';
 
 const MAX_IMAGES = 5;
-const MAX_SIZE_MB = 5;
+const MAX_SIZE_MB = 10;
 
 type Reimbursement = {
     id: string;
@@ -322,7 +323,7 @@ export default function FinancialSupportPage() {
                                 <input
                                     ref={fileRef}
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/*,.heic,.heif"
                                     multiple
                                     className="hidden"
                                     onChange={e => handleImageAdd(e.target.files)}
@@ -330,7 +331,7 @@ export default function FinancialSupportPage() {
                                 <div className="grid grid-cols-3 gap-3 mb-3">
                                     {images.map((img, i) => (
                                         <div key={i} className="relative aspect-square rounded-[8px] overflow-hidden bg-gray-100">
-                                            <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                            <LocalImagePreview src={img.url} />
                                             <button
                                                 type="button"
                                                 onClick={() => removeImage(i)}

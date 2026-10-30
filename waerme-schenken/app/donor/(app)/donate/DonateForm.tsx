@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { de } from '@/lib/i18n/de';
 import { BRAND, AGE_RANGES, CONDITIONS, CONDITION_LABELS } from '@/lib/constants';
 import { UploadCloud, X } from 'lucide-react';
+import { LocalImagePreview } from '@/components/ui/LocalImagePreview';
 
 type Step = 1 | 2 | 3;
 
@@ -300,7 +301,7 @@ export default function DonateForm() {
                                 <div className="grid grid-cols-3 gap-3 w-full">
                                     {images.map((img, i) => (
                                         <div key={i} className="relative aspect-square rounded-[16px] overflow-hidden">
-                                            <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                            <LocalImagePreview src={img.url} />
                                             <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))}
                                                 className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white">
                                                 <X size={12} />
@@ -318,7 +319,7 @@ export default function DonateForm() {
                             )}
                         </div>
 
-                        <input ref={fileRef} type="file" accept="image/*" multiple hidden
+                        <input ref={fileRef} type="file" accept="image/*,.heic,.heif" multiple hidden
                             onChange={e => handleImageAdd(e.target.files)} />
 
                         {errors.images && (
@@ -350,7 +351,7 @@ export default function DonateForm() {
                             <div className="flex gap-2 mt-2 flex-wrap">
                                 {images.map((img, i) => (
                                     <div key={i} className="w-16 h-16 rounded-xl overflow-hidden">
-                                        <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                        <LocalImagePreview src={img.url} />
                                     </div>
                                 ))}
                             </div>

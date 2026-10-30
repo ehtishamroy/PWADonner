@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
 import { ensureUploadDir, getPublicUrl, UPLOAD_DIR } from '@/lib/storage';
+import { toWebImage, ImageProcessingError, IMAGE_ERROR_MESSAGE } from '@/lib/image-processing';
 import path from 'path';
 import fs from 'fs';
 
@@ -29,22 +30,24 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Ungültige Eingabe.' }, { status: 400 });
         }
 
-        const fileType = (file as File).type;
-        if (!fileType.startsWith('image/')) {
-            return NextResponse.json({ error: 'Nur Bilder erlaubt.' }, { status: 400 });
-        }
         if (file.size > 5 * 1024 * 1024) {
             return NextResponse.json({ error: 'Datei zu gross (max. 5 MB).' }, { status: 400 });
         }
 
-        const rawExt = fileType.split('/')[1]?.split('+')[0]?.toLowerCase() || 'jpg';
-        const allowed = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif']);
-        const ext = allowed.has(rawExt) ? rawExt.replace('jpeg', 'jpg') : 'jpg';
-        const filename = `category-${Date.now()}.${ext}`;
+        let image;
+        try {
+            image = await toWebImage(Buffer.from(await file.arrayBuffer()));
+        } catch (err) {
+            if (err instanceof ImageProcessingError) {
+                console.warn('[category-image] rejected image:', err.message);
+                return NextResponse.json({ error: IMAGE_ERROR_MESSAGE }, { status: 400 });
+            }
+            throw err;
+        }
+        const filename = `category-${Date.now()}.${image.ext}`;
         const filepath = path.join(UPLOAD_DIR, filename);
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        fs.writeFileSync(filepath, buffer);
+        fs.writeFileSync(filepath, image.buffer);
 
         const url = getPublicUrl(filename);
         const saved = await db.categoryImage.upsert({

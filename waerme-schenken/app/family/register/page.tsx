@@ -602,7 +602,7 @@ function SocialCardStep({ form, setForm, errors, orgs }: { form: FormShape; setF
                     {uploading ? 'Wird hochgeladen...' : uploaded ? de.family.register.uploaded : de.family.register.uploadHint}
                 </span>
             </button>
-            <input ref={fileRef} type="file" accept="image/*" hidden
+            <input ref={fileRef} type="file" accept="image/*,.heic,.heif" hidden
                 onChange={e => handleFile(e.target.files?.[0])} />
             {(errors.socialCardUrl || uploadError) && (
                 <p className="text-[13px] font-medium mt-3" style={{ color: BRAND.error }}>

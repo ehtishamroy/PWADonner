@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { createOtp } from '@/lib/auth';
-import { sendOtpEmail } from '@/lib/email';
+import { sendOtpEmail, EmailSendError } from '@/lib/email';
 import { OTP_RATE_LIMIT } from '@/lib/constants';
 import { normalizeEmail, findUserByEmail } from '@/lib/email-utils';
 
@@ -114,7 +114,23 @@ export async function POST(req: NextRequest) {
         }
 
         const code = await createOtp(normalizedEmail);
-        await sendOtpEmail(normalizedEmail, code);
+        try {
+            await sendOtpEmail(normalizedEmail, code);
+        } catch (err) {
+            if (!(err instanceof EmailSendError)) throw err;
+            // The email provider refused (quota, rate limit, …). Don't claim a
+            // code was sent, and don't let our failure count against the
+            // user's hourly limit.
+            await db.otpCode.deleteMany({ where: { email: normalizedEmail, code, used: false } }).catch(() => {});
+            console.error('[send-otp] login code email not sent:', err.code);
+            return NextResponse.json(
+                {
+                    error: 'Wir konnten dir gerade keine E-Mail senden. Bitte versuche es in ein paar Minuten erneut.',
+                    code: 'EMAIL_FAILED',
+                },
+                { status: 503 },
+            );
+        }
 
         return NextResponse.json({ ok: true });
     } catch (err) {

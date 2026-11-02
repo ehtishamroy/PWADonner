@@ -104,7 +104,7 @@ export default async function FamilyDashboardPage() {
                             style={{ backgroundColor: BRAND.lila }}>
                             <span className="text-[32px] font-bold leading-none mb-1"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>
-                                {selections.length}&nbsp;<span className="text-[18px] opacity-60">/ {MAX_TOYS}</span>
+                                {selections.length}{!isSpecial && <>&nbsp;<span className="text-[18px] opacity-60">/ {MAX_TOYS}</span></>}
                             </span>
                             <span className="text-[11px] font-bold uppercase tracking-widest opacity-80"
                                 style={{ fontFamily: "'Bricolage Grotesque',sans-serif" }}>

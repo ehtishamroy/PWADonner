@@ -68,7 +68,9 @@ function writeCart(ids: string[]) {
     window.dispatchEvent(new CustomEvent('ws-cart-change'));
 }
 
-export function useFamilyCart() {
+// `isSpecial`: special families are exempt from the 5-toy limit (the server
+// enforces the same rule in /api/family/cart/reserve and /api/family/checkout).
+export function useFamilyCart(isSpecial = false) {
     const [ids, setIds] = useState<string[]>([]);
 
     useEffect(() => {
@@ -91,7 +93,7 @@ export function useFamilyCart() {
     const add = useCallback(async (id: string): Promise<{ ok: boolean; reason?: 'limit' | 'reserved' }> => {
         const cur = readCart();
         if (cur.includes(id)) return { ok: true };
-        if (cur.length >= CART_MAX) return { ok: false, reason: 'limit' };
+        if (!isSpecial && cur.length >= CART_MAX) return { ok: false, reason: 'limit' };
 
         let expiresAt: string | null = null;
         try {
@@ -116,7 +118,7 @@ export function useFamilyCart() {
 
         writeCart([...readCart(), id]);
         return { ok: true };
-    }, []);
+    }, [isSpecial]);
 
     const remove = useCallback((id: string) => {
         writeCart(readCart().filter(x => x !== id));

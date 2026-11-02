@@ -8,6 +8,9 @@ import {
 } from '@/lib/email';
 
 const MAX_ITEMS = 5;
+// Special families have no toy limit; this only guards a single request
+// (one row lock is taken per toy).
+const SPECIAL_MAX_PER_ORDER = 50;
 
 // POST /api/family/checkout
 // body: { donationIds: string[] }
@@ -38,18 +41,24 @@ export async function POST(req: NextRequest) {
     if (!Array.isArray(donationIds) || donationIds.length === 0) {
         return NextResponse.json({ error: 'Warenkorb ist leer.' }, { status: 400 });
     }
-    if (donationIds.length > MAX_ITEMS) {
-        return NextResponse.json({ error: `Maximal ${MAX_ITEMS} Spielzeuge pro Familie.` }, { status: 400 });
-    }
+    if (isSpecial) {
+        if (donationIds.length > SPECIAL_MAX_PER_ORDER) {
+            return NextResponse.json({ error: `Maximal ${SPECIAL_MAX_PER_ORDER} Spielzeuge pro Bestellung.` }, { status: 400 });
+        }
+    } else {
+        if (donationIds.length > MAX_ITEMS) {
+            return NextResponse.json({ error: `Maximal ${MAX_ITEMS} Spielzeuge pro Familie.` }, { status: 400 });
+        }
 
-    // Check family is not already at the 5-item limit including pre-existing selections
-    const existingSelected = await db.donation.count({
-        where: { selectedByFamilyId: family.id, status: { in: ['selected', 'sent'] } },
-    });
-    if (existingSelected + donationIds.length > MAX_ITEMS) {
-        return NextResponse.json({
-            error: `Maximal ${MAX_ITEMS} Spielzeuge pro Familie. Du hast bereits ${existingSelected} ausgewählt.`,
-        }, { status: 400 });
+        // Check family is not already at the 5-item limit including pre-existing selections
+        const existingSelected = await db.donation.count({
+            where: { selectedByFamilyId: family.id, status: { in: ['selected', 'sent'] } },
+        });
+        if (existingSelected + donationIds.length > MAX_ITEMS) {
+            return NextResponse.json({
+                error: `Maximal ${MAX_ITEMS} Spielzeuge pro Familie. Du hast bereits ${existingSelected} ausgewählt.`,
+            }, { status: 400 });
+        }
     }
 
     try {

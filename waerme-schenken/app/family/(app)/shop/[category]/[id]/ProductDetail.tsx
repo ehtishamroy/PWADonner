@@ -17,14 +17,15 @@ type Props = {
     description: string;
     condColor: string;
     images: string[];
+    isSpecial?: boolean;
 };
 
-export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images: rawImages }: Props) {
+export function ProductDetail({ id, category, toyName, ageRange, condition, description, condColor, images: rawImages, isSpecial = false }: Props) {
     const images = rawImages.filter(Boolean);
     const [idx, setIdx] = useState(0);
     const [limitToast, setLimitToast] = useState(false);
     const touchStartX = useRef<number | null>(null);
-    const cart = useFamilyCart();
+    const cart = useFamilyCart(isSpecial);
 
     function onTouchStart(e: React.TouchEvent) {
         touchStartX.current = e.touches[0].clientX;

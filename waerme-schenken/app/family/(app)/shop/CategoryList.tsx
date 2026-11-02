@@ -35,7 +35,7 @@ export function CategoryList({ categories, isSpecial = false }: { categories: Ca
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     const [searchLoading, setSearchLoading] = useState(false);
     const [limitModal, setLimitModal] = useState(false);
-    const cart = useFamilyCart();
+    const cart = useFamilyCart(isSpecial);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Re-fetch counts whenever the age filter changes

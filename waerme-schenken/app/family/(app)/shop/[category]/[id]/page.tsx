@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
+import { getSession } from '@/lib/auth';
 import { BRAND, CONDITION_COLORS } from '@/lib/constants';
 import { getShopStatus } from '@/lib/shop-status';
 import { ShopClosedBanner } from '../../ShopClosedBanner';
@@ -24,6 +25,9 @@ export default async function FamilyProductDetailPage({ params }: { params: Prom
 
     if (!donation || donation.status !== 'approved') notFound();
 
+    const session = await getSession();
+    const me = session ? await db.user.findUnique({ where: { id: session.userId }, select: { familySpecial: true } }) : null;
+
     return (
         <div className="min-h-screen pb-24 md:pl-8 md:pr-12 md:pt-6" style={{ backgroundColor: BRAND.beige }}>
             <ProductDetail
@@ -35,6 +39,7 @@ export default async function FamilyProductDetailPage({ params }: { params: Prom
                 description={donation.description}
                 condColor={CONDITION_COLORS[donation.condition] || BRAND.mustard}
                 images={donation.images.map(i => i.imageUrl)}
+                isSpecial={me?.familySpecial === true}
             />
         </div>
     );

@@ -37,7 +37,7 @@ export function ProductsGrid({ category, isSpecial = false }: { category: string
     const [ageFilter, setAgeFilter] = useState<string>(initialAge);
     const [limitModal, setLimitModal] = useState(false);
     const [showTop, setShowTop] = useState(false);
-    const cart = useFamilyCart();
+    const cart = useFamilyCart(isSpecial);
 
     useEffect(() => {
         const onScroll = () => setShowTop(window.scrollY > 400);

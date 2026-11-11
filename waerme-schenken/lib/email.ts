@@ -140,7 +140,7 @@ export async function sendDonationSelectedEmail(
           <p><strong>Hier ist die Versandadresse:</strong></p>
           <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${rn}<br/>${ra}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"Verschickt"</em> und hinterlege (wenn möglich) die Sendungsnummer. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });
@@ -176,7 +176,7 @@ export async function sendDonationReminderEmail(
           <p><strong>Hier ist die Versandadresse:</strong></p>
           <p style="font-family:monospace;background:#f5f5f5;padding:12px;border-radius:8px;">${rn}<br/>${ra}</p>
           ${imageBlock}
-          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"In Bearbeitung"</em> und dann auf <em>"Verschickt"</em>. Die Sendungsnummer kannst du auch im Portal hinterlegen. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
+          <p>Bitte ändere den Status deiner Spende in deinem Spendenportal auf <em>"Verschickt"</em> und hinterlege (wenn möglich) die Sendungsnummer. So ist ${rn} immer über den aktuellen Stand deines Geschenks informiert.</p>
           ${SIGNATURE}
         `,
     });

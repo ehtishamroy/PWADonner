@@ -19,6 +19,13 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({ error: 'Admin-Benutzer können nicht gelöscht werden.' }, { status: 400 });
         }
 
+        // If family: release any selected-but-not-yet-sent donations back to the
+        // shop (as when a family deletes its own account, app/api/users/me).
+        await db.donation.updateMany({
+            where: { selectedByFamilyId: id, status: 'selected' },
+            data:  { status: 'approved', selectedByFamilyId: null, selectedAt: null },
+        });
+
         // If donor: process their donations before deletion
         const donations = await db.donation.findMany({
             where:   { donorId: id },

@@ -4,6 +4,7 @@ import { createOtp } from '@/lib/auth';
 import { sendOtpEmail, EmailSendError } from '@/lib/email';
 import { OTP_RATE_LIMIT } from '@/lib/constants';
 import { normalizeEmail, findUserByEmail } from '@/lib/email-utils';
+import { nameError, normalizeName } from '@/lib/name-validation';
 
 export async function POST(req: NextRequest) {
     try {
@@ -68,6 +69,12 @@ export async function POST(req: NextRequest) {
             if (!privacy) {
                 return NextResponse.json({ error: 'Datenschutz muss akzeptiert werden.' }, { status: 400 });
             }
+            // Letters only in the names (also catches forms saved in the browser
+            // before this check existed); `field` lets the form jump back to it.
+            for (const field of ['firstName', 'lastName'] as const) {
+                const message = nameError(body[field]);
+                if (message) return NextResponse.json({ error: message, field }, { status: 400 });
+            }
             if (!street || !city || !zipCode) {
                 return NextResponse.json({ error: 'Vollständige Adresse erforderlich.' }, { status: 400 });
             }
@@ -92,8 +99,8 @@ export async function POST(req: NextRequest) {
                 await db.user.create({
                     data: {
                         email: normalizedEmail,
-                        firstName:          firstName || '',
-                        lastName:           lastName  || '',
+                        firstName:          normalizeName(firstName),
+                        lastName:           normalizeName(lastName),
                         role:               'family',
                         familyApproved:     false,
                         newsletterConsent:  !!newsletter,

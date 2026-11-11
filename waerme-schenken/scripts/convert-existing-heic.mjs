@@ -3,10 +3,12 @@
  * the server started converting uploads. Browsers other than Safari cannot
  * display HEIC, so these show up as broken images.
  *
- * For every DB row whose image URL ends in .heic / .heif:
+ * For every DB row whose image is HEIC, either by name (.heic / .heif) or by
+ * content (iPhones also sent HEIC photos named .jpg):
  *     DonationImage.imageUrl, ReimbursementImage.imageUrl,
  *     CategoryImage.imageUrl, User.socialCardUrl
- *   1. convert the file to a web-safe JPEG next to it (same pipeline as
+ *   1. convert the file to a web-safe JPEG next to it (a .jpg that was HEIC gets
+ *      a new "-web.jpg" name; same pipeline as
  *      lib/image-processing.ts: rotation applied, max 2000 px, no metadata),
  *   2. point the DB row(s) to the new .jpg,
  *   3. MOVE (never delete) the original into a holding folder outside the app.
@@ -92,34 +94,53 @@ function jpgUrlFor(url, jpgFile) {
 }
 
 function freeJpgPath(heicFile) {
-    let candidate = heicFile.replace(HEIC_EXT, '.jpg');
-    for (let i = 1; fs.existsSync(candidate); i++) candidate = heicFile.replace(HEIC_EXT, `-${i}.jpg`);
+    // A file named .jpg that holds HEIC must not be overwritten: give it a new name.
+    const base = HEIC_EXT.test(heicFile) ? heicFile.replace(HEIC_EXT, '') : `${heicFile.replace(/\.[^./]+$/, '')}-web`;
+    let candidate = `${base}.jpg`;
+    for (let i = 1; fs.existsSync(candidate); i++) candidate = `${base}-${i}.jpg`;
     return candidate;
 }
 
+function readHead(file, bytes = 64) {
+    const fd = fs.openSync(file, 'r');
+    try {
+        const buf = Buffer.alloc(bytes);
+        return buf.subarray(0, fs.readSync(fd, buf, 0, bytes, 0));
+    } finally {
+        fs.closeSync(fd);
+    }
+}
+
 // ── collect rows ─────────────────────────────────────────────────────────────
-const heicWhere = (field) => ({
-    OR: [
-        { [field]: { endsWith: '.heic', mode: 'insensitive' } },
-        { [field]: { endsWith: '.heif', mode: 'insensitive' } },
-    ],
-});
+// Every image row, kept if its URL ends in .heic/.heif or its file starts with a
+// HEIC header (only the first bytes of each file are read).
+function isHeicRow(url) {
+    if (HEIC_EXT.test(url.split('?')[0])) return true;
+    const file = fileForUrl(url);
+    if (!file || !fs.existsSync(file)) return false;
+    try {
+        return isHeic(readHead(file));
+    } catch {
+        return false;
+    }
+}
 
 async function collect() {
     const rows = [];
-    for (const r of await db.donationImage.findMany({ where: heicWhere('imageUrl'), select: { id: true, imageUrl: true } })) {
+    for (const r of await db.donationImage.findMany({ select: { id: true, imageUrl: true } })) {
         rows.push({ table: 'donationImage', field: 'imageUrl', id: r.id, url: r.imageUrl });
     }
-    for (const r of await db.reimbursementImage.findMany({ where: heicWhere('imageUrl'), select: { id: true, imageUrl: true } })) {
+    for (const r of await db.reimbursementImage.findMany({ select: { id: true, imageUrl: true } })) {
         rows.push({ table: 'reimbursementImage', field: 'imageUrl', id: r.id, url: r.imageUrl });
     }
-    for (const r of await db.categoryImage.findMany({ where: heicWhere('imageUrl'), select: { id: true, imageUrl: true } })) {
+    for (const r of await db.categoryImage.findMany({ select: { id: true, imageUrl: true } })) {
         rows.push({ table: 'categoryImage', field: 'imageUrl', id: r.id, url: r.imageUrl });
     }
-    for (const r of await db.user.findMany({ where: heicWhere('socialCardUrl'), select: { id: true, socialCardUrl: true } })) {
+    for (const r of await db.user.findMany({ where: { socialCardUrl: { not: null } }, select: { id: true, socialCardUrl: true } })) {
         rows.push({ table: 'user', field: 'socialCardUrl', id: r.id, url: r.socialCardUrl });
     }
-    return rows;
+    console.log(`Checked ${rows.length} image link(s).`);
+    return rows.filter(r => isHeicRow(r.url));
 }
 
 async function main() {
@@ -130,7 +151,7 @@ async function main() {
     // The same file can in theory be referenced by several rows.
     const byUrl = new Map();
     for (const r of rows) byUrl.set(r.url, [...(byUrl.get(r.url) ?? []), r]);
-    console.log(`Found ${rows.length} DB row(s) pointing to ${byUrl.size} HEIC/HEIF file(s).\n`);
+    console.log(`Found ${rows.length} DB row(s) pointing to ${byUrl.size} HEIC/HEIF file(s) (by name or content).\n`);
 
     const stats = { converted: 0, wouldConvert: 0, missing: 0, failed: 0 };
 

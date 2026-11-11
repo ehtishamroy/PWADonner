@@ -6,8 +6,19 @@ import Link from 'next/link';
 import { UploadCloud, ChevronDown, Check } from 'lucide-react';
 import { de } from '@/lib/i18n/de';
 import { BRAND } from '@/lib/constants';
+import { nameError } from '@/lib/name-validation';
 
 type Step = 1 | 2 | 3 | 4 | 5;
+
+// Phones and password managers filled saved address data into the name fields.
+// A bare autocomplete="off" is ignored by Chrome on name/address fields, so the
+// fields also get names browsers don't recognise and the password-manager opt-outs.
+const NO_AUTOFILL = (field: string) => ({
+    autoComplete: 'off',
+    name: `ws-reg-${field}`,
+    'data-lpignore': 'true',
+    'data-1p-ignore': 'true',
+});
 
 function StepBar({ step }: { step: Step }) {
     return (
@@ -117,7 +128,9 @@ export default function FamilyRegisterPage() {
     function validate1() {
         const e: Record<string, string> = {};
         if (!form.firstName.trim()) e.firstName = de.auth.errors.required;
+        else if (nameError(form.firstName)) e.firstName = nameError(form.firstName)!;
         if (!form.lastName.trim()) e.lastName = de.auth.errors.required;
+        else if (nameError(form.lastName)) e.lastName = nameError(form.lastName)!;
         if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
             e.email = de.auth.errors.emailInvalid;
         if (!form.privacy) e.privacy = de.auth.errors.required;
@@ -180,6 +193,9 @@ export default function FamilyRegisterPage() {
                     const d = await res.json();
                     if (res.status === 409 && d.loginUrl) {
                         setErrors({ duplicate: d.loginUrl }); return;
+                    }
+                    if (d.field === 'firstName' || d.field === 'lastName') {
+                        setStep(1); setErrors({ [d.field]: d.error }); return;
                     }
                     setErrors({ submit: d.error || de.common.error }); return;
                 }
@@ -245,6 +261,7 @@ export default function FamilyRegisterPage() {
                                         <div className="border-b-2 pb-2" style={{ borderColor: errors[key] ? BRAND.error : '#E5E7EB' }}>
                                             <label className="block mb-1" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{label}</label>
                                             <input type={key === 'email' ? 'email' : 'text'}
+                                                {...(key === 'email' ? {} : NO_AUTOFILL(key))}
                                                 value={(form as Record<string, unknown>)[key] as string}
                                                 placeholder={placeholder}
                                                 onChange={e => {
@@ -398,7 +415,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
             <div className="relative space-y-1">
                 <div className="border-b-2 pb-2" style={{ borderColor: errors.street ? BRAND.error : '#E5E7EB' }}>
                     <label className="block mb-1" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{de.family.register.street}</label>
-                    <input type="text" value={form.street}
+                    <input type="text" value={form.street} {...NO_AUTOFILL('street')}
                         placeholder="z.B. Musterstrasse 12"
                         onFocus={() => setShowStreetSugg(true)}
                         onBlur={() => setTimeout(() => setShowStreetSugg(false), 150)}
@@ -432,7 +449,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
             <div className="relative space-y-1">
                 <div className="border-b-2 pb-2" style={{ borderColor: errors.zipCode ? BRAND.error : '#E5E7EB' }}>
                     <label className="block mb-1" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{de.family.register.zip}</label>
-                    <input type="text" inputMode="numeric" maxLength={4} value={form.zipCode}
+                    <input type="text" inputMode="numeric" maxLength={4} value={form.zipCode} {...NO_AUTOFILL('zip')}
                         placeholder="8000"
                         onFocus={() => setShowSuggestions(true)}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -461,7 +478,7 @@ function AddressStep({ form, setForm, errors }: { form: FormShape; setForm: Reac
             <div className="space-y-1">
                 <div className="border-b-2 pb-2" style={{ borderColor: errors.city ? BRAND.error : '#E5E7EB' }}>
                     <label className="block mb-1" style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '15px' }}>{de.family.register.city}</label>
-                    <input type="text" value={form.city}
+                    <input type="text" value={form.city} {...NO_AUTOFILL('city')}
                         placeholder="z.B. Zürich"
                         onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
                         className="w-full font-bold bg-transparent outline-none text-[17px] placeholder:opacity-30" />

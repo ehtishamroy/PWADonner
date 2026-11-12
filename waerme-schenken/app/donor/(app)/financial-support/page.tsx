@@ -373,7 +373,7 @@ export default function FinancialSupportPage() {
                     ) : (
                         <div className="bg-white rounded-[8px] p-6 text-center mb-6">
                             <p className="opacity-50 text-sm">Keine ausstehenden Spenden für Erstattung.</p>
-                            <p className="text-xs opacity-40 mt-2">Nur Spenden mit Status «Gesendet» können eingereicht werden.</p>
+                            <p className="text-xs opacity-40 mt-2">Nur Spenden mit Status «Verschickt» können eingereicht werden.</p>
                         </div>
                     )
                 )}

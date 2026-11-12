@@ -92,7 +92,7 @@ export const de = {
         waiting:  'Auf Freigabe warten',
         approved: 'Freigegeben',
         selected: 'Ausgewählt',
-        sent:     'Gesendet',
+        sent:     'Verschickt',
         rejected: 'Abgelehnt',
     },
 
@@ -123,7 +123,7 @@ export const de = {
         address: 'Adresse',
         sendTo: 'Bitte sende das Spielzeug an diese Adresse.',
         trackingNumber: 'Sendungsnummer (optional)',
-        markSent: 'Als gesendet markieren',
+        markSent: 'Als verschickt markieren',
         delete: 'Spende löschen',
         deleteConfirm: 'Möchtest du diese Spende wirklich löschen?',
         deleteConfirmBtn: 'Ja, löschen',

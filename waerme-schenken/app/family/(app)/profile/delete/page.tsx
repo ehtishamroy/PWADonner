@@ -70,7 +70,7 @@ export default function FamilyDeleteProfilePage() {
                     </h2>
                     <p className="opacity-70 text-sm text-center leading-relaxed mb-6">{de.profile.deleteConfirm}</p>
                     <p className="text-[12px] opacity-50 text-center mb-6">
-                        Ausgewählte, noch nicht gesendete Spielzeuge werden freigegeben und zurück in die Börse gestellt.
+                        Ausgewählte, noch nicht verschickte Spielzeuge werden freigegeben und zurück in die Börse gestellt.
                     </p>
 
                     <div className="flex gap-3 items-start mb-6">

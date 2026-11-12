@@ -93,7 +93,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
     // Only allow delete if not sent
     if (donation.status === 'sent') {
-        return NextResponse.json({ error: 'Gesendete Spenden können nicht gelöscht werden.' }, { status: 403 });
+        return NextResponse.json({ error: 'Verschickte Spenden können nicht gelöscht werden.' }, { status: 403 });
     }
 
     // Email #8: notify family if the selected toy is being removed

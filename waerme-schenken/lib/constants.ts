@@ -62,7 +62,7 @@ export const STATUS_LABELS: Record<string, string> = {
     waiting:  'Auf Freigabe warten',
     approved: 'Freigegeben',
     selected: 'Ausgewählt',
-    sent:     'Gesendet',
+    sent:     'Verschickt',
     rejected: 'Abgelehnt',
 };
 
